@@ -121,10 +121,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { defineComponent } from 'vue';
+import { Input} from '@/components/ui/input'; // Adjusted import for default export
+import {Button} from '@/components/ui/button'; // Adjusted import for default export
+import {Label} from '@/components/ui/label'; // Adjusted import for default export
 
 export default defineComponent({
     name: 'LoginView',
@@ -133,5 +133,5 @@ export default defineComponent({
         Input,
         Label
     }
-})
+});
 </script>

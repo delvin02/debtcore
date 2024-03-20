@@ -4,16 +4,52 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from '@/router'
+import { OhVueIcon, addIcons } from 'oh-vue-icons'
+import {
+  FaExclamationTriangle,
+  FaSyncAlt,
+  FaSave,
+  FaTimesCircle,
+  FaRegularEye,
+  FaRegularEyeSlash,
+  FaHome,
+  FaWhatsapp,
+  FaPaperclip,
+  FaPlug,
+  FaUserAlt,
+  FaBuilding,
+  FaAddressBook,
+  FaSignOutAlt,
+  FaLock,
+  FaBars 
+} from 'oh-vue-icons/icons/fa/index.js'
+import { BiGraphUpArrow } from "oh-vue-icons/icons/bi/index.js";
 
-import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { FaUserCircle, BiSearch } from "oh-vue-icons/icons";
 
+addIcons(
+  FaExclamationTriangle,
+  FaSyncAlt,
+  FaSave,
+  FaTimesCircle,
+  FaRegularEye,
+  FaRegularEyeSlash,
+  FaHome,
+  FaWhatsapp,
+  FaPaperclip,
+  FaPlug,
+  FaUserAlt,
+  FaBuilding,
+  BiGraphUpArrow,
+  FaAddressBook,
+  FaSignOutAlt,
+  FaLock,
+  FaBars 
+)
 
-addIcons(FaUserCircle, BiSearch);
-
+// const Fa = Object.values({ ...FaIcons });
 const app = createApp(App)
 
-app.component("VIcon", OhVueIcon)
+.component('VIcon', OhVueIcon)
 
 app.use(createPinia())
 app.use(router)

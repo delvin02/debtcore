@@ -12,6 +12,9 @@ import path from "path"
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    port: 5174
+  },
   plugins: [
     vue(),
     vueJsx(),
@@ -29,10 +32,10 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ["oh-vue-icons/icons"]
+    exclude: ["oh-vue-icons/icons"],
   },
   ssr: {
-    noExternal: ["oh-vue-icons"]
+    noExternal: ["oh-vue-icons"],
   },
   build: {
     outDir: '../app/static/vue',

@@ -1,8 +1,7 @@
 <template>
-    <main class="section">
-        <h1>{{ message }}</h1>
-        <button class="btn-count" @click="updateMessage">Change Message</button>
-    </main>
+    <div>
+       
+    </div>
 </template>
 
 <script setup>

@@ -2,6 +2,7 @@
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { AnOutlinedHome } from "@kalimahapps/vue-icons";
 
 export interface LinkProp {
     title: string
@@ -40,9 +41,7 @@ defineProps<NavProps>()
                                 )
                             "
                         >
-                            <!-- <v-icon :icon="link.icon" class="size-4" /> -->
-                            <!-- <v-icon name="bi-music-player" class="size-4" /> -->
-                            <!-- <v-icon name="link.icon" class="bg-emerald-500" /> -->
+                            <AnOutlinedHome/>
                             <span class="sr-only">{{ link.title }}</span>
                         </a>
                     </TooltipTrigger>
@@ -67,7 +66,10 @@ defineProps<NavProps>()
                         )
                     "
                 >
-                    <Icon :icon="link.icon" class="mr-2 size-4" />
+                <VIcon
+                    class="mr-2 size-4"
+                    :name="link.icon"
+                />
                     {{ link.title }}
                     <span
                         v-if="link.label"

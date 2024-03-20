@@ -5,7 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui//separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
-
+import MainDisplay from './MainDisplay.vue'
 interface MailProps {
     accounts: {
         label: string
@@ -19,79 +19,54 @@ interface MailProps {
 
 const props = withDefaults(defineProps<MailProps>(), {
     defaultCollapsed: false,
-    defaultLayout: () => [265, 440, 655]
+    defaultLayout: () => [15, 85]
 })
 
 const isCollapsed = ref(props.defaultCollapsed)
 
 const links: LinkProp[] = [
     {
-        title: 'Inbox',
+        title: 'Dashboard',
         label: '128',
-        icon: 'fa-flag',
+        icon: 'fa-home',
         variant: 'default'
     },
+    
+]
+
+const links1: LinkProp[] = [
     {
-        title: 'Drafts',
-        label: '9',
-        icon: 'lucide:file',
+        title: 'Template',
+        icon: 'fa-whatsapp',
         variant: 'ghost'
     },
     {
-        title: 'Sent',
-        label: '',
-        icon: 'lucide:send',
-        variant: 'ghost'
-    },
-    {
-        title: 'Junk',
-        label: '23',
-        icon: 'lucide:archive',
-        variant: 'ghost'
-    },
-    {
-        title: 'Trash',
-        label: '',
-        icon: 'lucide:trash',
-        variant: 'ghost'
-    },
-    {
-        title: 'Archive',
-        label: '',
-        icon: 'lucide:archive',
+        title: 'Vendor',
+        icon: 'fa-address-book',
         variant: 'ghost'
     }
 ]
-
+const connections: LinkProp[] = [
+    {
+        title: 'Connections',
+        icon: 'fa-plug',
+        variant: 'ghost'
+    },
+]
 const links2: LinkProp[] = [
     {
-        title: 'Social',
-        label: '972',
-        icon: 'lucide:user-2',
+        title: 'User',
+        icon: 'fa-user-alt',
         variant: 'ghost'
     },
     {
-        title: 'Updates',
-        label: '342',
-        icon: 'lucide:alert-circle',
+        title: 'Company',
+        icon: 'fa-building',
         variant: 'ghost'
     },
     {
-        title: 'Forums',
-        label: '128',
-        icon: 'lucide:message-square',
-        variant: 'ghost'
-    },
-    {
-        title: 'Shopping',
-        label: '8',
-        icon: 'lucide:shopping-cart',
-        variant: 'ghost'
-    },
-    {
-        title: 'Promotions',
-        label: '21',
-        icon: 'lucide:archive',
+        title: 'Usage Report',
+        icon: 'bi-graph-up-arrow',
         variant: 'ghost'
     }
 ]
@@ -103,6 +78,7 @@ function onCollapse() {
 function onExpand() {
     isCollapsed.value = false
 }
+
 </script>
 
 <template>
@@ -117,11 +93,12 @@ function onExpand() {
                 :default-size="defaultLayout[0]"
                 :collapsed-size="navCollapsedSize"
                 collapsible
-                :min-size="15"
-                :max-size="20"
-                :class="cn(isCollapsed && 'min-w-[50px] transition-all duration-300 ease-in-out')"
+                :min-size="10"
+                :class="cn(isCollapsed && 'min-w-[50px] max-w-[80px] transition-all duration-300 ease-in-out')"
                 @expand="onExpand"
                 @collapse="onCollapse"
+                default="{20}"
+                :disabled="true"
             >
                 <div
                     :class="
@@ -131,20 +108,27 @@ function onExpand() {
                         )
                     "
                 >
+                <h1 class="text-2xl font-bold">DebtCore</h1>
+
                     <AccountSwitcher :is-collapsed="isCollapsed" :accounts="accounts" />
                 </div>
                 <Separator />
+                <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Dashboard</h1>
                 <Nav :is-collapsed="isCollapsed" :links="links" />
                 <Separator />
+                <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Management</h1>
+                <Nav :is-collapsed="isCollapsed" :links="links1" />
+                <Separator />
+                <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Settings</h1>
+                <Nav :is-collapsed="isCollapsed" :links="connections" />
+                <Separator />
+                <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Admin</h1>
                 <Nav :is-collapsed="isCollapsed" :links="links2" />
             </ResizablePanel>
             <ResizableHandle id="resize-handle-1" with-handle />
             <ResizablePanel id="resize-panel-2" :default-size="defaultLayout[1]" :min-size="30">
-                <VIcon icon="FaUserCircle" />
-            </ResizablePanel>
-            <ResizableHandle id="resiz-handle-2" with-handle />
-            <ResizablePanel id="resize-panel-3" :default-size="defaultLayout[2]">
-                <h1>test</h1>
+                <MainDisplay/>
+
             </ResizablePanel>
         </ResizablePanelGroup>
     </TooltipProvider>
