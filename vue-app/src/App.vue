@@ -1,40 +1,34 @@
 <script setup lang="ts">
-import { watch, ref } from 'vue'
+import { computed } from 'vue'
 import Sidebar from './components/Sidebar/Sidebar.vue'
+import Header from './components/Header/Header.vue'
+import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const hideSidebar = computed(() => route.meta.hideNavigation)
 </script>
 
 <template>
-    <main>
-        <Sidebar />
-        <router-view />
-    </main>
+    <div class="h-screen">
+        <TooltipProvider :delay-duration="0" v-if="!hideSidebar">
+            <ResizablePanelGroup
+                id="resize-panel-group-1"
+                direction="horizontal"
+                class="h-full max-h-[800px] items-stretch"
+            >
+                <Sidebar />
+                <ResizablePanel id="resize-panel-2" :min-size="30">
+                    <div class="flex h-full flex-col">
+                        <Header />
+                        <router-view />
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </TooltipProvider>
+        <router-view v-else />
+    </div>
 </template>
 
-<style scoped>
-header {
-    line-height: 1.5;
-}
-
-.logo {
-    display: block;
-    margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-    header {
-        display: flex;
-        place-items: center;
-        padding-right: calc(var(--section-gap) / 2);
-    }
-
-    .logo {
-        margin: 0 2rem 0 0;
-    }
-
-    header .wrapper {
-        display: flex;
-        place-items: flex-start;
-        flex-wrap: wrap;
-    }
-}
-</style>
+<style scoped></style>

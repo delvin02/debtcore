@@ -3,7 +3,7 @@ import './index.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
-import router from '@/router'
+import { router } from '@/router'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import {
   FaExclamationTriangle,
@@ -21,7 +21,10 @@ import {
   FaAddressBook,
   FaSignOutAlt,
   FaLock,
-  FaBars 
+  FaBars,
+  FaArrowUp,
+  FaArrowDown,
+  FaPlus 
 } from 'oh-vue-icons/icons/fa/index.js'
 import { BiGraphUpArrow } from "oh-vue-icons/icons/bi/index.js";
 
@@ -43,7 +46,8 @@ addIcons(
   FaAddressBook,
   FaSignOutAlt,
   FaLock,
-  FaBars 
+  FaBars,
+  FaPlus
 )
 
 // const Fa = Object.values({ ...FaIcons });

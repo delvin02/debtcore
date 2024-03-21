@@ -2,7 +2,6 @@
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { AnOutlinedHome } from "@kalimahapps/vue-icons";
 
 export interface LinkProp {
     title: string
@@ -30,8 +29,8 @@ defineProps<NavProps>()
             <template v-for="(link, index) of links">
                 <Tooltip v-if="isCollapsed" :key="`1-${index}`" :delay-duration="0">
                     <TooltipTrigger as-child>
-                        <a
-                            href="#"
+                        <router-link
+                            :to="'/vendor'"
                             :class="
                                 cn(
                                     buttonVariants({ variant: link.variant, size: 'icon' }),
@@ -41,9 +40,9 @@ defineProps<NavProps>()
                                 )
                             "
                         >
-                            <AnOutlinedHome/>
+                            <AnOutlinedHome />
                             <span class="sr-only">{{ link.title }}</span>
-                        </a>
+                        </router-link>
                     </TooltipTrigger>
                     <TooltipContent side="right" class="flex items-center gap-4">
                         {{ link.title }}
@@ -66,10 +65,7 @@ defineProps<NavProps>()
                         )
                     "
                 >
-                <VIcon
-                    class="mr-2 size-4"
-                    :name="link.icon"
-                />
+                    <VIcon class="mr-2 size-4" :name="link.icon" />
                     {{ link.title }}
                     <span
                         v-if="link.label"

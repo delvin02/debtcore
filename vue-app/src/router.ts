@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 
-export default createRouter({
+export const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -17,5 +17,9 @@ export default createRouter({
       component: () => import('@/views/LoginView.vue'),
       meta: { hideNavigation: true },
     },
+    {
+        path:'/vendor',
+        component: () => import("@/views/VendorView.vue"),
+    }
   ],
 })
