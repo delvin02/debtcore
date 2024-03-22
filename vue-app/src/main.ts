@@ -24,9 +24,20 @@ import {
   FaBars,
   FaArrowUp,
   FaArrowDown,
-  FaPlus 
+  FaPlus,
+  FaFilter,
+  FaPlusCircle,
+  FaPen ,
+  FaCheckCircle,
+  FaWindowClose,
+  FaBook,
+  FaFileImage 
 } from 'oh-vue-icons/icons/fa/index.js'
-import { BiGraphUpArrow } from "oh-vue-icons/icons/bi/index.js";
+import { 
+  BiGraphUpArrow,
+  BiThreeDots,
+  BiGear 
+ } from "oh-vue-icons/icons/bi/index.js";
 
 
 addIcons(
@@ -47,7 +58,16 @@ addIcons(
   FaSignOutAlt,
   FaLock,
   FaBars,
-  FaPlus
+  FaPlus,
+  BiThreeDots,
+  FaFilter,
+  FaPlusCircle,
+  FaPen,
+  FaCheckCircle,
+  BiGear,
+  FaWindowClose,
+  FaBook,
+  FaFileImage 
 )
 
 // const Fa = Object.values({ ...FaIcons });

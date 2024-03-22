@@ -20,10 +20,13 @@ interface DataTableViewOptionsProps {
 
 const props = defineProps<DataTableViewOptionsProps>()
 
+console.log(props.table.getAllColumns())
+
 const columns = computed(() =>
     props.table
         .getAllColumns()
-        .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
+        .filter((column) => typeof column.accessorFn !== 'undefined' && 
+        column.getCanHide())
 )
 </script>
 

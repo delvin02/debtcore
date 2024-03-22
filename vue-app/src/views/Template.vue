@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import tasks from '@/components/Vendor/data/tasks.json'
-import DataTable from '@/components/Vendor/DataTable.vue'
-import { columns } from '@/components/Vendor/columns'
+import tasks from '@/components/Template/data/tasks.json'
+import DataTable from '@/components/Template/DataTable.vue'
+import { columns } from '@/components/Template/columns'
 </script>
 
 <template>
@@ -21,9 +21,9 @@ import { columns } from '@/components/Vendor/columns'
     <div class="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
         <div class="flex items-center justify-between space-y-2">
             <div>
-                <h2 class="text-2xl font-bold tracking-tight">Vendor</h2>
+                <h2 class="text-2xl font-bold tracking-tight">Message Template for WhatsApp</h2>
                 <p class="text-muted-foreground">
-                    Here&apos;s a list of your tasks for this month!
+                    Here&apos;s a list of your message template!
                 </p>
             </div>
         </div>

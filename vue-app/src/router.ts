@@ -18,8 +18,16 @@ export const router = createRouter({
       meta: { hideNavigation: true },
     },
     {
-        path:'/vendor',
-        component: () => import("@/views/VendorView.vue"),
+      path: '/dashboard',
+      component: () => import('@/views/Dashboard.vue'),
+    },
+    {
+        path:'/customer',
+        component: () => import("@/views/Customer.vue"),
+    },
+    {
+      path: '/template',
+      component: () => import("@/views/Template.vue")
     }
   ],
 })

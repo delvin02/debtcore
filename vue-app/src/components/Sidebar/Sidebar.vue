@@ -2,7 +2,7 @@
 import { defineProps, withDefaults, ref } from 'vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { Separator } from '@/components/ui//separator'
+import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
 
@@ -25,7 +25,7 @@ const links: LinkProp[] = [
         title: 'Dashboard',
         label: '128',
         icon: 'fa-home',
-        variant: 'default'
+        to: '/dashboard'
     }
 ]
 
@@ -33,36 +33,36 @@ const links1: LinkProp[] = [
     {
         title: 'Template',
         icon: 'fa-whatsapp',
-        variant: 'ghost'
+        to: '/template'
     },
     {
-        title: 'Vendor',
+        title: 'Customer',
         icon: 'fa-address-book',
-        variant: 'ghost'
+        to: '/customer'
     }
 ]
 const connections: LinkProp[] = [
     {
         title: 'Connections',
         icon: 'fa-plug',
-        variant: 'ghost'
+        to: '/connections'
     }
 ]
 const links2: LinkProp[] = [
     {
         title: 'User',
         icon: 'fa-user-alt',
-        variant: 'ghost'
+        to: '/user'
     },
     {
         title: 'Company',
         icon: 'fa-building',
-        variant: 'ghost'
+        to: '/company'
     },
     {
         title: 'Usage Report',
         icon: 'bi-graph-up-arrow',
-        variant: 'ghost'
+        to: '/usage'
     }
 ]
 

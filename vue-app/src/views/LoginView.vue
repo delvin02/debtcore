@@ -42,7 +42,7 @@
                         </p>
                     </div>
                     <div class="grid gap-6">
-                        <form>
+                        <form @submit.prevent="handleLogin">
                             <div class="grid gap-2">
                                 <div class="grid gap-1">
                                     <Label
@@ -57,6 +57,7 @@
                                         autocomplete="email"
                                         autocorrect="off"
                                         type="email"
+                                        v-model="email"
                                     />
 
                                     <Label
@@ -69,11 +70,12 @@
                                         placeholder="*******"
                                         autocorrect="off"
                                         type="password"
+                                        v-model="password"
                                     />
                                 </div>
                                 <Button
                                     class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
-                                >
+                                    >
                                     <VIcon icon="BiSearch" /> Sign In
                                 </Button>
                             </div>
@@ -121,7 +123,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref} from 'vue'
 import { Input } from '@/components/ui/input' // Adjusted import for default export
 import { Button } from '@/components/ui/button' // Adjusted import for default export
 import { Label } from '@/components/ui/label' // Adjusted import for default export
@@ -132,6 +134,16 @@ export default defineComponent({
         Button,
         Input,
         Label
+    },
+    setup() {
+        const email = ref('')
+        const password = ref('')
+
+        const handleLogin = async () => {
+            console.log(`Logging in with ${email.value} and password`);
+        }
+
+        return { email, password, handleLogin}
     }
 })
 </script>

@@ -7,6 +7,7 @@
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
+    "esModuleInterop": true,
     "sourceMap": true,
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
@@ -14,6 +15,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    
   }
 }

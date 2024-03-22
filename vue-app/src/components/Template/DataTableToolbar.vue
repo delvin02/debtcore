@@ -6,7 +6,7 @@ import type { Task } from './data/schema'
 import { priorities, statuses } from './data/data'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
 import DataTableViewOptions from './DataTableViewOptions.vue'
-import DataTableAddVendor from './DataTableAddVendor.vue'
+import DataTableAddTemplate from './DataTableAddTemplate.vue'
 // import Cross2Icon from '~icons/radix-icons/cross-2'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,6 +18,7 @@ interface DataTableToolbarProps {
 const props = defineProps<DataTableToolbarProps>()
 
 const isFiltered = computed(() => props.table.getState().columnFilters.length > 0)
+
 </script>
 
 <template>
@@ -53,6 +54,6 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
             </Button>
         </div>
         <DataTableViewOptions :table="table" />
-        <DataTableAddVendor :table="table" />
+        <DataTableAddTemplate :table="table" />
     </div>
 </template>

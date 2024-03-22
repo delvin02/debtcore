@@ -42,7 +42,7 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
     <Popover>
         <PopoverTrigger as-child>
             <Button variant="outline" size="sm" class="h-8 border-dashed">
-                <PlusCircledIcon class="mr-2 h-4 w-4" />
+                <VIcon name="fa-plus-circle" class="mr-2 h-4 w-4" />
                 {{ title }}
                 <template v-if="selectedValues.size > 0">
                     <Separator orientation="vertical" class="mx-2 h-4" />
@@ -116,8 +116,8 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
                             >
                                 <CheckIcon :class="cn('h-4 w-4')" />
                             </div>
-                            <component
-                                :is="option.icon"
+                            <VIcon
+                                :name="option.icon"
                                 v-if="option.icon"
                                 class="mr-2 h-4 w-4 text-muted-foreground"
                             />

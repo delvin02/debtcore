@@ -83,6 +83,23 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
+    accessorKey: 'name',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Name"}),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('name')),
+    enableSorting: false,
+    enableHiding: false,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+  },
+  {
+    accessorKey: "companyName",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Company"}),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('companyName')),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     id: 'actions',
     cell: ({ row }) => h(DataTableRowActions, { row }),
   },

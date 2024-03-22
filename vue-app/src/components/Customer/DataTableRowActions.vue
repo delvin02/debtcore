@@ -33,7 +33,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
             <Button variant="ghost" class="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-                <!-- <DotsHorizontalIcon class="h-4 w-4" /> -->
+                <VIcon name="bi-three-dots" class="h-4 w-4" />
                 <span class="sr-only">Open menu</span>
             </Button>
         </DropdownMenuTrigger>
