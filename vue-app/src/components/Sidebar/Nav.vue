@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
 
 export interface LinkProp {
     title: string
@@ -31,12 +31,21 @@ defineProps<NavProps>()
                 <Tooltip v-if="isCollapsed" :key="`1-${index}`" :delay-duration="0">
                     <TooltipTrigger as-child>
                         <RouterLink :to="link.to" custom v-slot="{ isActive }">
-                            <a :class="cn(
-                                    buttonVariants({ variant: isActive ? 'default' : 'ghost', size: 'icon' }),
-                                    'h-9 w-9 flex items-center justify-center',
-                                    isActive ? 'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white' : ''
-                                )">
-                                <VIcon :name="link.icon"/>
+                            <a
+                                :class="
+                                    cn(
+                                        buttonVariants({
+                                            variant: isActive ? 'default' : 'ghost',
+                                            size: 'icon'
+                                        }),
+                                        'h-9 w-9 flex items-center justify-center',
+                                        isActive
+                                            ? 'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white'
+                                            : ''
+                                    )
+                                "
+                            >
+                                <VIcon :name="link.icon" />
                                 <span class="sr-only">{{ link.title }}</span>
                             </a>
                         </RouterLink>
@@ -49,19 +58,36 @@ defineProps<NavProps>()
                     </TooltipContent>
                 </Tooltip>
 
-                <router-link v-else :to="link.to"  custom v-slot="{ isActive }" :key="`nav-${index}`">
-                    <a :href="link.to"
-                        :class="cn(
-                            buttonVariants({ variant: isActive ? 'default' : 'ghost', size: 'sm' }),
-                            'justify-start flex items-center',
-                            isActive ? 'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white' : ''
-                        )">
-                        <VIcon :name="link.icon" class="mr-2"/>
+                <router-link
+                    v-else
+                    :to="link.to"
+                    custom
+                    v-slot="{ isActive }"
+                    :key="`nav-${index}`"
+                >
+                    <a
+                        :href="link.to"
+                        :class="
+                            cn(
+                                buttonVariants({
+                                    variant: isActive ? 'default' : 'ghost',
+                                    size: 'sm'
+                                }),
+                                'justify-start flex items-center',
+                                isActive
+                                    ? 'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white'
+                                    : ''
+                            )
+                        "
+                    >
+                        <VIcon :name="link.icon" class="mr-2" />
                         {{ link.title }}
-                        <span v-if="link.label" :class="cn(
-                                'ml-auto',
-                                isActive ? 'text-background dark:text-white' : ''
-                            )">
+                        <span
+                            v-if="link.label"
+                            :class="
+                                cn('ml-auto', isActive ? 'text-background dark:text-white' : '')
+                            "
+                        >
                             {{ link.label }}
                         </span>
                     </a>

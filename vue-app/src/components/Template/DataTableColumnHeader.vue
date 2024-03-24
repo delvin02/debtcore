@@ -36,7 +36,7 @@ defineProps<DataTableColumnHeaderProps>()
                         v-else-if="column.getIsSorted() === 'asc'"
                         class="ml-2 h-4 w-4"
                     />
-                    <!-- <CaretSortIcon v-else class="ml-2 h-4 w-4" /> -->
+                    <VIcon name="fa-sort" v-else class="ml-2 h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -50,7 +50,10 @@ defineProps<DataTableColumnHeaderProps>()
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem @click="column.toggleVisibility(false)">
-                    <!-- <EyeNoneIcon class="mr-2 h-3.5 w-3.5 text-muted-foreground/70" /> -->
+                    <VIcon
+                        name="fa-regular-eye-slash"
+                        class="mr-2 h-3.5 w-3.5 text-muted-foreground/70"
+                    />
                     Hide
                 </DropdownMenuItem>
             </DropdownMenuContent>

@@ -22,11 +22,11 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Name"}),
-    cell: ({ row }) => h('div', { class: 'w-20 underline' }, row.getValue('name')),
-    enableSorting: false,
-    enableHiding: false,
+    accessorKey: 'invoice',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Invoice"}),
+    cell: ({ row }) => h('div', { class: 'w-20 underline' }, row.getValue('invoice')),
+    enableSorting: true,
+    enableHiding: true,
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
@@ -35,23 +35,33 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: "companyName",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Company"}),
     cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('companyName')),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "phoneNumber",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Phone"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('phoneNumber')),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'outstanding',
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Outstanding Debts' }),
-    cell: ({ row }) => h(Badge, { variant: 'destructive' }, row.getValue('outstanding') + " MYR"),
     enableSorting: true,
     enableHiding: true,
-
+    enableColumnFilter: true,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
+  },
+  {
+    accessorKey: "dueDate",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Due Date"}),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('dueDate')),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Status"}),
+    cell: ({ row }) => {
+      const status = statuses.find(status => status.value === row.original.status)
+      
+      return h(Badge, { variant: 'secondary' }, status ? status.label : 'ERROR')
+    },
+    enableSorting: true,
+    enableHiding: true,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     id: 'actions',

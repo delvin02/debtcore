@@ -28,6 +28,10 @@ export const router = createRouter({
     {
       path: '/template',
       component: () => import("@/views/Template.vue")
+    },
+    {
+      path: '/debt',
+      component: () => import("@/views/Debt.vue")
     }
   ],
 })

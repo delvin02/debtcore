@@ -25,18 +25,23 @@ export const labels = [
 
 export const statuses = [
   {
-    value: 'backlog',
-    label: 'Backlog',
+    value: 'draft',
+    label: 'Draft',
     //icon: h(QuestionMarkCircledIcon),
   },
   {
-    value: 'todo',
-    label: 'Todo',
+    value: 'claiming',
+    label: 'Claiming',
     //icon: h(CircleIcon),
   },
   {
     value: 'in progress',
     label: 'In Progress',
+    //icon: h(StopwatchIcon),
+  },
+  {
+    value: 'verifying payment',
+    label: 'Verifying Payment',
     //icon: h(StopwatchIcon),
   },
   {

@@ -5,13 +5,9 @@ import { z } from 'zod'
 export const taskSchema = z.object({
   id: z.string(),
   status: z.string(),
-  label: z.string(),
-  priority: z.string(),
-  name: z.string().min(2).max(50),
+  invoice: z.string(),
   companyName: z.string().min(2).max(50),
-  phoneNumber: z.string(),
-  email: z.string(),
-  debts: z.string()
+  dueDate: z.string().pipe( z.coerce.date() )
 })
 
 export type Task = z.infer<typeof taskSchema>

@@ -13,4 +13,11 @@ export const taskSchema = z.object({
   last_updated: z.date().min(new Date("1900-01-01"), { message: "Too old" })
 })
 
+
+export const languageSchema = z.object({
+  value: z.string(),
+  label: z.string()
+})
+
 export type Task = z.infer<typeof taskSchema>
+export type Language = z.infer<typeof languageSchema>

@@ -31,12 +31,17 @@ import {
   FaCheckCircle,
   FaWindowClose,
   FaBook,
-  FaFileImage 
+  FaFileImage,
+  FaAngleDown,
+  FaSort,
+   
 } from 'oh-vue-icons/icons/fa/index.js'
 import { 
   BiGraphUpArrow,
   BiThreeDots,
-  BiGear 
+  BiGear,
+  BiEmojiSmileFill,
+  BiCashCoin
  } from "oh-vue-icons/icons/bi/index.js";
 
 
@@ -67,7 +72,14 @@ addIcons(
   BiGear,
   FaWindowClose,
   FaBook,
-  FaFileImage 
+  FaFileImage,
+  BiEmojiSmileFill,
+  FaAngleDown,
+  BiCashCoin,
+  FaArrowUp,
+  FaArrowDown,
+  FaSort,
+   
 )
 
 // const Fa = Object.values({ ...FaIcons });

@@ -18,6 +18,9 @@ module.exports = {
       },
     },
     extend: {
+      backgroundImage: {
+        'whatsapp-bg': "url('./assets/whatsapp-bg.png')",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

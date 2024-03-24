@@ -28,7 +28,7 @@ interface DataTableFacetedFilter {
     options: {
         label: string
         value: string
-        icon?: string
+        icon?: Component
     }[]
 }
 
@@ -76,8 +76,10 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
         </PopoverTrigger>
         <PopoverContent class="w-[200px] p-0" align="start">
             <Command>
-                <!-- :filter-function=" (list: DataTableFacetedFilter['options'], term) =>
-                list.filter((i) => i.label.toLowerCase()?.includes(term)) " -->
+                <!-- :filter-function="
+                    (list: DataTableFacetedFilter['options'], term) =>
+                        list.filter((i) => i.label.toLowerCase()?.includes(term))
+                " -->
                 <CommandInput :placeholder="title" />
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
@@ -114,8 +116,8 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
                             >
                                 <CheckIcon :class="cn('h-4 w-4')" />
                             </div>
-                            <VIcon
-                                :name="option.icon"
+                            <component
+                                :is="option.icon"
                                 v-if="option.icon"
                                 class="mr-2 h-4 w-4 text-muted-foreground"
                             />

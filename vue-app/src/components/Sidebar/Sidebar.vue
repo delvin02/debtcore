@@ -31,6 +31,11 @@ const links: LinkProp[] = [
 
 const links1: LinkProp[] = [
     {
+        title: 'Debt',
+        icon: 'bi-cash-coin',
+        to: '/debt'
+    },
+    {
         title: 'Template',
         icon: 'fa-whatsapp',
         to: '/template'
