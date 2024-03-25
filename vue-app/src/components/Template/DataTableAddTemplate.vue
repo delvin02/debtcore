@@ -3,12 +3,12 @@ import { defineModel, ref, computed, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
 } from '@/components/ui/sheet'
 
 import { Input } from '@/components/ui/input'
@@ -257,8 +257,7 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                             <div class="grid grid-cols-4 items-center gap-4 my-4">
                                 <Label for="name" class="text-center"> Name </Label>
                                 <div class="col-span-3 mr-2">
-                                    <Input  placeholder="Type your footer here." class="p-2 " />
-
+                                    <Input placeholder="Type your footer here." class="p-2" />
                                 </div>
                             </div>
                         </div>

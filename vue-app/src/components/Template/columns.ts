@@ -29,7 +29,9 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const rowValue = row.getValue(id)?.toString().toLowerCase() || ''
+      const filter = value?.toString().toLowerCase();
+      return rowValue.includes(filter)
     },
   },
   {

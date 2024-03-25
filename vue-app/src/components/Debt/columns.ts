@@ -66,6 +66,16 @@ export const columns: ColumnDef<Task>[] = [
       title: "Due Date"
     },
   },
+    {
+    accessorKey: "amount",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
+    cell: ({ row }) => h(Badge, {variant:"destructive"}, "RM " + row.getValue('amount')),
+    enableSorting: true,
+    enableHiding: true,
+    meta: {
+      title: "Amount"
+    },
+  },
   {
     accessorKey: "status",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Status"}),
@@ -87,7 +97,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() || '';
       const filterValueLower = value?.toString().toLowerCase();
       return rowValueLower.includes(filterValueLower);    
     },

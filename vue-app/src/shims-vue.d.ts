@@ -8,9 +8,6 @@ declare module '*.vue' {
 
 import '@tanstack/vue-table'
 declare module '@tanstack/vue-table' {
-  interface FilterFns {
-    filter: FilterFn<unknown>
-  },
   interface ColumnMeta<TData extends RowData, TValue> {
     title: string
   }
