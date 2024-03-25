@@ -28,7 +28,9 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
     },
   },
   {
@@ -37,6 +39,11 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('companyName')),
     enableSorting: false,
     enableHiding: false,
+    filterFn: (row, id, value) => {
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
+    },
   },
   {
     accessorKey: "phoneNumber",

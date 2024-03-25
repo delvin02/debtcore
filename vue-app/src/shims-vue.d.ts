@@ -4,3 +4,14 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+
+import '@tanstack/vue-table'
+declare module '@tanstack/vue-table' {
+  interface FilterFns {
+    filter: FilterFn<unknown>
+  },
+  interface ColumnMeta<TData extends RowData, TValue> {
+    title: string
+  }
+}

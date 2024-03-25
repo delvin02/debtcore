@@ -1,12 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      component: Home,
+      component: () => import('@/views/Home.vue'),
     },
     {
       path: '/about',
@@ -32,6 +31,10 @@ export const router = createRouter({
     {
       path: '/debt',
       component: () => import("@/views/Debt.vue")
+    },
+    {
+      path: '/customer/:customerId/debt',
+      component: () => import("@/views/CustomerDebt.vue")
     }
   ],
 })

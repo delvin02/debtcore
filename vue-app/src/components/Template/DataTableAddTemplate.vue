@@ -3,13 +3,13 @@ import { defineModel, ref, computed, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from '@/components/ui/dialog'
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 
 import { Input } from '@/components/ui/input'
 
@@ -87,22 +87,22 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
 </script>
 
 <template>
-    <Dialog>
-        <DialogTrigger asChild>
+    <Sheet>
+        <SheetTrigger>
             <Button variant="secondary" size="sm" class="hidden h-8 ml-2 lg:flex">
                 <!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
                 <VIcon name="fa-plus" class="size-4" />
             </Button>
-        </DialogTrigger>
-        <DialogContent :isSideBar="true" class="flex flex-col">
-            <DialogTitle>Add Template</DialogTitle>
+        </SheetTrigger>
+        <SheetContent side="right" :class="cn('flex flex-col sm:max-w-full')">
+            <SheetTitle>Add Template</SheetTitle>
             <Separator class="my-3" />
             <div class="flex items-stretch h-full">
                 <div class="w-[300px] border-r-2 mr-2">
-                    <DialogHeader>
-                        <DialogTitle>Language</DialogTitle>
-                        <DialogDescription> Pick a language to edit </DialogDescription>
-                    </DialogHeader>
+                    <SheetHeader>
+                        <SheetTitle>Language</SheetTitle>
+                        <SheetDescription> Pick a language to edit </SheetDescription>
+                    </SheetHeader>
                     <div class="h-full mt-2 w-[200px]">
                         <div
                             class="mb-2"
@@ -169,16 +169,16 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                     </div>
                 </div>
                 <div class="border-r-2 w-[800px] h-[750px] overflow-auto ml-2">
-                    <DialogHeader>
-                        <DialogTitle>Template Design (English)</DialogTitle>
-                        <DialogDescription>
+                    <SheetHeader>
+                        <SheetTitle>Template Design (English)</SheetTitle>
+                        <SheetDescription>
                             Add a title or choose which type of media you'll use for this header.
-                        </DialogDescription>
-                    </DialogHeader>
+                        </SheetDescription>
+                    </SheetHeader>
                     <!-- :validation-schema="vendorSchema" -->
                     <div class="grid gap-2 py-2 mt-4">
                         <div class="flex justify-between items-center">
-                            <DialogTitle>Header <Badge class="ml-1">Optional</Badge></DialogTitle>
+                            <SheetTitle>Header <Badge class="ml-1">Optional</Badge></SheetTitle>
                             <Button type="submit" variant="default" class="mr-2">Submit</Button>
                         </div>
                         <div class="grid grid-cols-4 items-center gap-4">
@@ -225,7 +225,7 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                         </div>
                     </div>
                     <div class="grid gap-2 py-2 mt-2">
-                        <DialogTitle class="mt-5">Body</DialogTitle>
+                        <SheetTitle class="mt-5">Body</SheetTitle>
                         <div class="grid grid-cols-4 gap-4">
                             <div class="col-span-4 mr-4 pl-1">
                                 <Textarea
@@ -248,30 +248,24 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                         </div>
                         <div class="grid grid-cols-4 items-center gap-4">
                             <div class="col-span-4 mr-2">
-                                <Input id="name" placeholder="Name" />
+                                <Input id="name" placeholder="Name" class="ml-1" />
                             </div>
                         </div>
-                        <div class="grid grid-cols-4 items-center gap-4 mt-4">
-                            <Label for="name" class="text-center"> Name </Label>
-                            <div class="col-span-3 mr-2">
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Media" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>None</SelectLabel>
-                                            <SelectItem value="text"> Text </SelectItem>
-                                            <SelectItem value="none"> None </SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                        <div class="border border-primary mr-2 rounded ml-1">
+                            <SheetTitle class="mt-3 ml-5">Variables in Body</SheetTitle>
+
+                            <div class="grid grid-cols-4 items-center gap-4 my-4">
+                                <Label for="name" class="text-center"> Name </Label>
+                                <div class="col-span-3 mr-2">
+                                    <Input  placeholder="Type your footer here." class="p-2 " />
+
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="grid gap-2 py-2 mt-2">
-                        <DialogTitle class="mt-5">Footer</DialogTitle>
+                        <SheetTitle class="mt-5">Footer</SheetTitle>
                         <div class="grid grid-cols-4 gap-4">
                             <div class="col-span-4 mr-4 pl-1">
                                 <Input placeholder="Type your footer here." class="p-2" />
@@ -280,10 +274,10 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                     </div>
                 </div>
                 <div class="p-3 w-[400px]">
-                    <DialogHeader>
-                        <DialogTitle>Preview Message</DialogTitle>
-                        <DialogDescription> How it will look on whatsapp. </DialogDescription>
-                    </DialogHeader>
+                    <SheetHeader>
+                        <SheetTitle>Preview Message</SheetTitle>
+                        <SheetDescription> How it will look on whatsapp. </SheetDescription>
+                    </SheetHeader>
                     <div class="h-fit">
                         <div
                             class="box-border relative w-full h-[380px] bg-[#e5ddd5] before:z-0 before:content-[''] before:h-full before:w-full before:opacity-[0.06] before:absolute before:size before:bg-cover before:left-0 before:bg-whatsapp-bg my-auto"
@@ -313,8 +307,8 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                     </div>
                 </div>
             </div>
-        </DialogContent>
-    </Dialog>
+        </SheetContent>
+    </Sheet>
 </template>
 
 <style scoped>

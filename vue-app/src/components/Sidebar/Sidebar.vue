@@ -103,7 +103,7 @@ function onExpand() {
                 cn('flex h-[52px] items-center justify-center', isCollapsed ? 'h-[52px]' : 'px-2')
             "
         >
-            <h1 class="text-2xl font-bold">DebtCore</h1>
+            <h1 class="text-2xl font-bold">test</h1>
 
             <!-- <AccountSwitcher :is-collapsed="isCollapsed" :accounts="accounts" /> -->
         </div>

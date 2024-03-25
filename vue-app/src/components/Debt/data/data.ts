@@ -27,32 +27,32 @@ export const statuses = [
   {
     value: 'draft',
     label: 'Draft',
-    //icon: h(QuestionMarkCircledIcon),
+    icon: 'fa-pen'
   },
   {
     value: 'claiming',
     label: 'Claiming',
-    //icon: h(CircleIcon),
+    icon: 'fa-circle'
   },
   {
     value: 'in progress',
     label: 'In Progress',
-    //icon: h(StopwatchIcon),
+    icon: 'bi-stopwatch',
   },
   {
     value: 'verifying payment',
     label: 'Verifying Payment',
-    //icon: h(StopwatchIcon),
+    icon: 'bi-arrow-up-square-fill'
   },
   {
     value: 'done',
     label: 'Done',
-    //icon: h(CheckCircledIcon),
+    icon: 'fa-check-circle'
   },
   {
     value: 'canceled',
     label: 'Canceled',
-    //icon: h(CrossCircledIcon),
+    icon: 'fa-times-circle'
   },
 ]
 

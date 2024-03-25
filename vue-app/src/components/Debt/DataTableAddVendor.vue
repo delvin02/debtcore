@@ -58,16 +58,16 @@ const date = ref<Date>()
         </DialogTrigger>
         <DialogContent :isSideBar="false" class="sm:max-w-[700px]">
             <DialogHeader>
-                <DialogTitle>Add Customer</DialogTitle>
+                <DialogTitle>Add Debt Record</DialogTitle>
                 <DialogDescription>
-                    Insert the details of the customer here. Click save when you're done.
+                    Insert the details of the debt here. Click add when you're done.
                 </DialogDescription>
             </DialogHeader>
             <!-- :validation-schema="vendorSchema" -->
             <div class="grid gap-4 py-4">
                 <div class="grid grid-cols-4 items-center gap-4">
                     <Label for="name" class="text-right"> Invoice </Label>
-                    <Input id="name" placeholder="John Doe" class="col-span-3" />
+                    <Input id="name" placeholder="INV-007" class="col-span-3" />
                 </div>
                 <div class="grid grid-cols-4 items-center gap-4">
                     <Label for="companyname" class="text-right"> Company </Label>
@@ -78,7 +78,7 @@ const date = ref<Date>()
                                     variant="outline"
                                     role="combobox"
                                     :aria-expanded="open"
-                                    class="w-full justify-between"
+                                    class="w-full justify-between px-3"
                                 >
                                     {{
                                         value
@@ -86,10 +86,10 @@ const date = ref<Date>()
                                                   ?.label
                                             : 'Select company'
                                     }}
-                                    <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    <VIcon name="fa-angle-down" class=" h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent class="w-[500px] p-0">
+                            <PopoverContent class="w-[500px] p-1">
                                 <Command>
                                     <CommandInput class="h-9" placeholder="Search framework..." />
                                     <CommandEmpty>No framework found.</CommandEmpty>
@@ -165,12 +165,23 @@ const date = ref<Date>()
                                         :key="status.value"
                                         :value="status.value"
                                     >
+                                    <VIcon :name="status.icon"/>
+
                                         {{ status.label }}
                                     </SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+                <div class="grid grid-cols-4 items-center gap-x-4 text-primary">
+                    <Label for="mobile" class="text-right"> Attachment </Label>
+                    <div class="col-span-3 ">
+                        <Input id="name" type="file"  class="col-span-3" />
+                    </div> 
+                    <p class="col-start-2 col-span-3 mt-1 text-sm text-gray-500 dark:text-gray-300">SVG, PNG, JPG or JPEG, PDF (MAX. 1080x720px).</p>
+
+  
                 </div>
             </div>
             <DialogFooter class="flex justify-end">

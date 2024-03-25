@@ -27,22 +27,29 @@ import {
   FaPlus,
   FaFilter,
   FaPlusCircle,
-  FaPen ,
+  FaPen,
   FaCheckCircle,
   FaWindowClose,
   FaBook,
   FaFileImage,
   FaAngleDown,
   FaSort,
-   
+  FaCircle,
+  FaPhoneAlt,
+  FaTrashAlt 
 } from 'oh-vue-icons/icons/fa/index.js'
+
 import { 
   BiGraphUpArrow,
   BiThreeDots,
   BiGear,
   BiEmojiSmileFill,
-  BiCashCoin
+  BiCashCoin,
+  BiStopwatch,
+  BiArrowUpSquareFill 
  } from "oh-vue-icons/icons/bi/index.js";
+
+ import { MdCancel, MdPendingactions  } from "oh-vue-icons/icons/md/index.js";
 
 
 addIcons(
@@ -79,7 +86,13 @@ addIcons(
   FaArrowUp,
   FaArrowDown,
   FaSort,
-   
+  MdCancel,
+  MdPendingactions,
+  BiStopwatch,
+  FaCircle,
+  BiArrowUpSquareFill,
+  FaPhoneAlt,
+  FaTrashAlt 
 )
 
 // const Fa = Object.values({ ...FaIcons });

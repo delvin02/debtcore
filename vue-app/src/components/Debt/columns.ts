@@ -7,6 +7,7 @@ import DataTableColumnHeader from './DataTableColumnHeader.vue'
 import DataTableRowActions from './DataTableRowActions.vue'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { OhVueIcon as VIcon } from 'oh-vue-icons'
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -20,6 +21,9 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => h(Checkbox, { 'checked': row.getIsSelected(), 'onUpdate:checked': value => row.toggleSelected(!!value), 'ariaLabel': 'Select row', 'class': 'translate-y-0.5' }),
     enableSorting: false,
     enableHiding: false,
+    meta: {
+      title: "Select"
+    },
   },
   {
     accessorKey: 'invoice',
@@ -28,7 +32,12 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
+    },
+    meta: {
+      title: "Invoice"
     },
   },
   {
@@ -39,15 +48,23 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
+    },
+    meta: {
+      title: "Company"
     },
   },
   {
-    accessorKey: "dueDate",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Due Date"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('dueDate')),
+    accessorKey: "due_date",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('due_date')),
     enableSorting: true,
     enableHiding: true,
+    meta: {
+      title: "Due Date"
+    },
   },
   {
     accessorKey: "status",
@@ -55,12 +72,27 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => {
       const status = statuses.find(status => status.value === row.original.status)
       
-      return h(Badge, { variant: 'secondary' }, status ? status.label : 'ERROR')
+      if (!status)
+        return null
+
+        return h(Badge, { variant:"secondary", class: 'flex w-fit items-center' }, [
+          status.icon && h(VIcon, {  
+            name: status.icon, 
+            class: 'mr-1 h-4 w-4 text-muted-foreground',
+          }),
+          h('span', {}, status.label),
+        ])
+      
     },
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
+    },
+    meta: {
+      title: "Status"
     },
   },
   {

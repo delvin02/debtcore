@@ -33,7 +33,10 @@ import {
 interface DataTableProps {
     columns: ColumnDef<Task, any>[]
     data: Task[]
+    customerId?: string
 }
+
+
 const props = defineProps<DataTableProps>()
 
 const sorting = ref<SortingState>([])

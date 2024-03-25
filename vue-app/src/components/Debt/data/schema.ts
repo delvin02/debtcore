@@ -7,7 +7,7 @@ export const taskSchema = z.object({
   status: z.string(),
   invoice: z.string(),
   companyName: z.string().min(2).max(50),
-  dueDate: z.string().pipe( z.coerce.date() )
+  due_date: z.string().pipe( z.coerce.date() )
 })
 
 export type Task = z.infer<typeof taskSchema>

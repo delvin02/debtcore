@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Row } from '@tanstack/vue-table'
 import { computed } from 'vue'
-import { labels } from './data/data'
+import { statuses } from './data/data'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
 // import DotsHorizontalIcon from '~icons/radix-icons/dots-horizontal'
@@ -39,15 +39,15 @@ const task = computed(() => taskSchema.parse(props.row.original))
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="w-[160px]">
             <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+            <DropdownMenuItem>Backlog</DropdownMenuItem>
             <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>Statuses</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                    <DropdownMenuRadioGroup :value="task.label">
+                    <DropdownMenuRadioGroup :value="statuses">
                         <DropdownMenuRadioItem
-                            v-for="label in labels"
+                            v-for="label in statuses"
                             :key="label.value"
                             :value="label.value"
                         >
@@ -57,9 +57,9 @@ const task = computed(() => taskSchema.parse(props.row.original))
                 </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem class="bg-red-600 text-white font-bold">
+                <VIcon name="fa-trash-alt" class="w-fit h-full mr-1"/>
                 Delete
-                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>

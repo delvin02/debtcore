@@ -57,9 +57,8 @@ const task = computed(() => taskSchema.parse(props.row.original))
                 </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem class="bg-red-600">
                 Delete
-                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>

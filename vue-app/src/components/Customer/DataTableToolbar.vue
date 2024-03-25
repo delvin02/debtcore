@@ -25,16 +25,16 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
         <div class="flex flex-1 items-center space-x-2">
             <Input
                 placeholder="Filter tasks..."
-                :model-value="(table.getColumn('title')?.getFilterValue() as string) ?? ''"
+                :model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
                 class="h-8 w-[150px] lg:w-[250px]"
-                @input="table.getColumn('title')?.setFilterValue($event.target.value)"
+                @input="table.getColumn('name')?.setFilterValue($event.target.value)"
             />
-            <DataTableFacetedFilter
+            <!-- <DataTableFacetedFilter
                 v-if="table.getColumn('status')"
                 :column="table.getColumn('status')"
                 title="Status"
                 :options="statuses"
-            />
+            /> -->
 
             <Button
                 v-if="isFiltered"
