@@ -28,7 +28,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() ?? '';
       const filterValueLower = value?.toString().toLowerCase();
       return rowValueLower.includes(filterValueLower);    
     },
@@ -40,7 +40,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() ?? '';
       const filterValueLower = value?.toString().toLowerCase();
       return rowValueLower.includes(filterValueLower);    
     },

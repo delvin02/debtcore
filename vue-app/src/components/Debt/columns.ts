@@ -32,7 +32,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() ?? '';
       const filterValueLower = value?.toString().toLowerCase();
       return rowValueLower.includes(filterValueLower);    
     },
@@ -48,7 +48,7 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase();
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() ?? '';
       const filterValueLower = value?.toString().toLowerCase();
       return rowValueLower.includes(filterValueLower);    
     },

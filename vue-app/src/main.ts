@@ -46,7 +46,8 @@ import {
   BiEmojiSmileFill,
   BiCashCoin,
   BiStopwatch,
-  BiArrowUpSquareFill 
+  BiArrowUpSquareFill,
+  BiFileEarmarkFont 
  } from "oh-vue-icons/icons/bi/index.js";
 
  import { MdCancel, MdPendingactions  } from "oh-vue-icons/icons/md/index.js";
@@ -92,7 +93,8 @@ addIcons(
   FaCircle,
   BiArrowUpSquareFill,
   FaPhoneAlt,
-  FaTrashAlt 
+  FaTrashAlt,
+  BiFileEarmarkFont 
 )
 
 // const Fa = Object.values({ ...FaIcons });

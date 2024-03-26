@@ -29,6 +29,10 @@ export const router = createRouter({
       component: () => import("@/views/Template.vue")
     },
     {
+      path: '/message',
+      component: () => import("@/views/Message.vue")
+    },
+    {
       path: '/debt',
       component: () => import("@/views/Debt.vue")
     },
