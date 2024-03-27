@@ -13,16 +13,16 @@ defineProps<MailListProps>()
 const selectedMail = defineModel<string>('selectedMail', { required: false })
 
 function getBadgeVariantFromLabel(label: string) {
-    if (['work'].includes(label.toLowerCase())) return 'default'
+    if (['debt'].includes(label.toLowerCase())) return 'default'
 
-    if (['personal'].includes(label.toLowerCase())) return 'outline'
+    if (['important'].includes(label.toLowerCase())) return 'destructive'
 
     return 'secondary'
 }
 </script>
 
 <template>
-    <ScrollArea class="h-screen flex">
+    <ScrollArea class="h-[80vh] flex">
         <div class="flex-1 flex flex-col gap-2 p-4 pt-0">
             <TransitionGroup name="list" appear>
                 <button

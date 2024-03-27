@@ -27,7 +27,7 @@ defineProps<DataTablePaginationProps>()
             {{ table.getFilteredSelectedRowModel().rows.length }} of
             {{ table.getFilteredRowModel().rows.length }} row(s) selected.
         </div>
-        <div class="flex items-center space-x-6 lg:space-x-8">
+        <div class="flex items-center space-x-6 lg:space-x-8 text-primary">
             <div class="flex items-center space-x-2">
                 <p class="text-sm font-medium">Rows per page</p>
                 <Select

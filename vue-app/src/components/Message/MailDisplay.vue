@@ -30,6 +30,7 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface MailDisplayProps {
     mail: Mail | undefined
@@ -48,8 +49,8 @@ const today = new Date()
 </script>
 
 <template>
-    <div class="flex h-full flex-col">
-        <div class="flex items-center p-2">
+    <div>
+        <!-- <div class="flex items-center p-2">
             <div class="flex items-center gap-2">
                 <Tooltip>
                     <TooltipTrigger as-child>
@@ -172,9 +173,9 @@ const today = new Date()
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
-        <Separator />
-        <div v-if="mail" class="flex flex-1 flex-col">
-            <div class="flex items-start p-4">
+        <Separator /> -->
+        <div v-if="mail" class="flex flex-col ">
+            <div class="flex items-start p-4 basis-1/6">
                 <div class="flex items-start gap-4 text-sm">
                     <Avatar>
                         <AvatarFallback>
@@ -186,11 +187,11 @@ const today = new Date()
                             {{ mail.name }}
                         </div>
                         <div class="line-clamp-1 text-xs">
-                            {{ mail.subject }}
+                            INVOICE-008 {{ mail.subject }}
                         </div>
-                        <div class="line-clamp-1 text-xs">
+                        <!-- <div class="line-clamp-1 text-xs">
                             <span class="font-medium">Reply-To:</span> {{ mail.email }}
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div v-if="mail.date" class="ml-auto text-xs text-muted-foreground">
@@ -198,8 +199,8 @@ const today = new Date()
                 </div>
             </div>
             <Separator />
-            <div class="overflow-y-auto">
-                <div class="flex w-1/3 ml-auto">
+            <ScrollArea class="h-[620px] ">
+                <div class="flex w-1/3 ml-auto  md:w-2/5">
                     <div class="flex flex-row-reverse">
                         <Avatar class="flex mt-auto mr-2">
                             <AvatarFallback>
@@ -213,7 +214,7 @@ const today = new Date()
                         </div>
                     </div>
                 </div>
-                <div class="flex w-1/3">
+                <div class="flex w-1/3  md:w-2/5">
                     <div class="flex">
                         <Avatar class="flex mt-auto ml-2">
                             <AvatarFallback>
@@ -227,7 +228,7 @@ const today = new Date()
                         </div>
                     </div>
                 </div>
-                <div class="flex w-1/3">
+                <div class="flex w-1/3 md:w-2/5">
                     <div class="flex">
                         <Avatar class="flex mt-auto ml-2">
                             <AvatarFallback>
@@ -241,18 +242,20 @@ const today = new Date()
                         </div>
                     </div>
                 </div>
-            </div>
-            <Separator class="mt-auto" />
-            <div class="p-4">
+                <div class="my-2"></div>
+
+            </ScrollArea>
+            <Separator />
+            <div class="p-4 basis-2/6 ">
                 <form>
                     <div class="grid gap-4">
-                        <Textarea class="p-4" :placeholder="`Reply ${mail.name}...`" />
+                        <Textarea class="p-4 resize-none" :placeholder="`Reply ${mail.name}...`" />
                         <div class="flex items-center">
                             <Label
                                 html-for="mute"
                                 class="flex items-center gap-2 text-xs font-normal"
                             >
-                                <Switch id="mute" aria-label="Mute thread" /> Mute this thread
+                                <!-- <Switch id="mute" aria-label="Mute thread" /> Mute this thread -->
                             </Label>
                             <Button type="button" size="sm" class="ml-auto"> Send </Button>
                         </div>

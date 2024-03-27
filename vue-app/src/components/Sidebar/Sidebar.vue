@@ -95,7 +95,7 @@ function onExpand() {
         :class="
             cn(
                 isCollapsed &&
-                    'position-fixed min-w-[50px] max-w-[80px] transition-all duration-300 ease-in-out'
+                    'position-fixed min-w-[50px] min-h-full max-w-[80px] transition-all duration-300 ease-in-out'
             )
         "
         @expand="onExpand"
