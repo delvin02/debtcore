@@ -9,7 +9,7 @@ import {
     ReplyAll,
     Trash2
 } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 // import addDays from 'date-fns/addDays'
 // import addHours from 'date-fns/addHours'
 // import format from 'date-fns/format'
@@ -44,11 +44,25 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 //     .join('')
 // })
 
+const headerElementRef = ref<HTMLDivElement | null>(null)
+
+function getHeaderHeight() {
+    return headerElementRef.value?.offsetHeight ?? 0
+}
+
+defineExpose({
+    getHeaderHeight
+})
+
+onMounted(() => {
+    console.log(getHeaderHeight()) // Optional: For internal use
+})
+
 const today = new Date()
 </script>
 
 <template>
-    <div>
+    <div ref="headerElementRef">
         <div class="flex items-center h-[52px]">
             <div class="flex items-center gap-2">
                 <Tooltip>
