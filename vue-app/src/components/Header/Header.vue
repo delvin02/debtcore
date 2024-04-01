@@ -9,7 +9,7 @@ import {
     ReplyAll,
     Trash2
 } from 'lucide-vue-next'
-import { ref, computed, onMounted } from 'vue'
+import { ref, defineExpose, inject, onMounted } from 'vue'
 // import addDays from 'date-fns/addDays'
 // import addHours from 'date-fns/addHours'
 // import format from 'date-fns/format'
@@ -23,13 +23,25 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useSideBarStore } from '@/store/index'
+import { useAuthStore } from '@/store/index'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/index'
+import { user } from '@/main'
+
+// logout
+const router = useRouter()
+
+const logout = async () => {
+    const success = await user.logout()
+    if (success) {
+        router.push('/login')
+    }
+}
 
 // interface MailDisplayProps {
 //   mail: Mail | undefined
@@ -44,19 +56,19 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 //     .join('')
 // })
 
-const headerElementRef = ref<HTMLDivElement | null>(null)
-
-function getHeaderHeight() {
-    return headerElementRef.value?.offsetHeight ?? 0
+export interface ComponentMethods {
+    getHeaderHeight: () => number
 }
 
+const headerElementRef = ref<HTMLDivElement | null>(null)
+
 defineExpose({
-    getHeaderHeight
+    getHeaderHeight() {
+        return headerElementRef.value?.offsetHeight ?? 0
+    }
 })
 
-onMounted(() => {
-    console.log(getHeaderHeight()) // Optional: For internal use
-})
+const store = useSideBarStore()
 
 const today = new Date()
 </script>
@@ -64,11 +76,16 @@ const today = new Date()
 <template>
     <div ref="headerElementRef">
         <div class="flex items-center h-[52px]">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center justify-center gap-2">
                 <Tooltip>
                     <TooltipTrigger as-child>
-                        <Button variant="ghost" size="icon">
-                            <VIcon class="size-4 mr-1" name="fa-bars" />
+                        <Button
+                            :variant="store.isCollapsible ? 'default' : 'ghost'"
+                            class="ml-2"
+                            size="icon"
+                            @click="store.toggleCollapsible()"
+                        >
+                            <VIcon class="size-4" name="fa-bars" />
                             <span class="sr-only">Archive</span>
                         </Button>
                     </TooltipTrigger>
@@ -93,7 +110,7 @@ const today = new Date()
                         Change Password</DropdownMenuItem
                     >
                     <Separator orientation="horizontal" class="my-2" />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem @click="logout()">
                         <VIcon class="size-4 mr-1" name="fa-sign-out-alt" />
                         LogOut</DropdownMenuItem
                     >

@@ -1,3 +1,53 @@
+<script setup lang="ts">
+import { defineComponent, ref, onMounted, computed } from 'vue'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import axios from 'axios'
+import { useAuthStore } from '@/store/index'
+import { useRouter } from 'vue-router'
+
+interface Credentials {
+    email: string
+    password: string
+}
+
+const email = ref('')
+const password = ref('')
+
+const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
+
+const router = useRouter()
+const user = useAuthStore()
+
+const login = async () => {
+    try {
+        // Initialize headers object
+        const headers: { [key: string]: string } = {
+            'Content-Type': 'application/json'
+        }
+
+        // Dynamically set the CSRF header
+        headers[drfCsrf.csrfHeaderName] = drfCsrf.csrfToken
+
+        const response = await axios.post(
+            'http://localhost:8000/api/user/login',
+            {
+                username: email.value,
+                password: password.value
+            },
+            {
+                headers
+            }
+        )
+        user.login(response.data)
+        router.push('/')
+    } catch (error) {
+        console.error(error)
+    }
+}
+</script>
+
 <template>
     <div class="h-screen w-full flex flex-col">
         <div
@@ -42,7 +92,7 @@
                         </p>
                     </div>
                     <div class="grid gap-6">
-                        <form @submit.prevent="handleLogin">
+                        <form @submit.prevent="login">
                             <div class="grid gap-2">
                                 <div class="grid gap-1">
                                     <Label
@@ -56,7 +106,6 @@
                                         autocapitalize="none"
                                         autocomplete="email"
                                         autocorrect="off"
-                                        type="email"
                                         v-model="email"
                                     />
 
@@ -75,7 +124,7 @@
                                 </div>
                                 <Button
                                     class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
-                                    >
+                                >
                                     <VIcon icon="BiSearch" /> Sign In
                                 </Button>
                             </div>
@@ -121,29 +170,3 @@
         </div>
     </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref} from 'vue'
-import { Input } from '@/components/ui/input' // Adjusted import for default export
-import { Button } from '@/components/ui/button' // Adjusted import for default export
-import { Label } from '@/components/ui/label' // Adjusted import for default export
-
-export default defineComponent({
-    name: 'LoginView',
-    components: {
-        Button,
-        Input,
-        Label
-    },
-    setup() {
-        const email = ref('')
-        const password = ref('')
-
-        const handleLogin = async () => {
-            console.log(`Logging in with ${email.value} and password`);
-        }
-
-        return { email, password, handleLogin}
-    }
-})
-</script>

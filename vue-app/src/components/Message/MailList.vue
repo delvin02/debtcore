@@ -1,9 +1,10 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { formatDistanceToNow } from 'date-fns'
 import type { Mail } from './data/mails'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
+import { inject } from 'vue'
 
 interface MailListProps {
     items: Mail[]

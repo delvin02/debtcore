@@ -48,19 +48,30 @@ import type { AcceptableValue } from 'node_modules/radix-vue/dist/Combobox/Combo
 import type { SelectEvent } from 'node_modules/radix-vue/dist/Combobox/ComboboxItem'
 
 import type { Language } from './data/schema'
+import { headers } from './data/data'
+import DOMPurify from 'dompurify'
+import type { Variable } from './data/types'
 
 const defaultMessage = 'Regards,\nSemix SDN BHD'
+const defaultFooter = 'Powered by DebtCore'
 
-const message = defineModel<string>('')
+const header = ref<string>('')
+const message = ref<string>('')
+
 const previewMessage = computed(() => {
-    const trimmedInput = message.value?.trim()
-    return trimmedInput ? `${trimmedInput}\n ${defaultMessage}` : defaultMessage
+    const trimmedInput = message.value?.trim() || ''
+    const trimmedHeader = header.value?.trim() || ''
+    return trimmedHeader
+        ? `<b>${trimmedHeader}</b>\n\n${trimmedInput}\n\n${defaultMessage}`
+        : trimmedInput
+          ? `${trimmedInput}\n\n${defaultMessage}`
+          : defaultMessage
 })
 
-const footer = ref('')
-const previewFooter = computed(() => {
-    return footer.value
-})
+// const footer = ref('')
+// const previewFooter = computed(() => {
+//     return footer.value
+// })
 const languages: Language[] = [
     { label: 'English', value: 'en' },
     { label: 'Malay', value: 'my' }
@@ -84,6 +95,79 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
 }
 
 // header
+
+const selectedHeader = ref<string>('none')
+
+const variables = ref<Variable[]>([])
+
+const addVariable = () => {
+    const newId = variables.value.length + 1
+    variables.value.push({ id: newId, value: '' })
+    message.value += ` {{ ${newId} }}`
+}
+
+const computedMessage = computed(() => {
+    let result = previewMessage.value
+    variables.value.forEach((variable) => {
+        const placeholder = `{{ ${variable.id} }}`
+        const isBlank =
+            variable.value === null || variable.value === undefined || variable.value.trim() === ''
+        result = result.replace(
+            new RegExp(placeholder, 'g'),
+            isBlank ? placeholder : variable.value
+        )
+    })
+    return DOMPurify.sanitize(result)
+})
+
+const updateVariablesFromMessage = () => {
+    const variableRegex = /\{\{\s*(\d+)\s*\}\}/g
+    let match
+    const currentVariables = new Map()
+    let highestId = 0
+
+    // Extract all variables and count occurrences, note the highest ID found
+    while ((match = variableRegex.exec(message.value)) !== null) {
+        const id = parseInt(match[1], 10)
+        highestId = Math.max(highestId, id)
+        if (!currentVariables.has(id)) {
+            currentVariables.set(id, { originalId: id, id: 0, count: 1 }) // Temporarily set id to 0
+        } else {
+            currentVariables.get(id).count += 1
+        }
+    }
+
+    // Sort and reassign IDs to ensure they start from 1 and are sequential
+    let newId = 1
+    const sortedVariables = Array.from(currentVariables.values()).sort(
+        (a, b) => a.originalId - b.originalId
+    )
+    sortedVariables.forEach((varInfo) => {
+        varInfo.id = newId++
+    })
+
+    // Reflect the new ID assignments in the message
+    let updatedMessage = message.value
+    sortedVariables.forEach((varInfo) => {
+        const oldPlaceholder = new RegExp(`\\{\\{\\s*${varInfo.originalId}\\s*\\}\\}`, 'g')
+        updatedMessage = updatedMessage.replace(oldPlaceholder, `{{ ${varInfo.id} }}`)
+    })
+
+    // Update message and variables array
+    message.value = updatedMessage
+    variables.value = sortedVariables.map((varInfo) => ({
+        id: varInfo.id,
+        value: '', // Assuming you reset or handle value separately
+        count: varInfo.count
+    }))
+}
+
+// Watch for changes in the message and update variables accordingly
+watch(message, updateVariablesFromMessage, { immediate: true })
+
+// Example usage
+updateVariablesFromMessage()
+console.log(variables.value) // You will see each variable with its count of occurrences
 </script>
 
 <template>
@@ -181,23 +265,30 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                             <SheetTitle>Header <Badge class="ml-1">Optional</Badge></SheetTitle>
                             <Button type="submit" variant="default" class="mr-2">Submit</Button>
                         </div>
-                        <div class="grid grid-cols-4 items-center gap-4">
+                        <div class="grid grid-cols-4 items-center gap-4 ml-2">
                             <div class="col-span-1">
-                                <Select>
+                                <Select :defaultValue="selectedHeader" v-model="selectedHeader">
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Media" />
+                                        <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>None</SelectLabel>
-                                            <SelectItem value="text"> Text </SelectItem>
-                                            <SelectItem value="none"> None </SelectItem>
+                                            <SelectItem
+                                                v-for="header in headers"
+                                                :key="header.value"
+                                                :value="header.value"
+                                            >
+                                                {{ header.label }}
+                                            </SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-4 items-center gap-4">
+                        <div
+                            v-if="selectedHeader === 'media'"
+                            class="grid grid-cols-4 items-center gap-4 ml-2"
+                        >
                             <RadioGroup class="flex" default-value="comfortable">
                                 <CardContent class="border p-4 cursor-pointer">
                                     <div class="grid items-center w-full gap-4">
@@ -223,6 +314,16 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                                 </CardContent>
                             </RadioGroup>
                         </div>
+                        <div
+                            v-else-if="selectedHeader === 'text'"
+                            class="grid grid-cols-4 items-center gap-4 ml-2 mr-4"
+                        >
+                            <Input
+                                placeholder="Type your header here."
+                                v-model="header"
+                                class="p-2 col-span-4"
+                            />
+                        </div>
                     </div>
                     <div class="grid gap-2 py-2 mt-2">
                         <SheetTitle class="mt-5">Body</SheetTitle>
@@ -241,7 +342,9 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                                     <Button variant="secondary" class="font-bold ml-2"
                                         ><i>I</i></Button
                                     >
-                                    <Button variant="secondary" class="ml-2">+ Add Variable</Button>
+                                    <Button variant="secondary" class="ml-2" @click="addVariable"
+                                        >+ Add Variable</Button
+                                    >
                                 </div>
                                 <!-- <p class="text-muted-foreground">Enter the text for your message in the language you've selected.</p> -->
                             </div>
@@ -251,26 +354,35 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                                 <Input id="name" placeholder="Name" class="ml-1" />
                             </div>
                         </div>
-                        <div class="border border-primary mr-2 rounded ml-1">
+                        <div
+                            class="border border-primary/40 mr-2 rounded ml-1"
+                            v-if="variables.length > 0"
+                        >
                             <SheetTitle class="mt-3 ml-5">Variables in Body</SheetTitle>
 
-                            <div class="grid grid-cols-4 items-center gap-4 my-4">
-                                <Label for="name" class="text-center"> Name </Label>
+                            <div
+                                class="grid grid-cols-4 items-center gap-4 my-2"
+                                v-for="variable in variables"
+                                :key="variable.id"
+                            >
+                                <Label for="name" class="text-center">
+                                    &#123;&#123; {{ variable.id }} &#125;&#125;
+                                </Label>
                                 <div class="col-span-3 mr-2">
-                                    <Input placeholder="Type your footer here." class="p-2" />
+                                    <Input v-model="variable.value" placeholder="Enter value" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid gap-2 py-2 mt-2">
+                    <!-- <div class="grid gap-2 py-2 mt-2">
                         <SheetTitle class="mt-5">Footer</SheetTitle>
                         <div class="grid grid-cols-4 gap-4">
                             <div class="col-span-4 mr-4 pl-1">
                                 <Input placeholder="Type your footer here." class="p-2" />
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="p-3 w-[400px]">
                     <SheetHeader>
@@ -288,12 +400,13 @@ const handleSelectLanguage = (ev: SelectEvent<AcceptableValue>) => {
                                     <div
                                         class="bg-[#fff] min-h-5 relative break-words my-3 p-1 rounded"
                                     >
-                                        <p class="text-left text-black px-1 whitespace-pre-wrap">
-                                            {{ previewMessage }}
-                                        </p>
+                                        <p
+                                            class="text-left text-black px-1 whitespace-pre-wrap"
+                                            v-html="computedMessage"
+                                        ></p>
                                         <div class="flex justify-between items-end">
                                             <p class="text-left ml-1 text-gray-400 text-sm pb-1">
-                                                Powered by DebtCore
+                                                {{ defaultFooter }}
                                             </p>
                                             <p class="text-right mr-1 text-gray-400 text-[10px]">
                                                 12:52 AM

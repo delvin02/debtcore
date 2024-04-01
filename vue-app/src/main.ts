@@ -3,8 +3,9 @@ import './index.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
-import { router } from '@/router'
+import router  from '@/router'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
+import axios from "axios";
 import {
   FaExclamationTriangle,
   FaSyncAlt,
@@ -98,10 +99,27 @@ addIcons(
 )
 
 // const Fa = Object.values({ ...FaIcons });
+
+// axios.interceptors.request.use(config => {
+//   const token = localStorage.getItem('token');
+//   if (token) {
+//     config.headers.Authorization = `Token ${token}`;
+//   }
+
+//   return config
+// })
+
+
 const app = createApp(App)
 
 .component('VIcon', OhVueIcon)
 
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
+
+import { useAuthStore } from '@/store/index'
+
+export const user = useAuthStore().init();
+
 app.mount('#app')

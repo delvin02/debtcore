@@ -80,3 +80,20 @@ export const types = [
     value: 'authentication'
   }
 ]
+
+// Add Template Modal
+
+export const headers = [
+  {
+    label: 'Media',
+    value: 'media',
+  },
+  {
+    label: 'Text',
+    value: 'text',
+  },
+  {
+    label: 'None',
+    value: 'none',
+  }
+]

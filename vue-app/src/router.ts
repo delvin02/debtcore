@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { user } from './main'; 
 
-export const router = createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
+      name: 'home',
       component: () => import('@/views/Home.vue'),
     },
     {
@@ -13,8 +15,9 @@ export const router = createRouter({
     },
     {
       path: '/login',
+      name:'login',
       component: () => import('@/views/LoginView.vue'),
-      meta: { hideNavigation: true },
+      meta: { hideNavigation: true, requiresAuth: false },
     },
     {
       path: '/dashboard',
@@ -30,7 +33,7 @@ export const router = createRouter({
     },
     {
       path: '/message',
-      component: () => import("@/views/Message.vue")
+      component: () => import("@/views/Message.vue"),
     },
     {
       path: '/debt',
@@ -42,3 +45,19 @@ export const router = createRouter({
     }
   ],
 })
+
+
+router.beforeEach(async (to, from, next) => {
+  
+  const isAuthenticated = user.isAuthenticated;
+
+
+  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+    next({ name: 'login' }); // Adjust as necessary
+  } else {
+    next(); // proceed to route
+  }
+
+});
+
+export default router;

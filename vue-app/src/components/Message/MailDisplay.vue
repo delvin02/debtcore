@@ -9,7 +9,7 @@ import {
     ReplyAll,
     Trash2
 } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import addDays from 'date-fns/addDays'
 import addHours from 'date-fns/addHours'
 import format from 'date-fns/format'
@@ -29,8 +29,8 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface MailDisplayProps {
     mail: Mail | undefined
@@ -46,10 +46,30 @@ const mailFallbackName = computed(() => {
 })
 
 const today = new Date()
+
+const wrapperRef = ref<HTMLDivElement | null>(null)
+const chatHeaderRef = ref<HTMLDivElement | null>(null)
+const sendMessageRef = ref<HTMLDivElement | null>(null)
+
+const wrapperHeight = ref<string>('0px')
+
+const fixMessageLayout = () => {
+    nextTick(() => {
+        const headerHeight: number = chatHeaderRef.value?.offsetHeight ?? 0
+        const footerHeight: number = sendMessageRef.value?.offsetHeight ?? 0
+        const window: number = wrapperRef.value?.offsetHeight ?? 0
+
+        wrapperHeight.value = `${window - (headerHeight + footerHeight + 30)}px`
+    })
+}
+
+onMounted(() => {
+    fixMessageLayout()
+})
 </script>
 
 <template>
-    <div>
+    <div class="flex h-full flex-col">
         <!-- <div class="flex items-center p-2">
             <div class="flex items-center gap-2">
                 <Tooltip>
@@ -172,10 +192,10 @@ const today = new Date()
                     <DropdownMenuItem>Mute thread</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-        </div>
-        <Separator /> -->
-        <div v-if="mail" class="flex flex-col ">
-            <div class="flex items-start p-4 basis-1/6">
+        </div> -->
+        <Separator />
+        <div v-if="mail" class="flex flex-1 flex-col leading-[0px] items-stretch" ref="wrapperRef">
+            <div class="flex items-start p-4" ref="chatHeaderRef">
                 <div class="flex items-start gap-4 text-sm">
                     <Avatar>
                         <AvatarFallback>
@@ -187,11 +207,8 @@ const today = new Date()
                             {{ mail.name }}
                         </div>
                         <div class="line-clamp-1 text-xs">
-                            INVOICE-008 {{ mail.subject }}
+                            {{ mail.subject }}
                         </div>
-                        <!-- <div class="line-clamp-1 text-xs">
-                            <span class="font-medium">Reply-To:</span> {{ mail.email }}
-                        </div> -->
                     </div>
                 </div>
                 <div v-if="mail.date" class="ml-auto text-xs text-muted-foreground">
@@ -199,8 +216,8 @@ const today = new Date()
                 </div>
             </div>
             <Separator />
-            <ScrollArea class="h-[620px] ">
-                <div class="flex w-1/3 ml-auto  md:w-2/5">
+            <ScrollArea :style="{ height: wrapperHeight }">
+                <div class="flex md:w-2/3 lg:w-1/3 w-full ml-auto">
                     <div class="flex flex-row-reverse">
                         <Avatar class="flex mt-auto mr-2">
                             <AvatarFallback>
@@ -214,7 +231,7 @@ const today = new Date()
                         </div>
                     </div>
                 </div>
-                <div class="flex w-1/3  md:w-2/5">
+                <div class="flex md:w-2/3 lg:w-1/3 w-full">
                     <div class="flex">
                         <Avatar class="flex mt-auto ml-2">
                             <AvatarFallback>
@@ -228,7 +245,7 @@ const today = new Date()
                         </div>
                     </div>
                 </div>
-                <div class="flex w-1/3 md:w-2/5">
+                <div class="flex md:w-2/3 lg:w-1/3 w-full">
                     <div class="flex">
                         <Avatar class="flex mt-auto ml-2">
                             <AvatarFallback>
@@ -242,20 +259,18 @@ const today = new Date()
                         </div>
                     </div>
                 </div>
-                <div class="my-2"></div>
-
             </ScrollArea>
-            <Separator />
-            <div class="p-4 basis-2/6 ">
-                <form>
+            <Separator class="my-2" />
+            <div class="flex-none box-border relative min-h-[160px] z-20" ref="sendMessageRef">
+                <form class="p-4">
                     <div class="grid gap-4">
-                        <Textarea class="p-4 resize-none" :placeholder="`Reply ${mail.name}...`" />
+                        <Textarea class="p-4" :placeholder="`Reply ${mail.name}...`" />
                         <div class="flex items-center">
                             <Label
                                 html-for="mute"
                                 class="flex items-center gap-2 text-xs font-normal"
                             >
-                                <!-- <Switch id="mute" aria-label="Mute thread" /> Mute this thread -->
+                                <Switch id="mute" aria-label="Mute thread" /> Mute this thread
                             </Label>
                             <Button type="button" size="sm" class="ml-auto"> Send </Button>
                         </div>

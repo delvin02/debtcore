@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Message from '@/components/Message/Message.vue'
 import { accounts, mails } from '@/components/Message/data/mails'
+import { inject } from 'vue'
+
+const scrollHeight = inject<string | null>('height')
 </script>
 
 <template>
@@ -18,8 +21,6 @@ import { accounts, mails } from '@/components/Message/data/mails'
             />
         </div>
 
-        <div class="hidden md:flex">
-            <Message :accounts="accounts" :mails="mails" />
-        </div>
+        <Message :accounts="accounts" :mails="mails" :style="{ height: scrollHeight }" />
     </div>
 </template>

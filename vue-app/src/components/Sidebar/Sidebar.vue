@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { defineProps, withDefaults, ref } from 'vue'
+import { ref, provide } from 'vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
+import { useSideBarStore } from '@/store/index'
 
 interface MailProps {
     accounts: {
@@ -18,7 +19,7 @@ interface MailProps {
 
 const defaultLayout = [15, 85]
 
-const isCollapsed = ref(false)
+const store = useSideBarStore()
 
 const links: LinkProp[] = [
     {
@@ -75,14 +76,6 @@ const links2: LinkProp[] = [
         to: '/usage'
     }
 ]
-
-function onCollapse() {
-    isCollapsed.value = true
-}
-
-function onExpand() {
-    isCollapsed.value = false
-}
 </script>
 
 <template>
@@ -92,20 +85,21 @@ function onExpand() {
         :default-size="defaultLayout[0]"
         collapsible
         :min-size="10"
+        :max-size="15"
         :class="
             cn(
-                isCollapsed &&
+                store.isCollapsible &&
                     'position-fixed min-w-[50px] min-h-full max-w-[80px] transition-all duration-300 ease-in-out'
             )
         "
-        @expand="onExpand"
-        @collapse="onCollapse"
+        @expand="store.onExpand()"
+        @collapse="store.onCollapse()"
         default="{20}"
         :disabled="true"
     >
         <div
             :class="
-                cn('flex h-[52px] items-center justify-center', isCollapsed ? 'h-[52px]' : 'px-2')
+                cn('flex items-center justify-center', store.isCollapsible ? 'h-[52px]' : 'px-2')
             "
         >
             <h1 class="text-2xl font-bold">test</h1>
@@ -113,19 +107,25 @@ function onExpand() {
             <!-- <AccountSwitcher :is-collapsed="isCollapsed" :accounts="accounts" /> -->
         </div>
         <Separator />
-        <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Dashboard</h1>
-        <Nav :is-collapsed="isCollapsed" :links="links" />
+        <h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+            Dashboard
+        </h1>
+        <Nav :is-collapsed="store.isCollapsible" :links="links" />
         <Separator />
-        <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
+        <h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
             Management
         </h1>
-        <Nav :is-collapsed="isCollapsed" :links="links1" />
+        <Nav :is-collapsed="store.isCollapsible" :links="links1" />
         <Separator />
-        <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Settings</h1>
-        <Nav :is-collapsed="isCollapsed" :links="connections" />
+        <h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+            Settings
+        </h1>
+        <Nav :is-collapsed="store.isCollapsible" :links="connections" />
         <Separator />
-        <h1 v-if="!isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">Admin</h1>
-        <Nav :is-collapsed="isCollapsed" :links="links2" />
+        <h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+            Admin
+        </h1>
+        <Nav :is-collapsed="store.isCollapsible" :links="links2" />
     </ResizablePanel>
     <ResizableHandle id="resize-handle-1" with-handle />
 </template>

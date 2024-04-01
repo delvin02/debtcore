@@ -1,12 +1,13 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.d.ts","src/**/*.json", "package.json", "src/**/*.ts"],
+  "exclude": ["src/**/__tests__/*", "node_modules"],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
+    "allowJs": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "composite": true,

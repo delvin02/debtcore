@@ -1,40 +1,54 @@
-{% load static %}
-{% load vue_tags %}
+{% load static %} {% load vue_tags %}
 
 <!DOCTYPE html>
 
 {% block html %}
 <html lang="en">
+  {% block head %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %}</title>
+    {% if DEBUG %}
+    <!-- In development, point to Vite's development server for CSS -->
+    <link
+      rel="stylesheet"
+      crossorigin
+      href="http://localhost:5174/src/index.css"
+    />
+    {% else %}
+    <!-- In production, use the vue_css template tag to load the compiled CSS -->
+    <link rel="stylesheet" href="{% vue_css 'main' %}" />
+    {% endif %}
+  </head>
+  {% endblock %}
+  <body>
+    {% block body %}
+    <div id="app"></div>
 
-    {% block head %}
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>{% block title %}{% endblock %} </title>
-            {% if DEBUG %}
-                <!-- In development, point to Vite's development server for CSS -->
-                <link rel="stylesheet" crossorigin href="http://localhost:5174/src/index.css">
-            {% else %}
-                <!-- In production, use the vue_css template tag to load the compiled CSS -->
-                <link rel="stylesheet" href="{% vue_css 'main' %}">
-            {% endif %}
-        </head>
-    {% endblock %}
-    <body>
-
-        {% block body %}
-        <div id="app"></div>
-
-        {% if DEBUG %}
-            <!-- In development, point to Vite's development server for JS -->
-            <script type="module" crossorigin src="http://localhost:5174/@vite/client"></script>
-            <script type="module" crossorigin src="http://localhost:5174/src/main.ts"></script>
-        {% else %}
-            <!-- In production, load the compiled JS from static files -->
-            <script type="module" src="{% static 'vue/main.js' %}"></script>
-        {% endif %}
-        {% endblock %}
-    </body>
+    <script type="application/json" id="drf_csrf">
+      {
+        "csrfHeaderName": "X-CSRFTOKEN",
+        "csrfToken": "{{ csrf_token }}"
+      }
+    </script>
+    {% if DEBUG %}
+    <!-- In development, point to Vite's development server for JS -->
+    <script
+      type="module"
+      crossorigin
+      src="http://localhost:5174/@vite/client"
+    ></script>
+    <script
+      type="module"
+      crossorigin
+      src="http://localhost:5174/src/main.ts"
+    ></script>
+    {% else %}
+    <!-- In production, load the compiled JS from static files -->
+    <script type="module" src="{% static 'vue/main.js' %}"></script>
+    {% endif %} {% endblock %}
+  </body>
 </html>
 
 {% endblock %}

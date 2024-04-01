@@ -11,7 +11,7 @@ export const taskSchema = z.object({
   companyName: z.string().min(2).max(50),
   phoneNumber: z.string(),
   email: z.string(),
-  debts: z.string()
+  outstanding: z.string()
 })
 
 export type Task = z.infer<typeof taskSchema>
