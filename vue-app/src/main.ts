@@ -114,12 +114,8 @@ const app = createApp(App)
 
 .component('VIcon', OhVueIcon)
 
-const pinia = createPinia()
-app.use(pinia)
+app.use(createPinia())
 app.use(router)
 
-import { useAuthStore } from '@/store/index'
-
-export const user = useAuthStore().init();
 
 app.mount('#app')

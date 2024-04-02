@@ -30,18 +30,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useSideBarStore } from '@/store/index'
 import { useAuthStore } from '@/store/index'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/store/index'
-import { user } from '@/main'
 
 // logout
 const router = useRouter()
 
-const logout = async () => {
-    const success = await user.logout()
-    if (success) {
-        router.push('/login')
-    }
-}
 
 // interface MailDisplayProps {
 //   mail: Mail | undefined

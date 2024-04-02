@@ -5,6 +5,7 @@ from django.shortcuts import render
 import json
 from app.models import *
 from django.contrib.auth import login, logout
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
@@ -13,9 +14,10 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 import datetime
 import jwt
+import logging
 
 from app.serializers.serializers import *
-
+from app.forms import SignupForm
 
 # Create your views here.
 
@@ -24,6 +26,45 @@ class HomeView(TemplateView):
 
 class MathGameView(TemplateView):
     template_name = "webapp/math-game.html"
+
+@api_view(['GET'])
+@permission_classes([])
+@authentication_classes([])
+def me(request):    
+    if request.user.is_authenticated:
+        user_info = {
+            'id': request.user.id,
+            'name': 'hello',  # Assuming you want to hard-code the name as 'hello'
+            'email': request.user.email
+        }
+        return JsonResponse({"user": user_info, "test": request.user})
+    else:
+        # Return an appropriate response if the user is not authenticated
+        return JsonResponse({"error": "User is not authenticated"}, status=401)
+
+class SignUpView(APIView):
+    permission_classes = []  
+    authentication_classes = ()
+    
+    def post(self, request):
+        data = request.data
+        message='success'
+        
+        form = SignupForm({
+            'email': data.get('email'),
+            'name': data.get('name'),
+            'password1': data.get('password1'),
+            'password2': data.get('password2'),
+        })
+        
+        if form.is_valid():
+            form.save()
+            
+            # send verification email for authenticate the user later
+        else:
+            message = 'error'
+        
+        return JsonResponse({'status': message})
 
 class LoginView(APIView):
     permission_classes = [AllowAny]  
@@ -71,22 +112,6 @@ class SessionStatusView(APIView):
             })
         else:
             return Response({'isAuthenticated': False}, status=200)
-    
-# class AuthenticateView(APIView):
-#      def get(self, request):
-#         token = request.COOKIES.get('jwt')
 
-#         if not token:
-#             raise AuthenticationFailed("Unauthenticated!")
-
-#         try:
-#             payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-#         except jwt.ExpiredSignatureError:
-#             raise AuthenticationFailed("Unauthenticated - Token expired")
-#         except jwt.InvalidTokenError:
-#             raise AuthenticationFailed("Unauthenticated - Invalid Token")
-
-#         # Optionally return user details or a success message
-#         return Response({"message": "Authenticated successfully", "user_id": payload['id']})
 
     

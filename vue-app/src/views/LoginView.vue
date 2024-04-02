@@ -4,13 +4,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import axios from 'axios'
-import { useAuthStore } from '@/store/index'
+import { useAuthStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 
-interface Credentials {
-    email: string
-    password: string
-}
 
 const email = ref('')
 const password = ref('')
@@ -21,30 +17,37 @@ const router = useRouter()
 const user = useAuthStore()
 
 const login = async () => {
-    try {
-        // Initialize headers object
-        const headers: { [key: string]: string } = {
-            'Content-Type': 'application/json'
-        }
-
-        // Dynamically set the CSRF header
-        headers[drfCsrf.csrfHeaderName] = drfCsrf.csrfToken
-
-        const response = await axios.post(
-            'http://localhost:8000/api/user/login',
-            {
-                username: email.value,
-                password: password.value
-            },
-            {
-                headers
-            }
-        )
-        user.login(response.data)
-        router.push('/')
-    } catch (error) {
-        console.error(error)
+    const headers: { [key: string]: string } = {
+        'Content-Type': 'application/json'
     }
+
+    // Dynamically set the CSRF header
+    headers[drfCsrf.csrfHeaderName] = drfCsrf.csrfToken
+
+    await axios.post(
+        'http://localhost:8000/api/login',
+        {
+            email: email.value,
+            password: password.value
+        },
+        {
+            headers
+        }
+    ).then(response => {
+        user.set_token(response.data)
+        console.log(response.data.access)
+        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.access;
+    }).catch(error => {
+        console.log('error', error)
+    })
+ 
+    await axios.get('/api/me/').then(response => {
+        console.log(response)
+        user.set_user_info(response.data)
+        router.push('/')
+    }).catch(error => {
+        console.log('error', error)
+    })
 }
 </script>
 
@@ -70,8 +73,7 @@ const login = async () => {
                     >
                         <path
                             d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"
-                        ></path></svg
-                    >DebtCore
+                        ></path></svg>DebtCore
                 </div>
                 <div class="relative z-20 mt-auto">
                     <blockquote class="space-y-2">
@@ -92,7 +94,7 @@ const login = async () => {
                         </p>
                     </div>
                     <div class="grid gap-6">
-                        <form @submit.prevent="login">
+                        <form v-on:submit.prevent="login">
                             <div class="grid gap-2">
                                 <div class="grid gap-1">
                                     <Label
