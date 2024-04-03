@@ -28,12 +28,12 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useSideBarStore } from '@/store/index'
-import { useAuthStore } from '@/store/index'
+import { useAuthStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 
 // logout
 const router = useRouter()
-
+const user = useAuthStore()
 
 // interface MailDisplayProps {
 //   mail: Mail | undefined
@@ -102,7 +102,7 @@ const today = new Date()
                         Change Password</DropdownMenuItem
                     >
                     <Separator orientation="horizontal" class="my-2" />
-                    <DropdownMenuItem @click="logout()">
+                    <DropdownMenuItem @click="user.remove_token()">
                         <VIcon class="size-4 mr-1" name="fa-sign-out-alt" />
                         LogOut</DropdownMenuItem
                     >

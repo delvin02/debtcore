@@ -28,8 +28,6 @@ class MathGameView(TemplateView):
     template_name = "webapp/math-game.html"
 
 @api_view(['GET'])
-@permission_classes([])
-@authentication_classes([])
 def me(request):    
     if request.user.is_authenticated:
         user_info = {
@@ -37,11 +35,12 @@ def me(request):
             'name': 'hello',  # Assuming you want to hard-code the name as 'hello'
             'email': request.user.email
         }
-        return JsonResponse({"user": user_info, "test": request.user})
+        return JsonResponse({"user": user_info}, status=200)
     else:
         # Return an appropriate response if the user is not authenticated
         return JsonResponse({"error": "User is not authenticated"}, status=401)
-
+    
+    
 class SignUpView(APIView):
     permission_classes = []  
     authentication_classes = ()

@@ -26,7 +26,6 @@ export const useAuthStore = defineStore('auth', {
   actions: {
       async init() {
           // Make sure to check for null and handle it appropriately
-          console.log("get accessToken" + localStorage.getItem('access_token'))
           const accessToken = localStorage.getItem('access_token');
           if (accessToken) {
               this.access_token = accessToken;
@@ -38,10 +37,7 @@ export const useAuthStore = defineStore('auth', {
                   name: localStorage.getItem('user.name') || '',
                   email: localStorage.getItem('user.email') || ''
               };
-
-              await this.refresh_user_token(); // Renamed method to avoid name conflict
-
-              console.log('initialize user:', this.user);
+              await this.refresh_user_token();
           }
       },
       set_token(data: { access: string; refresh: string }) {
@@ -49,10 +45,9 @@ export const useAuthStore = defineStore('auth', {
           this.refresh_token = data.refresh;
 
           localStorage.setItem('access_token', data.access);
-          localStorage.setItem('refresh_token', data.refresh); // Fixed inconsistency in key name
+          localStorage.setItem('refresh_token', data.refresh); 
       },
       remove_token() {
-          console.log('remove token');
           this.user = null;
           this.access_token = null;
           this.refresh_token = null;
@@ -60,7 +55,6 @@ export const useAuthStore = defineStore('auth', {
           localStorage.clear(); // Simplified clearing localStorage
       },
       set_user_info(user: User) {
-          console.log('set user info', user);
 
           // Directly assigning user object after validating it
           if (user) {
@@ -71,7 +65,6 @@ export const useAuthStore = defineStore('auth', {
               localStorage.setItem('user.email', user.email);
           }
 
-          console.log('User', this.user);
       },
       async refresh_user_token() {
         const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')

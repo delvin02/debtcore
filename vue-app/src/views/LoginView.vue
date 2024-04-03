@@ -3,10 +3,9 @@ import { defineComponent, ref, onMounted, computed } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { useAuthStore } from '@/store/user'
 import { useRouter } from 'vue-router'
-
 
 const email = ref('')
 const password = ref('')
@@ -16,6 +15,17 @@ const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '
 const router = useRouter()
 const user = useAuthStore()
 
+interface UserAuthenticator {
+    access: string
+    refresh: string
+}
+
+interface User {
+    id: string
+    name: string
+    email: string
+}
+
 const login = async () => {
     const headers: { [key: string]: string } = {
         'Content-Type': 'application/json'
@@ -24,30 +34,36 @@ const login = async () => {
     // Dynamically set the CSRF header
     headers[drfCsrf.csrfHeaderName] = drfCsrf.csrfToken
 
-    await axios.post(
-        'http://localhost:8000/api/login',
-        {
-            email: email.value,
-            password: password.value
-        },
-        {
-            headers
-        }
-    ).then(response => {
-        user.set_token(response.data)
-        console.log(response.data.access)
-        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.access;
-    }).catch(error => {
-        console.log('error', error)
-    })
- 
-    await axios.get('/api/me/').then(response => {
-        console.log(response)
-        user.set_user_info(response.data)
-        router.push('/')
-    }).catch(error => {
-        console.log('error', error)
-    })
+    await axios
+        .post(
+            'http://localhost:8000/api/login',
+            {
+                email: email.value,
+                password: password.value
+            },
+            {
+                headers
+            }
+        )
+        .then((response: AxiosResponse<UserAuthenticator>) => {
+            user.set_token(response.data)
+            console.log(response.data.access)
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access
+        })
+        .catch((error: any) => {
+            console.log('error', error)
+        })
+
+    await axios
+        .get('/api/me/')
+        .then((response: AxiosResponse<User>) => {
+            console.log(response)
+            user.set_user_info(response.data)
+            router.push('/')
+        })
+        .catch((error: any) => {
+            console.log('error', error)
+        })
 }
 </script>
 
@@ -73,7 +89,8 @@ const login = async () => {
                     >
                         <path
                             d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"
-                        ></path></svg>DebtCore
+                        ></path></svg
+                    >DebtCore
                 </div>
                 <div class="relative z-20 mt-auto">
                     <blockquote class="space-y-2">
