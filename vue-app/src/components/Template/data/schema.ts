@@ -5,12 +5,11 @@ import { z } from 'zod'
 export const taskSchema = z.object({
   id: z.string(),
   name: z.string().min(2).max(50),
-  status: z.string(),
-  label: z.string(),
   type: z.string(),
+  status: z.string(),
   message_delivered: z.number(),
   message_read: z.number(),
-  last_updated: z.date().min(new Date("1900-01-01"), { message: "Too old" })
+  due_date: z.string().pipe( z.coerce.date() ),
 })
 
 

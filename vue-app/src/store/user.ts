@@ -1,10 +1,20 @@
 import { defineStore } from 'pinia';
 import axios from "axios";
+import type {AxiosResponse} from 'axios'
 
 interface User {
   id: string;
   name: string;
   email: string;
+}
+
+interface UserAuthenticateResponse {
+  access: string
+  refresh: string
+}
+
+interface ApiResponse {
+  user: User;
 }
 
 interface AuthState {
@@ -20,8 +30,8 @@ export const useAuthStore = defineStore('auth', {
       refresh_token: null 
   }),
   getters: {
-      isAuthenticated: (state: AuthState) => !!state.user, // Corrected type here
-      getUser: (state: AuthState) => state.user // Corrected type here
+      isAuthenticated: (state: AuthState) => !!state.user, 
+      getUser: (state: AuthState) => state.user
   },
   actions: {
       async init() {
@@ -40,7 +50,49 @@ export const useAuthStore = defineStore('auth', {
               await this.refresh_user_token();
           }
       },
-      set_token(data: { access: string; refresh: string }) {
+      async login(email: string, password: string) {
+        const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
+        try {
+          const response = await axios.post('http://localhost:8000/api/login', {
+            email: email,
+            password: password
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              [drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
+            }
+          });
+
+          this.set_token(response.data);
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access;
+          await this.get_user();
+          return null; 
+        } catch (error: unknown) {
+          if (axios.isAxiosError(error)) {
+            // Now TypeScript knows this is an AxiosError, you can access error.response safely
+            const errorMessage = error.response?.request.statusText || 'An error occurred during login.';
+            return errorMessage;
+          }
+          return 'An unexpected error occurred.';
+        }
+      },
+      async get_user() {
+        await axios
+          .get('http://localhost:8000/api/me/', {
+            headers: {
+              'Accept': 'application/json',
+            }
+          })
+          .then((response: AxiosResponse<ApiResponse>) => {
+              console.log(response)
+              this.set_user_info(response.data.user)
+          })
+          .catch((error: any) => {
+              // error toast here
+              console.log('error', error)
+          })
+      },
+      set_token(data: UserAuthenticateResponse) {
           this.access_token = data.access;
           this.refresh_token = data.refresh;
 
@@ -70,20 +122,20 @@ export const useAuthStore = defineStore('auth', {
         const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 
         try {
-          const response = await axios.post('/api/refresh', {
+          const response = await axios.post('http://localhost:8000/api/refresh', {
             refresh: this.refresh_token
           }, {
             headers: {
               [drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
             }
           });
-          this.access_token = response.data.access; // Assuming 'access' is the correct property name
+
+          this.access_token = response.data.access; 
           localStorage.setItem('access_token', response.data.access);
-          // Update axios defaults with the new token
           axios.defaults.headers.common["Authorization"] = `Bearer ${this.access_token}`;
         } catch (error) {
           console.error(error);
-          this.remove_token(); // Ensure this method correctly handles token removal and user logout
+          this.remove_token(); 
         }
       }
   }

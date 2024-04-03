@@ -62,6 +62,11 @@ defineExpose({
 
 const store = useSideBarStore()
 
+
+const logout = () => {
+    user.remove_token()
+    router.push('/login')
+}
 const today = new Date()
 </script>
 
@@ -102,9 +107,9 @@ const today = new Date()
                         Change Password</DropdownMenuItem
                     >
                     <Separator orientation="horizontal" class="my-2" />
-                    <DropdownMenuItem @click="user.remove_token()">
+                    <DropdownMenuItem class="bg-red-600 text-white" @click="logout">
                         <VIcon class="size-4 mr-1" name="fa-sign-out-alt" />
-                        LogOut</DropdownMenuItem
+                        Log Out</DropdownMenuItem
                     >
                 </DropdownMenuContent>
             </DropdownMenu>

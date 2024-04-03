@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/vue-table'
 import { h } from 'vue'
 
-import { labels, priorities, statuses, types } from './data/data'
+import { statuses, types } from './data/data'
 import type { Task } from './data/schema'
 import DataTableColumnHeader from './DataTableColumnHeader.vue'
 import DataTableRowActions from './DataTableRowActions.vue'
@@ -58,9 +58,12 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Status' }),
 
     cell: ({ row }) => {
+      console.log(row.getValue('status'))
+
       const status = statuses.find(
-        status => status.value === row.getValue('status'),
+        status => status.value === row.getValue('status')
       )
+
 
       if (!status)
         return null
@@ -101,7 +104,27 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'last_updated',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Last Updated"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('last_updated')),
+    cell: ({ row }) => {
+      const date = row.getValue('last_updated') as string;
+      let formattedDate = '';
+
+      if (date) {
+          const parsedDate = new Date(Date.parse(date));
+          if (!isNaN(parsedDate.getTime())) {
+              formattedDate = parsedDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short', 
+                  day: 'numeric' 
+              });
+          } else {
+              formattedDate = 'Not Provided'; 
+          }
+      } else {
+          formattedDate = 'Not provided'; // Handle empty or null dueDate values
+      }
+
+      return h('div', { class: `w-fit ${formattedDate != 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
+    },
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {

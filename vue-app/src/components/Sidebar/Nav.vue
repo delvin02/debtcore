@@ -47,7 +47,6 @@ const store = useSideBarStore()
                                             : ''
                                     )
                                 "
-                                :href="link.to"
                             >
                                 <VIcon :name="link.icon" />
                                 <span class="sr-only">{{ link.title }}</span>
@@ -62,7 +61,7 @@ const store = useSideBarStore()
                     </TooltipContent>
                 </Tooltip>
 
-                <router-link
+                <RouterLink
                     v-else
                     :to="link.to"
                     custom
@@ -70,7 +69,6 @@ const store = useSideBarStore()
                     :key="`nav-${index}`"
                 >
                     <a
-                        :href="link.to"
                         :class="
                             cn(
                                 buttonVariants({
@@ -95,7 +93,7 @@ const store = useSideBarStore()
                             {{ link.label }}
                         </span>
                     </a>
-                </router-link>
+                </RouterLink>
             </template>
         </nav>
     </div>

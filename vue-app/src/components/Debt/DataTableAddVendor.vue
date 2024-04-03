@@ -165,7 +165,7 @@ const date = ref<Date>()
                                         :key="status.value"
                                         :value="status.value"
                                     >
-                                    <VIcon :name="status.icon"/>
+                                    <VIcon :name="status.icon" class="mr-1"/>
 
                                         {{ status.label }}
                                     </SelectItem>

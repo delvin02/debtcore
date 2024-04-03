@@ -1,8 +1,15 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory}from 'vue-router'
+import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
+
 import { useAuthStore } from '@/store/user'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/:pathMatch(.*)*', // This will match all paths not matched by earlier routes
+      name: 'NotFound',
+      component: import('@/views/404.vue'),
+    },
     {
       path: '/',
       name: 'home',
@@ -52,18 +59,22 @@ const router = createRouter({
   ],
 })
 
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  const isAuthenticated:boolean = useAuthStore().isAuthenticated
+  const requiresAuth = to.meta.requiresAuth ?? true
 
-// router.beforeEach((to, from, next) => {
-//   const user = useAuthStore()
-//   const isAuthenticated:boolean = user.isAuthenticated;
+  if (requiresAuth && !isAuthenticated) {
+    next({ name: 'login' });
+    return;
+  } 
 
 
-//   if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
-//     next({ name: 'login' }); // Adjust as necessary
-//   } else {
-//     next(); // proceed to route
-//   }
-
-// });
+  if (to.name === 'login' && isAuthenticated) {
+    next({ name: 'home' });
+    return;
+  }
+  
+  next()
+});
 
 export default router;

@@ -59,14 +59,34 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "due_date",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('due_date')),
+    cell: ({ row }) => {
+      const date = row.getValue('due_date') as string;
+      let formattedDate = '';
+
+      if (date) {
+          const parsedDate = new Date(Date.parse(date));
+          if (!isNaN(parsedDate.getTime())) {
+              formattedDate = parsedDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short', 
+                  day: 'numeric' 
+              });
+          } else {
+              formattedDate = 'Not Provided'; 
+          }
+      } else {
+          formattedDate = 'Not provided'; // Handle empty or null dueDate values
+      }
+
+      return h('div', { class: `w-fit ${formattedDate != 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
+    },
     enableSorting: true,
     enableHiding: true,
     meta: {
       title: "Due Date"
     },
   },
-    {
+  {
     accessorKey: "amount",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
     cell: ({ row }) => h(Badge, {variant:"destructive"}, "RM " + row.getValue('amount')),

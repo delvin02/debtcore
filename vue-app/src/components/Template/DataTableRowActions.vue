@@ -42,7 +42,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
             <DropdownMenuItem>Make a copy</DropdownMenuItem>
             <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuSub>
+            <!-- <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                     <DropdownMenuRadioGroup :value="task.label">
@@ -55,9 +55,10 @@ const task = computed(() => taskSchema.parse(props.row.original))
                         </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                 </DropdownMenuSubContent>
-            </DropdownMenuSub>
+            </DropdownMenuSub> -->
             <DropdownMenuSeparator />
-            <DropdownMenuItem class="bg-red-600">
+            <DropdownMenuItem class="bg-red-600 text-white font-bold hover:bg-red-600/90">
+                <VIcon name="fa-trash-alt" class="w-fit h-full mr-1"/>
                 Delete
             </DropdownMenuItem>
         </DropdownMenuContent>

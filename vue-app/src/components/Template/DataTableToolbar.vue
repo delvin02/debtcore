@@ -35,12 +35,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
                 title="Status"
                 :options="statuses"
             />
-            <DataTableFacetedFilter
-                v-if="table.getColumn('priority')"
-                :column="table.getColumn('priority')"
-                title="Priority"
-                :options="priorities"
-            />
+
 
             <Button
                 v-if="isFiltered"

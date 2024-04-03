@@ -17,24 +17,10 @@ const data: Task[] = tasks.map((task: any) => ({
     last_updated: new Date(task.last_updated)
 }))
 
-const scrollHeight = inject('height')
 </script>
 
 <template>
-    <div class="md:hidden">
-        <VPImage
-            alt="Tasks"
-            width="1280"
-            height="1214"
-            class="block"
-            :image="{
-                dark: '/examples/tasks-dark.png',
-                light: '/examples/tasks-light.png'
-            }"
-        />
-    </div>
 
-    <ScrollArea :style="{ height: scrollHeight }">
         <div class="p-8 space-y-8">
             <div class="flex items-center justify-between space-y-2">
                 <div>
@@ -44,5 +30,4 @@ const scrollHeight = inject('height')
             </div>
             <DataTable :data="data" :columns="columns" />
         </div>
-    </ScrollArea>
 </template>

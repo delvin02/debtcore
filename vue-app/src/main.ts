@@ -37,7 +37,9 @@ import {
   FaSort,
   FaCircle,
   FaPhoneAlt,
-  FaTrashAlt 
+  FaTrashAlt,
+  FaCircleNotch,
+  FaRegularSadCry  
 } from 'oh-vue-icons/icons/fa/index.js'
 
 import { 
@@ -95,7 +97,9 @@ addIcons(
   BiArrowUpSquareFill,
   FaPhoneAlt,
   FaTrashAlt,
-  BiFileEarmarkFont 
+  BiFileEarmarkFont,
+  FaCircleNotch,
+  FaRegularSadCry 
 )
 
 // const Fa = Object.values({ ...FaIcons });

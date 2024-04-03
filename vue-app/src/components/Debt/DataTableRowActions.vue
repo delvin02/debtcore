@@ -57,7 +57,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
                 </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem class="bg-red-600 text-white font-bold">
+            <DropdownMenuItem class="bg-red-600 text-white font-bold hover:bg-red-600/90">
                 <VIcon name="fa-trash-alt" class="w-fit h-full mr-1"/>
                 Delete
             </DropdownMenuItem>

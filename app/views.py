@@ -32,7 +32,7 @@ def me(request):
     if request.user.is_authenticated:
         user_info = {
             'id': request.user.id,
-            'name': 'hello',  # Assuming you want to hard-code the name as 'hello'
+            'name': request.user.name,  # Assuming you want to hard-code the name as 'hello'
             'email': request.user.email
         }
         return JsonResponse({"user": user_info}, status=200)

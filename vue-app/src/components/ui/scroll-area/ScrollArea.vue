@@ -9,7 +9,7 @@ import {
 import ScrollBar from './ScrollBar.vue'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<ScrollAreaRootProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<ScrollAreaRootProps & { class?: HTMLAttributes['class'], height?: string }>()
 
 const delegatedProps = computed(() => {
     const { class: _, ...delegated } = props
@@ -20,8 +20,10 @@ const delegatedProps = computed(() => {
 
 <template>
     <ScrollAreaRoot v-bind="delegatedProps" :class="cn('relative overflow-hidden', props.class)">
-        <ScrollAreaViewport class="h-full w-full rounded-[inherit]">
-            <slot />
+        <ScrollAreaViewport class="h-full w-full rounded-[inherit]" id="vp">
+            <div :style="{ height: props.height }">
+                <slot />
+            </div>
         </ScrollAreaViewport>
         <ScrollBar />
         <ScrollAreaCorner />

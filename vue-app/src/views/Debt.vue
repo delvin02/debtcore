@@ -19,28 +19,14 @@ const scrollHeight = inject('height')
 </script>
 
 <template>
-    <div class="md:hidden">
-        <VPImage
-            alt="Tasks"
-            width="1280"
-            height="1214"
-            class="block"
-            :image="{
-                dark: '/examples/tasks-dark.png',
-                light: '/examples/tasks-light.png'
-            }"
-        />
-    </div>
 
-    <ScrollArea :style="{ height: scrollHeight }">
-        <div class="p-8 space-y-8">
-            <div class="flex items-center justify-between space-y-2">
-                <div>
-                    <h2 class="text-2xl font-bold tracking-tight">Debt Management</h2>
-                    <p class="text-muted-foreground">Here&apos;s a list of your existing debts!</p>
-                </div>
+    <div class="p-8 space-y-8 h-full">
+        <div class="flex items-center justify-between space-y-2">
+            <div>
+                <h2 class="text-2xl font-bold tracking-tight">Debt Management</h2>
+                <p class="text-muted-foreground">Here&apos;s a list of your existing debts!</p>
             </div>
-            <DataTable :data="data" :columns="columns" />
         </div>
-    </ScrollArea>
+        <DataTable :data="data" :columns="columns" />
+    </div>
 </template>

@@ -62,7 +62,9 @@ onBeforeMount(async () => {
                 <Sidebar ref="sidebarRef" />
                 <ResizablePanel id="resize-panel-2" :min-size="30">
                     <Header ref="mainHeaderRef" />
-                    <router-view />
+                    <ScrollArea :style="{ height: wrapperHeight }" :height="wrapperHeight" class="flex justify-center my-auto">
+                        <RouterView />
+                    </ScrollArea>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </TooltipProvider>
