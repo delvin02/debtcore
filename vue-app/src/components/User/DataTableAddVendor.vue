@@ -51,7 +51,7 @@ const date = ref<Date>()
 <template>
     <Dialog>
         <DialogTrigger asChild>
-            <Button variant="secondary" size="sm" class="hidden h-8 ml-2 lg:flex">
+            <Button variant="default" size="sm" class="hidden h-8 ml-2 lg:flex">
                 <!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
                 <VIcon name="fa-plus" class="size-4" />
             </Button>

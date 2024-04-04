@@ -1,29 +1,42 @@
 <script setup lang="ts">
-import tasks from '@/components/User/data/tasks.json'
 import DataTable from '@/components/User/DataTable.vue'
 import { columns } from '@/components/User/columns'
 import type { Task } from '@/components/User/data/schema'
 import axios from 'axios'
+import {onMounted, ref} from 'vue'
 
-const data: Task[] = tasks.map((task: any) => ({
-	id: task.id,
-	name: task.name,
-	surname: task.surname,
-	email: task.email,
-	company_name: task.company_name,
-	last_login: new Date(task.last_login)
-}))
+const tasksData = ref([]); // Initialize tasksData as an empty array
+const is_loading = ref(false);
 
 async function fetchUsers() {
+	is_loading.value = true
 	try {
-		const response = await axios.get('http://127.0.0.1:8000/api/get/users')
-		console.log(response.data) // Assuming the server responds with JSON data
+		const response = await axios.get('http://127.0.0.1:8000/api/get/users', {
+			withCredentials: true
+		});
+		is_loading.value = false
+		return response.data
 	} catch (error) {
 		console.error('There was an error fetching the users:', error)
+		is_loading.value = false
+		return []
 	}
 }
 
-fetchUsers()
+onMounted(async () => {
+  tasksData.value = await processTasks();
+});
+
+async function processTasks() {
+  const tasks = await fetchUsers();
+  return tasks.data.map((task:any) => ({
+    id: task.id,
+    name: task.name,
+    email: task.email,
+    company_name: task.company_name,
+    last_login: new Date(task.last_login),
+  }));
+}
 </script>
 
 <template>
@@ -34,6 +47,11 @@ fetchUsers()
 				<p class="text-muted-foreground">Here&apos;s a list of your existing users!</p>
 			</div>
 		</div>
-		<DataTable :data="data" :columns="columns" />
-	</div>
+
+		<div v-if="is_loading" class="text-center">
+			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10"/>
+    </div>
+    <div v-else>
+      <DataTable :data="tasksData" :columns="columns" />
+    </div>	</div>
 </template>

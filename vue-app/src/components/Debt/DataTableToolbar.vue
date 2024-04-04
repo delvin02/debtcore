@@ -29,7 +29,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
                 placeholder="Search invoice..."
                 :model-value="(table.getColumn('invoice')?.getFilterValue() as string) ?? ''"
                 class="h-8 w-[150px] lg:w-[250px]"
-                @input="table.getColumn('invoice')?.setFilterValue($event.target.value)"
+                @input="table.setGlobalFilter($event.target.value)"
             />
             <!-- @input="table.getColumn('invoice')?.setFilterValue($event.target.value)" -->
 

@@ -40,7 +40,11 @@ import {
   FaTrashAlt,
   FaCircleNotch,
   FaRegularSadCry,
-  FaEdit
+  FaEdit,
+  FaArrowRight,
+  FaArrowLeft,
+  FaChevronRight,
+  FaChevronLeft
 } from 'oh-vue-icons/icons/fa/index.js'
 
 import { 
@@ -101,7 +105,11 @@ addIcons(
   BiFileEarmarkFont,
   FaCircleNotch,
   FaRegularSadCry,
-  FaEdit
+  FaEdit,
+  FaArrowRight,
+  FaArrowLeft,
+  FaChevronRight,
+  FaChevronLeft,
 )
 
 // const Fa = Object.values({ ...FaIcons });

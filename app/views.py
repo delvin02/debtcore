@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.generic import TemplateView
+from django.utils import timezone
 from django.shortcuts import render
 import json
 from app.models import *
@@ -77,6 +78,9 @@ class LoginView(APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.check_user(request.data)
             if user is not None:
+                user.last_login = timezone.now()
+                user.save(update_fields=['last_login'])
+                
                 login(request, user)
 
                 user = {

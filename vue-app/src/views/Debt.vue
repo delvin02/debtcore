@@ -24,6 +24,6 @@ const data: Task[] = tasks.map((task: any) => ({
 				<p class="text-muted-foreground">Here&apos;s a list of your existing debts!</p>
 			</div>
 		</div>
-		<DataTable :data="data" :columns="columns" />
+		<DataTable :data="data" :columns="columns" class="mb-10" />
 	</div>
 </template>

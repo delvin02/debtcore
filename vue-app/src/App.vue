@@ -59,7 +59,7 @@ onBeforeMount(async () => {
                 class="h-fit items-stretch"
             >
                 <Sidebar ref="sidebarRef" />
-                <ResizablePanel id="resize-panel-2" :min-size="30">
+                <ResizablePanel id="resize-panel-2" :min-size="30" >
                     <Header ref="mainHeaderRef" />
                     <ScrollArea
                         :style="{ height: wrapperHeight }"

@@ -26,12 +26,11 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
     <div class="flex items-center justify-between">
         <div class="flex flex-1 items-center space-x-2">
             <Input
-                placeholder="Search invoice..."
+                placeholder="Search..."
                 :model-value="(table.getColumn('invoice')?.getFilterValue() as string) ?? ''"
                 class="h-8 w-[150px] lg:w-[250px]"
-                @input="table.getColumn('invoice')?.setFilterValue($event.target.value)"
+                @input="table.setGlobalFilter($event.target.value)"
             />
-            <!-- @input="table.getColumn('invoice')?.setFilterValue($event.target.value)" -->
 
             <DataTableFacetedFilter
                 v-if="table.getColumn('status')"
@@ -42,7 +41,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 
             <Button
                 v-if="isFiltered"
-                variant="ghost"
+                variant="default"
                 class="h-8 px-2 lg:px-3"
                 @click="table.resetColumnFilters()"
             >
