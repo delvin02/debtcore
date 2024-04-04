@@ -32,10 +32,24 @@ class Company(models.Model):
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
     whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
         
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="created_companies", null=True, default=None, on_delete=models.SET_DEFAULT)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_companies",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
     created_date = models.DateTimeField(default=timezone.now)
     
-    last_updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="updated_companies", null=True, default=None, on_delete=models.SET_DEFAULT)
+    last_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="updated_companies",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )    
     last_updated_date = models.DateTimeField(blank=True, null=True)
     
     is_active = models.BooleanField(default=False)

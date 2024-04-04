@@ -5,5 +5,5 @@ class CompanySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Company
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'whatsapp_business_account_id']
         

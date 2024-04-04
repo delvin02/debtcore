@@ -13,7 +13,12 @@ urlpatterns = [
     path('api/session-status', SessionStatusView.as_view(), name='session_status'),
     path('api/user/login', LoginView.as_view(), name='login'),
     path('api/user/logout', LogoutView.as_view(), name='logout'),
+
+    # TABLES
     path('api/get/users', UserView.as_view(), name="get_users"),
-    path('api/get/companies', CompanyView.as_view(), name="get_users")
+    path('api/get/companies', CompanyView.as_view(), name="get_companies"),
+
+    # COMPANY MODAL
+    path('api/get/company', CompanyModalView.as_view(), name="get_company")
 
 ]

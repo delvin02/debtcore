@@ -4,44 +4,41 @@ import { computed } from 'vue'
 import { statuses } from './data/data'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
-// import DotsHorizontalIcon from '~icons/radix-icons/dots-horizontal'
-
+import DataTableEditModal from '@/components/Company/DataTableEditModal.vue'
+import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuSeparator,
+	DropdownMenuShortcut,
+	DropdownMenuSub,
+	DropdownMenuSubContent,
+	DropdownMenuSubTrigger,
+	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
 interface DataTableRowActionsProps {
-    row: Row<Task>
+	row: Row<Task>
 }
 const props = defineProps<DataTableRowActionsProps>()
-
 const task = computed(() => taskSchema.parse(props.row.original))
 </script>
 
 <template>
-    <div class="flex gap-1">
-        <Button class="w-fit p-2 h-fit">
-            <VIcon name="fa-pen" class="h-4 w-4"/>
-        </Button>
-        <Button class="w-fit p-2 h-fit">
-            <VIcon name="fa-lock" class="h-4 w-4"/>
-        </Button>
-        <Button class="w-fit p-2 h-fit" variant="outline">
-            <VIcon name="fa-building" class="h-4 w-4"/>
-        </Button>
-    </div>
-    <!-- <DropdownMenu>
+	<div class="flex gap-1">
+		<DataTableEditModal :id="task.id" />
+		<Button class="w-fit p-2 h-fit">
+			<VIcon name="fa-lock" class="h-4 w-4" />
+		</Button>
+		<Button class="w-fit p-2 h-fit" variant="outline">
+			<VIcon name="fa-building" class="h-4 w-4" />
+		</Button>
+	</div>
+	<!-- <DropdownMenu>
         <DropdownMenuTrigger as-child>
             <Button variant="ghost" class="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
                 <VIcon name="bi-three-dots" class="h-4 w-4" />
@@ -58,6 +55,6 @@ const task = computed(() => taskSchema.parse(props.row.original))
                 <VIcon name="fa-trash-alt" class="w-fit h-full mr-1" />
                 Delete
             </DropdownMenuItem> -->
-        <!-- </DropdownMenuContent>
+	<!-- </DropdownMenuContent>
     </DropdownMenu> -->
 </template>

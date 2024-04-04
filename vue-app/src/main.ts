@@ -5,7 +5,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router  from '@/router'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
-import axios from "axios";
+import axios from 'axios';
+
 import {
   FaExclamationTriangle,
   FaSyncAlt,
@@ -123,10 +124,10 @@ addIcons(
 //   return config
 // })
 
+const app = createApp(App).component('VIcon', OhVueIcon)
 
-const app = createApp(App)
-
-.component('VIcon', OhVueIcon)
+// axios.defaults.withCredentials = true;
+// app.config.globalProperties.$axios = axios;
 
 app.use(createPinia())
 app.use(router)

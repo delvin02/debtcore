@@ -25,6 +25,7 @@ export const columns: ColumnDef<Task>[] = [
       title: "Select"
     },
   },
+  
   {
     accessorKey: "name",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Name"}),
