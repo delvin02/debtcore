@@ -52,10 +52,25 @@ const router = createRouter({
       component: () => import("@/views/Debt.vue")
     },
     {
+      path: '/user',
+      name: 'name',
+      component: () => import("@/views/User.vue")
+    },
+    {
+      path: '/company',
+      name: 'company',
+      component: () => import ("@/views/Company.vue")
+    },
+    {
+      path: '/usage-report',
+      name: 'usage_report',
+      component: () => import ("@/views/UsageReport.vue")
+    },
+    {
       path: '/customer/:customerId/debt',
       name: 'customerdebt',
       component: () => import("@/views/CustomerDebt.vue")
-    }
+    },
   ],
 })
 

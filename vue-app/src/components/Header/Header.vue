@@ -62,7 +62,6 @@ defineExpose({
 
 const store = useSideBarStore()
 
-
 const logout = () => {
     user.remove_token()
     router.push('/login')
@@ -102,12 +101,15 @@ const today = new Date()
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem class="cursor-pointer">
                         <VIcon class="size-4 mr-1" name="fa-lock" />
                         Change Password</DropdownMenuItem
                     >
                     <Separator orientation="horizontal" class="my-2" />
-                    <DropdownMenuItem class="bg-red-600 text-white" @click="logout">
+                    <DropdownMenuItem
+                        class="bg-red-600 hover:bg-red-600/90 text-white cursor-pointer"
+                        @click="logout"
+                    >
                         <VIcon class="size-4 mr-1" name="fa-sign-out-alt" />
                         Log Out</DropdownMenuItem
                     >

@@ -43,10 +43,9 @@ onBeforeMount(async () => {
 
     const token = user.access_token
     if (token) {
-        axios.defaults.headers.common["Authorization"] = "Bearer " + token; 
-    } else
-    {
-        axios.defaults.headers.common["Authorization"] = "";
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+    } else {
+        axios.defaults.headers.common['Authorization'] = ''
     }
 })
 </script>
@@ -62,8 +61,12 @@ onBeforeMount(async () => {
                 <Sidebar ref="sidebarRef" />
                 <ResizablePanel id="resize-panel-2" :min-size="30">
                     <Header ref="mainHeaderRef" />
-                    <ScrollArea :style="{ height: wrapperHeight }" :height="wrapperHeight" class="flex justify-center my-auto">
-                        <RouterView />
+                    <ScrollArea
+                        :style="{ height: wrapperHeight }"
+                        :height="wrapperHeight"
+                        class="flex justify-center my-auto"
+                    >
+                        <router-view />
                     </ScrollArea>
                 </ResizablePanel>
             </ResizablePanelGroup>

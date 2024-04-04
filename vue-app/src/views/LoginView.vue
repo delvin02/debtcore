@@ -4,8 +4,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import axios from 'axios'
-import type {AxiosResponse} from 'axios'
 import { useAuthStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 

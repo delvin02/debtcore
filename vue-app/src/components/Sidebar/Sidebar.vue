@@ -73,7 +73,7 @@ const links2: LinkProp[] = [
     {
         title: 'Usage Report',
         icon: 'bi-graph-up-arrow',
-        to: '/usage'
+        to: '/usage-report'
     }
 ]
 </script>
