@@ -18,8 +18,18 @@ class CompanyView(APIView):
         serializer = CompanySerializer(companies, many=True)
         return JsonResponse({'data': serializer.data})
     
+class CompanyCreateModalView(APIView):
+  permission_classes = [IsAdminUser]
+  
+  def post(self, request):
+    serializer = CompanySerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+      serializer.save()
+      return JsonResponse(serializer.data, status=200)
+    return JsonResponse({"error": "Company failed to create", "details": serializer.errors}, status=400)
+    
 
-class CompanyModalView(APIView):
+class CompanyEditModalView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):

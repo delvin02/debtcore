@@ -11,6 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { columns } from './columns'
 
 interface DataTableColumnHeaderProps {
     column: Column<Task, any>

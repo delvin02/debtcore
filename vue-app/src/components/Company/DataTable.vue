@@ -3,7 +3,8 @@ import type {
 	ColumnDef,
 	ColumnFiltersState,
 	SortingState,
-	VisibilityState
+	VisibilityState,
+	PaginationState
 } from '@tanstack/vue-table'
 import {
 	FlexRender,
@@ -16,7 +17,7 @@ import {
 	useVueTable
 } from '@tanstack/vue-table'
 
-import { ref, onMounted } from 'vue'
+import { onMounted, ref, watchEffect, provide } from 'vue'
 import type { Task } from './data/schema'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'
@@ -29,6 +30,10 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table'
+import { useTableStore } from '@/store/table'
+
+const tableStore = useTableStore();
+
 
 interface DataTableProps {
 	columns: ColumnDef<Task, any>[]
@@ -39,7 +44,30 @@ const props = defineProps<DataTableProps>()
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
-const rowSelection = ref({})
+const pagination = ref<PaginationState>({
+	pageIndex: tableStore.page_index,
+  pageSize: tableStore.page_size,
+})
+const rowSelection = ref()
+
+
+function paginationUpdater(updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState), targetRef: any) {
+  let newValue: PaginationState;
+
+  if (typeof updaterOrValue === 'function') {
+    // Call the function with the current ref value if updaterOrValue is a function
+    newValue = updaterOrValue(targetRef.value);
+  } else {
+    // Directly use updaterOrValue if it's not a function
+    newValue = updaterOrValue;
+  }
+  // Update the ref with the new value
+  targetRef.value = newValue;
+
+  tableStore.set_page_index(newValue.pageIndex);
+  tableStore.set_page_size(newValue.pageSize);
+}
+
 
 const table = useVueTable({
 	get data() {
@@ -60,10 +88,14 @@ const table = useVueTable({
 		},
 		get rowSelection() {
 			return rowSelection.value
+		},
+		get pagination() {
+			return pagination.value
 		}
 	},
 	enableRowSelection: true,
 	onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+	onPaginationChange: (updaterOrValue) => paginationUpdater(updaterOrValue, pagination),
 	onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
 	onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
 	onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
@@ -74,6 +106,12 @@ const table = useVueTable({
 	getFacetedRowModel: getFacetedRowModel(),
 	getFacetedUniqueValues: getFacetedUniqueValues()
 })
+
+watchEffect(() => {
+  table.setPageIndex(tableStore.page_index);
+  table.setPageSize(tableStore.page_size);
+})
+
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Row } from '@tanstack/vue-table'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { statuses } from './data/data'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
@@ -26,11 +26,16 @@ interface DataTableRowActionsProps {
 }
 const props = defineProps<DataTableRowActionsProps>()
 const task = computed(() => taskSchema.parse(props.row.original))
+
+
+
+
+
 </script>
 
 <template>
 	<div class="flex gap-1">
-		<DataTableEditModal :id="task.id" />
+		<DataTableEditModal :id="task.id" :row="task" />
 		<Button class="w-fit p-2 h-fit">
 			<VIcon name="fa-lock" class="h-4 w-4" />
 		</Button>

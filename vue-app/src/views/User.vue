@@ -8,7 +8,7 @@ import {onMounted, ref} from 'vue'
 const tasksData = ref([]); // Initialize tasksData as an empty array
 const is_loading = ref(false);
 
-async function fetchUsers() {
+async function fetch() {
 	is_loading.value = true
 	try {
 		const response = await axios.get('http://127.0.0.1:8000/api/get/users', {
@@ -28,7 +28,7 @@ onMounted(async () => {
 });
 
 async function processTasks() {
-  const tasks = await fetchUsers();
+  const tasks = await fetch();
   return tasks.data.map((task:any) => ({
     id: task.id,
     name: task.name,

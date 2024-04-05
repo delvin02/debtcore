@@ -26,7 +26,6 @@ interface DataTableRowActionsProps {
 }
 const props = defineProps<DataTableRowActionsProps>()
 
-console.log(row.original.id)
 const task = computed(() => taskSchema.parse(props.row.original))
 </script>
 

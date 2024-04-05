@@ -1,0 +1,50 @@
+// store/table.js
+import { defineStore } from 'pinia';
+import axios from 'axios'
+
+export const useTableStore = defineStore('table', {
+  state: () => ({
+    tasks: [],
+    is_loading: false,
+    page_index: 0,
+    page_size: 10,
+    fetch_url: ''
+  }),
+  actions: {
+    async fetch(url: string, page_index?: number) {
+      this.is_loading = true
+      this.fetch_url = url
+      try {
+        const response = await axios.get(url, {
+          withCredentials: true,
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          },
+        })
+        this.tasks = response.data.data.map((task: any) => ({
+          id: task.id,
+          name: task.name,
+        }))
+        this.set_page_index(page_index ?? 0)
+        
+      } catch (error) {
+        console.error('There was an error fetching the companies:', error)
+      } finally {
+        this.is_loading = false
+      }
+    },
+    async refresh(page_index?: number){
+      if (this.fetch_url) {
+        await this.fetch(this.fetch_url, page_index)
+      }
+    },
+    set_page_index(index: number) {
+      this.page_index = index
+    },
+    set_page_size(size: number) {
+      this.page_size = size
+    }
+  },
+})

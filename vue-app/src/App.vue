@@ -8,6 +8,9 @@ import { useRoute } from 'vue-router'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ComponentMethods } from '@/components/Header/Header.vue'
 import { useAuthStore } from '@/store/user'
+import Toaster from '@/components/ui/toast/Toaster.vue'
+
+
 import axios from 'axios'
 
 const route = useRoute()
@@ -59,6 +62,8 @@ onBeforeMount(async () => {
                 class="h-fit items-stretch"
             >
                 <Sidebar ref="sidebarRef" />
+                <Toaster />
+
                 <ResizablePanel id="resize-panel-2" :min-size="30" >
                     <Header ref="mainHeaderRef" />
                     <ScrollArea
@@ -72,7 +77,10 @@ onBeforeMount(async () => {
             </ResizablePanelGroup>
         </TooltipProvider>
         <router-view v-else />
+        <Toaster />
+
     </div>
+
 </template>
 
 <style scoped></style>

@@ -13,11 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 import { Button } from '@/components/ui/button'
-
-import { format } from 'date-fns'
-import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { statuses } from './data/data'
-
 import { ref, reactive } from 'vue'
 import { cn } from '@/lib/utils'
 import {
@@ -28,23 +23,16 @@ import {
 	CommandItem,
 	CommandList
 } from '@/components/ui/command'
-
-import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
 import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
+import type { Task } from './data/schema'
+import { useTableStore } from '@/store/table';
+
+const tableStore = useTableStore();
 
 interface DataTableEditModalProps {
-	id: number
+  row: Task
 }
 
 const props = defineProps<DataTableEditModalProps>()
@@ -58,7 +46,7 @@ interface Company {
 }
 
 const form = reactive<Company>({
-	id: props.id,
+	id: props.row.id,
 	name: '',
 	whatsapp_business_account_id: ''
 })
@@ -67,14 +55,13 @@ const companies = [{ value: 'semix sdn bhd', label: 'Semix Sdn Bhd' }]
 const open = ref(false)
 const value = ref('')
 const is_loading = ref(true)
-
 const is_dialog_open = ref(false)
 
 async function init() {
 	try {
 		const response = await axios.get('http://127.0.0.1:8000/api/get/company', {
 			params: {
-				id: props.id
+				id: props.row.id
 			}
 		})
 
@@ -89,6 +76,7 @@ async function init() {
 }
 
 async function submit() {
+	// const page_index = inject<number|null>('page_index')
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.post(
@@ -104,6 +92,8 @@ async function submit() {
 			}
 		)
 		toggle_dialog()
+    await tableStore.refresh(tableStore.page_index)
+    console.log("refresh index:" + tableStore.page_index)
 	} catch (error) {
 		console.error(error)
 	}

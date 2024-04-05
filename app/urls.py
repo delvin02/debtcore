@@ -19,6 +19,6 @@ urlpatterns = [
     path('api/get/companies', CompanyView.as_view(), name="get_companies"),
 
     # COMPANY MODAL
-    path('api/get/company', CompanyModalView.as_view(), name="get_company")
-
+    path('api/get/company', CompanyEditModalView.as_view(), name="get_company"),
+    path('api/company/create', CompanyCreateModalView.as_view(), name="company_create")
 ]
