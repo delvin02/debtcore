@@ -6,6 +6,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  company_id: string;
 }
 
 interface UserAuthenticateResponse {
@@ -15,17 +16,20 @@ interface UserAuthenticateResponse {
 
 interface ApiResponse {
   user: User;
+  is_admin: Boolean
 }
 
 interface AuthState {
   user: User | null;
+  is_admin: Boolean
   access_token: string | null;
   refresh_token: string | null;
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
-      user: null, 
+      user: null,
+      is_admin: false,
       access_token: null,
       refresh_token: null 
   }),
@@ -43,12 +47,14 @@ export const useAuthStore = defineStore('auth', {
 
               // Assuming `user` should be an object, not directly assigning string values
               this.user = {
-                  id: localStorage.getItem('user.id') || '',
-                  name: localStorage.getItem('user.name') || '',
-                  email: localStorage.getItem('user.email') || ''
+                id: localStorage.getItem('user.id') || '',
+                name: localStorage.getItem('user.name') || '',
+                email: localStorage.getItem('user.email') || '',
+                company_id: localStorage.getItem('user.company_id') || ''
               };
-              await this.refresh_user_token();
           }
+          await this.refresh_user_token();
+          await this.get_user()
       },
       async login(email: string, password: string) {
         const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
@@ -84,8 +90,8 @@ export const useAuthStore = defineStore('auth', {
             }
           })
           .then((response: AxiosResponse<ApiResponse>) => {
-              console.log(response)
               this.set_user_info(response.data.user)
+              this.is_admin = response.data.is_admin
           })
           .catch((error: any) => {
               // error toast here
@@ -115,6 +121,7 @@ export const useAuthStore = defineStore('auth', {
               localStorage.setItem('user.id', user.id);
               localStorage.setItem('user.name', user.name);
               localStorage.setItem('user.email', user.email);
+              localStorage.setItem('user.company_id', user.company_id)
           }
 
       },

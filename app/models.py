@@ -7,27 +7,24 @@ import uuid
 class CustomUserManager(UserManager):
   def _create_user(self, name, email, password, **extra_fields):
     if not email:
-      raise ValueError("You are not provided a valid e-mail address")
-    
+        raise ValueError("You are not provided a valid e-mail address")
     email = self.normalize_email(email)
-    name = extra_fields.get('name') or 'NULL'
     user = self.model(email=email, name=name, **extra_fields)
     user.set_password(password)
     user.save(using=self._db)
-    
-  def create_user(self, name=None, email=None, password=None, **extra_fields):
-    extra_fields.setdefault('is_staff', False)
-    extra_fields.setdefault('is_superuser', False)
+    return user
+
+def create_user(self, name=None, email=None, password=None, **extra_fields):
     return self._create_user(name, email, password, **extra_fields)
-  
-  def create_superuser(self, name=None, email=None, password=None, **extra_fields):
+
+def create_superuser(self, name=None, email=None, password=None, **extra_fields):
     extra_fields.setdefault('is_staff', True)
     extra_fields.setdefault('is_superuser', True)
     return self._create_user(name, email, password, **extra_fields)
 
 class Company(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
     whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
@@ -54,9 +51,7 @@ class Company(models.Model):
     
     is_active = models.BooleanField(default=False)
     is_onboarded = models.BooleanField(default=False)
-
     
-
     def __str__(self):
        return self.name
 
@@ -64,6 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
+    surname = models.CharField(max_length=100, blank=True, default='')
 
     company = models.ForeignKey(Company, related_name="company", on_delete=models.CASCADE, null=True)
     
@@ -72,9 +68,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     ROLE_CHOICES = (
-        ('systemadmin', 'System Admin'),
-        ('companyadmin', 'Company Admin'),
-        ('companystaff', 'Company Staff'),
+        (1, 'System Admin'),
+        (2, 'Company Admin'),
+        (3, 'Company Staff'),
     )
     
     role = models.CharField(max_length=12, choices=ROLE_CHOICES, default='companystaff')

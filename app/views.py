@@ -7,12 +7,14 @@ import json
 from app.models import *
 from django.contrib.auth import login, logout
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
 import datetime
 import jwt
 import logging
@@ -33,10 +35,12 @@ def me(request):
     if request.user.is_authenticated:
         user_info = {
             'id': request.user.id,
-            'name': request.user.name,  # Assuming you want to hard-code the name as 'hello'
-            'email': request.user.email
+            'name': request.user.name, 
+            'email': request.user.email,
+            'company_id': request.user.company_id
         }
-        return JsonResponse({"user": user_info}, status=200)
+        is_admin = request.user.is_superuser
+        return JsonResponse({"user": user_info, "is_admin": is_admin}, status=200)
     else:
         # Return an appropriate response if the user is not authenticated
         return JsonResponse({"error": "User is not authenticated"}, status=401)
@@ -66,32 +70,18 @@ class SignUpView(APIView):
         
         return JsonResponse({'status': message})
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]  
-    authentication_classes = (SessionAuthentication,)
-    
-    def post(self, request, format=None):
-        # username = request.data.get('username')
-        # password = request.data.get('password')
-        serializer = UserLoginSerializer(data=request.data)
+class LoginView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
 
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.check_user(request.data)
-            if user is not None:
+        if response.status_code == 200:
+            jwt_auth = JWTAuthentication()
+            auth_result = jwt_auth.authenticate(request)
+            if auth_result is not None:
+                user, _ = auth_result
                 user.last_login = timezone.now()
                 user.save(update_fields=['last_login'])
-                
-                login(request, user)
-
-                user = {
-                    'id': user.id,
-                    'email': user.email,
-                    'username': user.username
-                }
-                return Response(user, status=status.HTTP_200_OK)
-        
-        else:
-            raise AuthenticationFailed("Invalid Credentials")
+        return response
 
 class LogoutView(APIView):
 

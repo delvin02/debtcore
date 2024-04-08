@@ -4,7 +4,7 @@ import { computed, onMounted } from 'vue'
 import { statuses } from './data/data'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
-import DataTableEditModal from '@/components/Company/DataTableEditModal.vue'
+import DataTableEditModal from './DataTableEditModal.vue'
 import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
@@ -26,16 +26,11 @@ interface DataTableRowActionsProps {
 }
 const props = defineProps<DataTableRowActionsProps>()
 const task = computed(() => taskSchema.parse(props.row.original))
-
-
-
-
-
 </script>
 
 <template>
 	<div class="flex gap-1">
-		<DataTableEditModal :id="task.id" :row="task" />
+		<DataTableEditModal :row="task" />
 		<Button class="w-fit p-2 h-fit">
 			<VIcon name="fa-lock" class="h-4 w-4" />
 		</Button>
@@ -53,7 +48,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
         <DropdownMenuContent align="end" class="w-[160px]">
             <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem>Change Password</DropdownMenuItem>
-            <!-- <DropdownMenuSeparator />
+             <DropdownMenuSeparator />
             <DropdownMenuItem
                 class="bg-red-600 text-white font-bold hover:bg-red-600/90 cursor-pointer"
             >

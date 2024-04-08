@@ -17,7 +17,7 @@ import {
 	useVueTable
 } from '@tanstack/vue-table'
 
-import { onMounted, ref, watchEffect, provide } from 'vue'
+import { onMounted, ref, watchEffect, inject } from 'vue'
 import type { Task } from './data/schema'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'
@@ -32,8 +32,7 @@ import {
 } from '@/components/ui/table'
 import { useTableStore } from '@/store/table'
 
-const tableStore = useTableStore();
-
+const tableStore = inject('tableStore', useTableStore('company'))
 
 interface DataTableProps {
 	columns: ColumnDef<Task, any>[]
@@ -46,28 +45,29 @@ const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const pagination = ref<PaginationState>({
 	pageIndex: tableStore.page_index,
-  pageSize: tableStore.page_size,
+	pageSize: tableStore.page_size
 })
 const rowSelection = ref()
 
+function paginationUpdater(
+	updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState),
+	targetRef: any
+) {
+	let newValue: PaginationState
 
-function paginationUpdater(updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState), targetRef: any) {
-  let newValue: PaginationState;
+	if (typeof updaterOrValue === 'function') {
+		// Call the function with the current ref value if updaterOrValue is a function
+		newValue = updaterOrValue(targetRef.value)
+	} else {
+		// Directly use updaterOrValue if it's not a function
+		newValue = updaterOrValue
+	}
+	// Update the ref with the new value
+	targetRef.value = newValue
 
-  if (typeof updaterOrValue === 'function') {
-    // Call the function with the current ref value if updaterOrValue is a function
-    newValue = updaterOrValue(targetRef.value);
-  } else {
-    // Directly use updaterOrValue if it's not a function
-    newValue = updaterOrValue;
-  }
-  // Update the ref with the new value
-  targetRef.value = newValue;
-
-  tableStore.set_page_index(newValue.pageIndex);
-  tableStore.set_page_size(newValue.pageSize);
+	tableStore.set_page_index(newValue.pageIndex)
+	tableStore.set_page_size(newValue.pageSize)
 }
-
 
 const table = useVueTable({
 	get data() {
@@ -108,14 +108,13 @@ const table = useVueTable({
 })
 
 watchEffect(() => {
-  table.setPageIndex(tableStore.page_index);
-  table.setPageSize(tableStore.page_size);
+	table.setPageIndex(tableStore.page_index)
+	table.setPageSize(tableStore.page_size)
 })
-
 </script>
 
 <template>
-	<div class="space-y-4">
+	<div class="space-y-4 text-muted-foreground">
 		<DataTableToolbar :table="table" />
 		<div class="rounded-md border">
 			<Table>

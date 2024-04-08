@@ -10,7 +10,6 @@ import type { ComponentMethods } from '@/components/Header/Header.vue'
 import { useAuthStore } from '@/store/user'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 
-
 import axios from 'axios'
 
 const route = useRoute()
@@ -22,65 +21,63 @@ const wrapperHeight = ref<string>('0px')
 
 // Function to adjust layout
 const fixLayout = () => {
-    nextTick(() => {
-        const headerHeight: number = mainHeaderRef.value?.getHeaderHeight() ?? 0
-        const windowHeight = window.innerHeight
+	nextTick(() => {
+		const headerHeight: number = mainHeaderRef.value?.getHeaderHeight() ?? 0
+		const windowHeight = window.innerHeight
 
-        wrapperHeight.value = `${windowHeight - headerHeight}px`
-    })
+		wrapperHeight.value = `${windowHeight - headerHeight}px`
+	})
 }
 
 onMounted(() => {
-    fixLayout()
-    window.addEventListener('resize', fixLayout)
+	fixLayout()
+	window.addEventListener('resize', fixLayout)
 })
 
 onUnmounted(() => {
-    window.removeEventListener('resize', fixLayout)
+	window.removeEventListener('resize', fixLayout)
 })
 
 provide('height', wrapperHeight)
 
 onBeforeMount(async () => {
-    await user.init()
+	await user.init()
 
-    const token = user.access_token
-    if (token) {
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-    } else {
-        axios.defaults.headers.common['Authorization'] = ''
-    }
+	const token = user.access_token
+	if (token) {
+		axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
+	} else {
+		axios.defaults.headers.common['Authorization'] = ''
+	}
 })
 </script>
 
 <template>
-    <div class="wrapper">
-        <TooltipProvider :delay-duration="0" v-if="!hideSidebar">
-            <ResizablePanelGroup
-                id="resize-panel-group-1"
-                direction="horizontal"
-                class="h-fit items-stretch"
-            >
-                <Sidebar ref="sidebarRef" />
-                <Toaster />
+	<div class="wrapper">
+		<TooltipProvider :delay-duration="0" v-if="!hideSidebar">
+			<ResizablePanelGroup
+				id="resize-panel-group-1"
+				direction="horizontal"
+				class="h-fit items-stretch"
+			>
+				<Sidebar ref="sidebarRef" />
+				<Toaster />
 
-                <ResizablePanel id="resize-panel-2" :min-size="30" >
-                    <Header ref="mainHeaderRef" />
-                    <ScrollArea
-                        :style="{ height: wrapperHeight }"
-                        :height="wrapperHeight"
-                        class="flex justify-center my-auto"
-                    >
-                        <router-view />
-                    </ScrollArea>
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </TooltipProvider>
-        <router-view v-else />
-        <Toaster />
-
-    </div>
-
+				<ResizablePanel id="resize-panel-2" :min-size="30">
+					<Header ref="mainHeaderRef" />
+					<ScrollArea
+						:style="{ height: wrapperHeight }"
+						:height="wrapperHeight"
+						class="flex justify-center my-auto"
+					>
+						<router-view />
+					</ScrollArea>
+				</ResizablePanel>
+			</ResizablePanelGroup>
+		</TooltipProvider>
+		<router-view v-else />
+		<Toaster />
+	</div>
 </template>
 
 <style scoped></style>

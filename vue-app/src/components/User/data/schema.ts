@@ -1,13 +1,17 @@
 import { z } from 'zod'
 
-// We're keeping a simple non-relational schema here.
-// IRL, you will have a schema for your data models.
+// Data table
 export const taskSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string(),
   company_name: z.string().min(2).max(50),
-  last_login: z.string().pipe( z.coerce.date() )
+  last_login: z.preprocess((arg) => {
+    if (arg instanceof Date) return arg;
+    if (typeof arg === 'string') return new Date(arg);
+    return arg; // or handle invalid types as needed
+  }, z.date()).nullable()
 })
+
 
 export type Task = z.infer<typeof taskSchema>

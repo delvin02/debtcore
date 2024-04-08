@@ -69,21 +69,21 @@ export const columns: ColumnDef<Task>[] = [
       let formattedDate = '';
 
       if (date) {
-          const parsedDate = new Date(Date.parse(date));
-          if (!isNaN(parsedDate.getTime())) {
-              formattedDate = parsedDate.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short', 
-                  day: 'numeric' 
-              });
-          } else {
-              formattedDate = 'Not Provided'; 
-          }
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime()) && parsedDate.getTime() !== new Date(0).getTime()) {
+          formattedDate = parsedDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short', 
+            day: 'numeric' 
+          });
+        } else {
+          formattedDate = 'Not provided'; 
+        }
       } else {
-          formattedDate = 'Not provided'; // Handle empty or null dueDate values
+        formattedDate = 'Not provided'; // Handle empty or null last_login values
       }
 
-      return h('div', { class: `w-fit ${formattedDate != 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
+    return h('div', { class: `w-fit ${formattedDate !== 'Not provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
     },
     enableSorting: true,
     enableHiding: true,

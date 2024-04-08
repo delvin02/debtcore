@@ -4,16 +4,29 @@ import DataTable from '@/components/Company/DataTable.vue'
 import { columns } from '@/components/Company/columns'
 import type { Task } from '@/components/Company/data/schema'
 import axios from 'axios'
-import { onMounted, ref, provide } from 'vue'
+import { onMounted, provide, onBeforeUnmount } from 'vue'
 import { useTableStore } from '@/store/table'
 
-const tableStore = useTableStore();
+const tableStore = useTableStore('company')
 
-const companiesUrl = 'http://127.0.0.1:8000/api/get/companies';
+const companiesUrl = 'http://127.0.0.1:8000/api/company'
+const map_function = (task: any): Task => {
+	const serialized_task = {
+		id: task.id,
+		name: task.name
+	}
+	return serialized_task
+}
 
 onMounted(async () => {
-  await tableStore.fetch(companiesUrl); // Pass the URL when calling the action
-});
+	await tableStore.fetch(companiesUrl, 0, map_function) // Pass the URL when calling the action
+})
+
+provide('tableStore', tableStore)
+
+onBeforeUnmount(() => {
+	tableStore.$reset()
+})
 </script>
 
 <template>

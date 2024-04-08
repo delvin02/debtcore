@@ -3,40 +3,32 @@ import DataTable from '@/components/User/DataTable.vue'
 import { columns } from '@/components/User/columns'
 import type { Task } from '@/components/User/data/schema'
 import axios from 'axios'
-import {onMounted, ref} from 'vue'
+import { onMounted, provide, onBeforeUnmount } from 'vue'
+import { useTableStore } from '@/store/table'
 
-const tasksData = ref([]); // Initialize tasksData as an empty array
-const is_loading = ref(false);
+const tableStore = useTableStore('user')
+const data_url = 'http://127.0.0.1:8000/api/user'
 
-async function fetch() {
-	is_loading.value = true
-	try {
-		const response = await axios.get('http://127.0.0.1:8000/api/get/users', {
-			withCredentials: true
-		});
-		is_loading.value = false
-		return response.data
-	} catch (error) {
-		console.error('There was an error fetching the users:', error)
-		is_loading.value = false
-		return []
+const map_function = (task: any): Task => {
+	const serialized_task = {
+		id: task.id,
+		name: task.name,
+		email: task.email,
+		company_name: task.company_name,
+		last_login: new Date(task.last_login)
 	}
+	console.log(serialized_task) // Debug: log the transformed task
+	return serialized_task
 }
-
 onMounted(async () => {
-  tasksData.value = await processTasks();
-});
+	await tableStore.fetch(data_url, 0, map_function)
+})
 
-async function processTasks() {
-  const tasks = await fetch();
-  return tasks.data.map((task:any) => ({
-    id: task.id,
-    name: task.name,
-    email: task.email,
-    company_name: task.company_name,
-    last_login: new Date(task.last_login),
-  }));
-}
+provide('tableStore', tableStore)
+
+onBeforeUnmount(() => {
+	tableStore.$reset()
+})
 </script>
 
 <template>
@@ -48,10 +40,11 @@ async function processTasks() {
 			</div>
 		</div>
 
-		<div v-if="is_loading" class="text-center">
-			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10"/>
-    </div>
-    <div v-else>
-      <DataTable :data="tasksData" :columns="columns" />
-    </div>	</div>
+		<div v-if="tableStore.is_loading" class="text-center">
+			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
+		</div>
+		<div v-else>
+			<DataTable :data="tableStore.tasks" :columns="columns" />
+		</div>
+	</div>
 </template>

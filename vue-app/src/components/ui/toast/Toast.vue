@@ -9,20 +9,28 @@ const props = defineProps<ToastProps>()
 const emits = defineEmits<ToastRootEmits>()
 
 const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props
+	const { class: _, ...delegated } = props
 
-  return delegated
+	return delegated
 })
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
+
+let icon_name: string = ''
+if (props.variant == 'destructive') {
+	icon_name = 'fa-exclamation-triangle'
+} else if (props.variant == 'success') {
+	icon_name = 'fa-check-circle'
+}
 </script>
 
 <template>
-  <ToastRoot
-    v-bind="forwarded"
-    :class="cn(toastVariants({ variant }), props.class)"
-    @update:open="onOpenChange"
-  >
-    <slot />
-  </ToastRoot>
+	<ToastRoot
+		v-bind="forwarded"
+		:class="cn(toastVariants({ variant }), props.class)"
+		@update:open="onOpenChange"
+	>
+		<VIcon v-if="props.variant" :name="icon_name" class="size-12 fill-white" />
+		<slot />
+	</ToastRoot>
 </template>

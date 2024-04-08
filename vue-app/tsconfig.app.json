@@ -17,6 +17,9 @@
       "@/*": ["./src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
-    
+    "plugins": [
+      { "name": "@babel/plugin-proposal-optional-chaining" },
+      { "name": "@babel/plugin-proposal-optional-chaining-assign" }
+    ]
   }
 }
