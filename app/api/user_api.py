@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 import datetime
 from app.models import User
-from app.serializers.serializers import UserSerializer, UserEditSerializer, UserTableSerializer, UserRoleChoiceSerializer
+from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 
 class UserView(APIView):
@@ -28,7 +28,7 @@ class UserView(APIView):
             serializer = UserEditSerializer(user)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
-            users = User.objects.all()
+            users = User.objects.select_related('company').all()
             serializer = UserTableSerializer(users, many=True)
             return JsonResponse({'Result': serializer.data}, status=200)
     
@@ -36,7 +36,7 @@ class UserView(APIView):
         serializer = UserSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'Result': 'User created'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,11 +48,30 @@ class UserView(APIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'Result': 'User updated'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'user': request.user})
+        if serializer.is_valid():
+            user_id = request.data.get('id')
+            new_password = request.data.get('password')
+            
+            user = get_object_or_404(User, pk=user_id)
+            if request.user.is_superuser:
+                user.set_password(new_password)
+                user.save()
+                return Response({'Result': 'Password updated successfully'})
+            else:
+                return Response({'error': 'You do not have permission to change another user\'s password.'},
+                                status=status.HTTP_403_FORBIDDEN)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserRoleChoicesAPIView(APIView):
     def get(self, request, *args, **kwargs):
         role_choices = [{"key": key, "value": value} for key, value in User.ROLE_CHOICES]

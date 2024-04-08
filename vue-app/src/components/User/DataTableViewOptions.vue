@@ -20,7 +20,6 @@ interface DataTableViewOptionsProps {
 
 const props = defineProps<DataTableViewOptionsProps>()
 
-console.log(props.table.getAllColumns())
 const columns = computed(() =>
     props.table
         .getAllColumns()
@@ -28,7 +27,6 @@ const columns = computed(() =>
         column.getCanHide())
 )
 
-console.log(columns)
 </script>
 
 <template>

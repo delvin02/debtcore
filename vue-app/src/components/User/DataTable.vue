@@ -38,7 +38,6 @@ interface DataTableProps {
 	data: Task[]
 }
 
-console.log(tableStore.fetch_url)
 const props = defineProps<DataTableProps>()
 
 const sorting = ref<SortingState>([])

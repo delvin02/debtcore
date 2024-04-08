@@ -5,7 +5,7 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger
+	DialogFooter
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -132,11 +132,9 @@ async function fetchRoles() {
 	} finally {
 		roles.is_loading = false
 	}
-	console.log(roles.data)
 }
 
 async function init_user() {
-	console.log('user id' + props.row.id)
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/user/${props.row.id}/`)
 
@@ -160,9 +158,33 @@ const init_form = async () => {
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
+const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
+function validateForm() {
+	const validations = [
+		{ condition: form.name === '', message: 'Name cannot be blank' },
+		{ condition: form.email === '', message: 'Email cannot be blank' },
+		{ condition: form.company == null, message: 'Company must be selected' }
+	]
+
+	for (let validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
+		}
+	}
+
+	return true
+}
+
 async function submit() {
+	const isValid = validateForm()
+	if (!isValid) {
+		return
+	}
+
+	// process form
 	is_loading.value = true
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
@@ -181,7 +203,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'User edited successfully',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -244,9 +266,9 @@ function handleRoleSelect(role: SelectList) {
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Create User</DialogTitle>
+					<DialogTitle>Edit User</DialogTitle>
 					<DialogDescription>
-						Insert the details of the user here. Click create when you're done.
+						Insert the details of the user here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
@@ -323,7 +345,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleCompanySelect(company)"
 												>
 													{{ company.label }}
-													<Check
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.company === company.id
@@ -376,7 +399,7 @@ function handleRoleSelect(role: SelectList) {
 											class="h-9"
 											placeholder="Search framework..."
 										/>
-										<CommandEmpty>No framework found.</CommandEmpty>
+										<CommandEmpty>No role found.</CommandEmpty>
 										<CommandList>
 											<CommandGroup>
 												<CommandItem
@@ -386,7 +409,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleRoleSelect(role)"
 												>
 													{{ role.label }}
-													<Check
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.role === role.id
@@ -402,6 +426,12 @@ function handleRoleSelect(role: SelectList) {
 							</Popover>
 						</div>
 					</div>
+					<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
+						<Label for="name" class="text-red-600 col-span-3 col-start-2">
+							<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />
+							{{ error_message }}
+						</Label>
+					</div>
 				</div>
 				<DialogFooter class="flex justify-end">
 					<Button type="submit" @click="submit" :disabled="is_loading">
@@ -412,7 +442,7 @@ function handleRoleSelect(role: SelectList) {
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-						Create</Button
+						Edit</Button
 					>
 				</DialogFooter>
 			</DialogContent>

@@ -5,7 +5,7 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger
+	DialogFooter
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -129,7 +129,6 @@ async function fetchRoles() {
 	} finally {
 		roles.is_loading = false
 	}
-	console.log(roles.data)
 }
 
 const init_form = async () => {
@@ -142,10 +141,32 @@ const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
+function validateForm() {
+	const validations = [
+		{ condition: form.name === '', message: 'Name cannot be blank' },
+		{ condition: form.email === '', message: 'Email cannot be blank' },
+		{ condition: form.company == null, message: 'Company must be selected' },
+		{ condition: form.password != form.confirm_password, message: 'Passwords do not match' },
+		{
+			condition: form.password.length < 9,
+			message: 'Password must consists more than 8 characters'
+		},
+		{ condition: form.password == '', message: 'Password cannot be blank' }
+	]
+
+	for (let validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
+		}
+	}
+
+	return true // Indicate form is valid
+}
+
 async function submit() {
-	error_message.value = null
-	if (form.password != form.confirm_password) {
-		error_message.value = 'Passwords do not match.'
+	const isValid = validateForm()
+	if (!isValid) {
 		return
 	}
 	is_loading.value = true
@@ -166,7 +187,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'User created successfully',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -237,9 +258,9 @@ function handleRoleSelect(role: SelectList) {
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right"> Surname </Label>
+						<Label for="surname" class="text-right"> Surname </Label>
 						<Input
-							id="name"
+							id="surname"
 							v-model="form.surname"
 							placeholder="Lee"
 							class="col-span-3"
@@ -250,14 +271,14 @@ function handleRoleSelect(role: SelectList) {
 						<Input
 							id="name"
 							v-model="form.name"
-							placeholder="Amalina"
+							placeholder="Susan"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right"> Email </Label>
+						<Label for="email" class="text-right"> Email </Label>
 						<Input
-							id="name"
+							id="email"
 							v-model="form.email"
 							placeholder="Amalina"
 							class="col-span-3"
@@ -308,7 +329,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleCompanySelect(company)"
 												>
 													{{ company.label }}
-													<Check
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.company === company.id
@@ -371,7 +393,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleRoleSelect(role)"
 												>
 													{{ role.label }}
-													<Check
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.role === role.id
@@ -389,9 +412,9 @@ function handleRoleSelect(role: SelectList) {
 					</div>
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right"> Password </Label>
+						<Label for="password" class="text-right"> Password </Label>
 						<Input
-							id="name"
+							id="password"
 							v-model="form.password"
 							placeholder="***********"
 							class="col-span-3"
@@ -399,9 +422,9 @@ function handleRoleSelect(role: SelectList) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right"> Confirm Password </Label>
+						<Label for="confirm_password" class="text-right"> Confirm Password </Label>
 						<Input
-							id="name"
+							id="confirm_password"
 							v-model="form.confirm_password"
 							placeholder="***********"
 							class="col-span-3"

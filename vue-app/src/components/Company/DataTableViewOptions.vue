@@ -26,7 +26,6 @@ const columns = computed(() =>
 		.filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
 )
 
-console.log(columns)
 </script>
 
 <template>

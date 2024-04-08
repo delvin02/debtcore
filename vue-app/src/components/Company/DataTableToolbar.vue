@@ -26,17 +26,17 @@ const isCreateModalVisible = ref(false)
 		<div class="flex flex-1 items-center space-x-2">
 			<Input
 				placeholder="Search..."
-				:model-value="(table.getColumn('invoice')?.getFilterValue() as string) ?? ''"
+				:model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
 				class="h-8 w-[150px] lg:w-[250px]"
 				@input="table.setGlobalFilter($event.target.value)"
 			/>
 
-			<DataTableFacetedFilter
+			<!-- <DataTableFacetedFilter
 				v-if="table.getColumn('status')"
 				:column="table.getColumn('status')"
 				title="Status"
 				:options="statuses"
-			/>
+			/> -->
 
 			<Button
 				v-if="isFiltered"

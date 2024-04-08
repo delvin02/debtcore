@@ -10,7 +10,6 @@ urlpatterns = [
     path('api/login', LoginView.as_view(), name="token_obtain"),
     path('api/refresh', TokenRefreshView.as_view(), name="token_refresh"),
     path('api/signup', SignUpView.as_view(), name="sign_up"),
-    path('api/session-status', SessionStatusView.as_view(), name='session_status'),
     path('api/user/login', LoginView.as_view(), name='login'),
     path('api/user/logout', LogoutView.as_view(), name='logout'),
 
@@ -18,6 +17,8 @@ urlpatterns = [
     path('api/user', UserView.as_view(), name="get_users"),
     path('api/user/<uuid:user_id>/', UserView.as_view(), name="get_users"),
     path('api/role-choices/', UserRoleChoicesAPIView.as_view(), name='role-choices'),
+    path('api/user/change-password/', PasswordChangeView.as_view(), name="user_change_password"),
+    path('api/user/change-company/', CompanyChangeView.as_view(), name="get_companies"),
 
     path('api/company', CompanyView.as_view(), name="get_companies"),
     path('api/company/<int:company_id>/', CompanyView.as_view(), name="get_company"),  

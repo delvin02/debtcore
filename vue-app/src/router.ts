@@ -52,6 +52,11 @@ const router = createRouter({
       component: () => import("@/views/Debt.vue")
     },
     {
+      path: '/connections',
+      name: 'connections',
+      component: () => import("@/views/Connections.vue")
+    },
+    {
       path: '/user',
       name: 'name',
       component: () => import("@/views/User.vue")

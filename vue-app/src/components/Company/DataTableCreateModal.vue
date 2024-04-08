@@ -5,7 +5,7 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger
+	DialogFooter
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -131,73 +131,14 @@ function toggleDialog() {
 							class="col-span-3"
 						/>
 					</div>
-					<!-- <div class="grid grid-cols-4 items-center gap-4">
-					<Label for="companyname" class="text-right"> Country </Label>
-					<div class="col-span-3">
-						<Popover v-model:open="open">
-							<PopoverTrigger as-child>
-								<Button
-									variant="outline"
-									role="combobox"
-									:aria-expanded="open"
-									class="w-full justify-between px-3"
-								>
-									{{
-										name
-											? companies.find((c) => c.name === name)?.label
-											: 'Select company'
-									}}
-									<VIcon
-										name="fa-angle-down"
-										class="h-4 w-4 shrink-0 opacity-50"
-									/>
-								</Button>
-							</PopoverTrigger>
-							<PopoverContent class="w-[500px] p-1">
-								<Command>
-									<CommandInput class="h-9" placeholder="Search framework..." />
-									<CommandEmpty>No framework found.</CommandEmpty>
-									<CommandList>
-										<CommandGroup>
-											<CommandItem
-												v-for="company in companies"
-												:key="company.id"
-												:value="company.id"
-												@select="
-													(ev) => {
-														if (typeof ev.detail.value === 'string') {
-															value = ev.detail.value
-														}
-														open = false
-													}
-												"
-											>
-												{{ company.name }}
-												<Check
-													:class="
-														cn(
-															'ml-auto h-4 w-4',
-															value === company.id
-																? 'opacity-100'
-																: 'opacity-0'
-														)
-													"
-												/>
-											</CommandItem>
-										</CommandGroup>
-									</CommandList>
-								</Command>
-							</PopoverContent>
-						</Popover>
-					</div>
-				</div> -->
+
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right leading-normal">
+						<Label for="whatsapp_id" class="text-right leading-normal">
 							Whatsapp Business Account ID
 						</Label>
 						<Input
-							id="name"
+							id="whatsapp_id"
 							v-model="form.whatsapp_business_account_id"
 							placeholder="XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX"
 							class="col-span-3"

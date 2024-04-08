@@ -54,9 +54,21 @@ class UserTableSerializer(serializers.ModelSerializer):
     def get_company_name(self, obj):
         return obj.company.name if obj.company else None
     
+    
+class PasswordChangeSerializer(serializers.Serializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'password']
+        
+    def validate_user_id(self, value):
+        user = self.context['user']
+        if not user.is_superuser:
+            raise serializers.ValidationError("You do not have permission to change another user's password.")
+        return value
 
 
-
+        
     
 '''
     User Roles Serializer for frontend

@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from app.models import Company  
 from django.utils import timezone
+
 class CompanySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Company
-        fields = ['id', 'name', 'whatsapp_business_account_id']
+        fields = ['id', 'name', 'whatsapp_business_account_id', 'is_active']
       
     def create(self, validated_data):
       user = self.context['request'].user
@@ -13,6 +14,19 @@ class CompanySerializer(serializers.ModelSerializer):
       validated_data['last_updated_by'] = user
       validated_data['last_updated_date'] = timezone.now()
       return super().create(validated_data)
+  
+class CompanyTableSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Company
+        fields = ['id', 'name']
+      
+class CompanyChangeSerializer(serializers.Serializer):
+
+    class Meta:
+        model = Company
+        fields = ['id']
+        
 
 class CompanySelectListSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField(source='name')

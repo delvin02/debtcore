@@ -11,7 +11,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -37,7 +37,8 @@ def me(request):
             'id': request.user.id,
             'name': request.user.name, 
             'email': request.user.email,
-            'company_id': request.user.company_id
+            'company_id': request.user.company_id,
+            'company_name': request.user.company.name
         }
         is_admin = request.user.is_superuser
         return JsonResponse({"user": user_info, "is_admin": is_admin}, status=200)
@@ -83,28 +84,9 @@ class LoginView(TokenObtainPairView):
                 user.save(update_fields=['last_login'])
         return response
 
-class LogoutView(APIView):
 
+class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)
-    
-class SessionStatusView(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = (SessionAuthentication,)
-
-    def get(self, request, format=None):
-        if request.user.is_authenticated:
-            return Response({
-                'isAuthenticated': True,
-                'user': {
-                    'id': request.user.id,
-                    'email': request.user.email,
-                    'username': request.user.username,
-                }
-            })
-        else:
-            return Response({'isAuthenticated': False}, status=200)
-
-
     
