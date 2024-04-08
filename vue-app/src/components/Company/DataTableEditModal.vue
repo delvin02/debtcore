@@ -5,7 +5,8 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger
+	DialogTrigger,
+	DialogFooter
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -29,6 +30,7 @@ import axios from 'axios'
 import type { Task } from './data/schema'
 import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const tableStore = inject('tableStore', useTableStore('company'))
 
@@ -43,14 +45,16 @@ interface Company {
 	id?: number
 	name?: string
 	// country: string;
-	whatsapp_business_account_id: string
+	whatsapp_business_account_id: string,
+	is_active: boolean
 }
 
 const form = reactive<Company>({
 	id: props.row.id,
 	name: props.row.name,
 	//
-	whatsapp_business_account_id: ''
+	whatsapp_business_account_id: '',
+	is_active: false
 })
 
 const companies = [{ value: 'semix sdn bhd', label: 'Semix Sdn Bhd' }]
@@ -66,9 +70,9 @@ async function init() {
 
 		form.name = response.data.Result.name
 		form.whatsapp_business_account_id = response.data.Result.whatsapp_business_account_id
+		form.is_active = response.data.Result.is_active
 		is_loading.value = false
 	} catch (error) {
-		console.error(error)
 		is_loading.value = false
 	}
 }
@@ -90,10 +94,10 @@ async function submit() {
 				}
 			}
 		)
-		toggle_dialog()
+		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'Company updated successfully',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -120,27 +124,28 @@ async function submit() {
 		is_loading.value = false
 	}
 }
-function toggle_dialog() {
+function toggleDialog() {
 	if (!is_dialog_open.value) {
 		init()
 	}
-	is_dialog_open.value = false
+	is_dialog_open.value = !is_dialog_open.value
 }
 </script>
 
 <template>
+<div>
+	<div>
+		<Button
+			variant="default"
+			size="sm"
+			class="hidden h-8 ml-2 lg:flex"
+			@click="toggleDialog"
+		>
+			<VIcon name="fa-pen" class="size-4" />
+		</Button>
+	</div>
 	<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
-		<DialogTrigger asChild>
-			<Button
-				variant="default"
-				@click="async () => await init()"
-				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
-			>
-				<VIcon name="fa-pen" class="size-4" />
-			</Button>
-		</DialogTrigger>
-		<DialogContent :isSideBar="false" v-if="!is_loading" class="sm:max-w-[700px]">
+		<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 			<DialogHeader>
 				<DialogTitle>Edit Company</DialogTitle>
 				<DialogDescription>
@@ -201,7 +206,7 @@ function toggle_dialog() {
 												"
 											>
 												{{ company.label }}
-												<Check
+												<VIcon name="fa-check"
 													:class="
 														cn(
 															'ml-auto h-4 w-4',
@@ -231,6 +236,13 @@ function toggle_dialog() {
 						class="col-span-3"
 					/>
 				</div>
+				<Separator />
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="is_active" class="text-right leading-normal">
+						Is Active
+					</Label>
+					<Checkbox id="is_active" :checked="form.is_active" @update:checked="form.is_active=!form.is_active"/>
+				</div>
 			</div>
 			<DialogFooter class="flex justify-end">
 				<Button type="submit" @click="submit" :disabled="is_loading">
@@ -245,8 +257,6 @@ function toggle_dialog() {
 				>
 			</DialogFooter>
 		</DialogContent>
-		<DialogContent v-else class="sm:max-w-[700px]">
-			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10 mx-auto" />
-		</DialogContent>
 	</Dialog>
+</div>
 </template>

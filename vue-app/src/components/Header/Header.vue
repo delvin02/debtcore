@@ -25,7 +25,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
+import CompanySwitcher from './CompanySwticher.vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useSideBarStore } from '@/store/index'
 import { useAuthStore } from '@/store/user'
@@ -33,7 +33,7 @@ import { useRouter } from 'vue-router'
 
 // logout
 const router = useRouter()
-const user = useAuthStore()
+const auth = useAuthStore()
 
 // interface MailDisplayProps {
 //   mail: Mail | undefined
@@ -63,7 +63,7 @@ defineExpose({
 const store = useSideBarStore()
 
 const logout = () => {
-    user.remove_token()
+    auth.remove_token()
     router.push('/login')
 }
 const today = new Date()
@@ -88,7 +88,8 @@ const today = new Date()
                     <TooltipContent>Archive</TooltipContent>
                 </Tooltip>
                 <div>
-                    <h1 class="font-bold">SEMIX SDN BHD</h1>
+                    <CompanySwitcher v-if="auth.is_admin"/>
+                    <h1 class="font-bold" v-else>{{ auth.user?.company_name }}</h1> 
                 </div>
             </div>
             <div class="ml-auto flex items-center gap-2"></div>

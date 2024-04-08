@@ -5,7 +5,7 @@ export const taskSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string(),
-  company_name: z.string().min(2).max(50),
+  company_name: z.string().nullable(),
   last_login: z.preprocess((arg) => {
     if (arg instanceof Date) return arg;
     if (typeof arg === 'string') return new Date(arg);

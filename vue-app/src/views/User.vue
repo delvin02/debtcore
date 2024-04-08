@@ -17,7 +17,6 @@ const map_function = (task: any): Task => {
 		company_name: task.company_name,
 		last_login: new Date(task.last_login)
 	}
-	console.log(serialized_task) // Debug: log the transformed task
 	return serialized_task
 }
 onMounted(async () => {

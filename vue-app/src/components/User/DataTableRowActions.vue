@@ -21,6 +21,7 @@ import {
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import DataTableEditModal from './DataTableEditModal.vue'
+import DataTableEditPasswordModal from './DataTableEditPasswordModal.vue'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
@@ -33,9 +34,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
 <template>
 	<div class="flex gap-1">
 		<DataTableEditModal :row="task" />
-		<Button class="w-fit p-2 h-fit">
-			<VIcon name="fa-lock" class="h-4 w-4" />
-		</Button>
+		<DataTableEditPasswordModal :row="task" />
 		<Button class="w-fit p-2 h-fit" variant="outline">
 			<VIcon name="fa-building" class="h-4 w-4" />
 		</Button>

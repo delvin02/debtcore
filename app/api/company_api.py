@@ -8,7 +8,9 @@ from rest_framework import status
 from rest_framework.decorators import action
 import datetime
 from app.models import Company
-from app.serializers.serializers import CompanySerializer, CompanySelectListSerializer
+from app.serializers.serializers import *
+from django.shortcuts import get_object_or_404
+from asgiref.sync import sync_to_async
 
 class CompanyView(APIView):
     permission_classes = [IsAdminUser]
@@ -18,14 +20,14 @@ class CompanyView(APIView):
         company_id = kwargs.get('company_id')
         if company_id:
             # Retrieving a single company
-            company = CompanyUtils.get_company(company_id)
+            company = get_object_or_404(Company, pk=company_id)
             if not company:
                 return JsonResponse({'error': 'Company not found'}, status=404)
             serializer = CompanySerializer(company)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
             companies = Company.objects.all()
-            serializer = CompanySerializer(companies, many=True)
+            serializer = CompanyTableSerializer(companies, many=True)
             return JsonResponse({'Result': serializer.data}, status=200)
     
     def post(self, request, *args, **kwargs):
@@ -38,16 +40,46 @@ class CompanyView(APIView):
     def patch(self, request, *args, **kwargs):
         company_id = kwargs.get('company_id')
         if company_id:
-            # UPDATE
-            company = CompanyUtils.get_company(company_id)
+            company = get_object_or_404(Company, pk=company_id)
             if not company:
                 return JsonResponse({'error': 'Company not found'}, status=404)
             company.name = request.data.get('name')
             company.whatsapp_business_account_id = request.data.get('whatsapp_business_account_id')
+            company.is_active = request.data.get('is_active')
             company.save()
-            return JsonResponse({'success': True}, status=200)
+            return JsonResponse({'Result': 'Company updated successfully'})
+    
+    
+
+class CompanyChangeView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = CompanyChangeSerializer(data=request.data, context={'user': request.user})
+        if serializer.is_valid():
+            company_id = request.data.get('id')
+            
+            user = request.user
+            
+            company = get_object_or_404(Company, pk=company_id)
+            if user.is_staff:
+                user.company = company
+                user.save()
+                
+                request.session['company_id'] = company_id
+                
+                return Response({'Result': 'Company changed successfully'})
+            else:
+                return Response({'error': 'You do not have permission to change.'},
+                                status=status.HTTP_403_FORBIDDEN)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
         
 class GetCompanySelectList(APIView):
+    permission_classes = [IsAdminUser]
+
+
     def get(self, request, format=None):
         companies = Company.objects.all()
         serializer = CompanySelectListSerializer(companies, many=True)

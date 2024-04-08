@@ -5,7 +5,7 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger
+	DialogFooter
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -132,11 +132,9 @@ async function fetchRoles() {
 	} finally {
 		roles.is_loading = false
 	}
-	console.log(roles.data)
 }
 
 async function init_user() {
-	console.log('user id' + props.row.id)
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/user/${props.row.id}/`)
 
@@ -181,7 +179,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'User edited successfully',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -244,9 +242,9 @@ function handleRoleSelect(role: SelectList) {
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Create User</DialogTitle>
+					<DialogTitle>Edit User</DialogTitle>
 					<DialogDescription>
-						Insert the details of the user here. Click create when you're done.
+						Insert the details of the user here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
@@ -323,7 +321,7 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleCompanySelect(company)"
 												>
 													{{ company.label }}
-													<Check
+													<VIcon name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.company === company.id
@@ -376,7 +374,7 @@ function handleRoleSelect(role: SelectList) {
 											class="h-9"
 											placeholder="Search framework..."
 										/>
-										<CommandEmpty>No framework found.</CommandEmpty>
+										<CommandEmpty>No role found.</CommandEmpty>
 										<CommandList>
 											<CommandGroup>
 												<CommandItem
@@ -386,7 +384,7 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleRoleSelect(role)"
 												>
 													{{ role.label }}
-													<Check
+													<VIcon name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.role === role.id
@@ -412,7 +410,7 @@ function handleRoleSelect(role: SelectList) {
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-						Create</Button
+						Edit</Button
 					>
 				</DialogFooter>
 			</DialogContent>

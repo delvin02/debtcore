@@ -7,6 +7,7 @@ interface User {
   name: string;
   email: string;
   company_id: string;
+  company_name: string;
 }
 
 interface UserAuthenticateResponse {
@@ -50,7 +51,8 @@ export const useAuthStore = defineStore('auth', {
                 id: localStorage.getItem('user.id') || '',
                 name: localStorage.getItem('user.name') || '',
                 email: localStorage.getItem('user.email') || '',
-                company_id: localStorage.getItem('user.company_id') || ''
+                company_id: localStorage.getItem('user.company_id') || '',
+                company_name: localStorage.getItem('user.company_name') || ''
               };
           }
           await this.refresh_user_token();
@@ -122,6 +124,8 @@ export const useAuthStore = defineStore('auth', {
               localStorage.setItem('user.name', user.name);
               localStorage.setItem('user.email', user.email);
               localStorage.setItem('user.company_id', user.company_id)
+              localStorage.setItem('user.company_name', user.company_name)
+
           }
 
       },

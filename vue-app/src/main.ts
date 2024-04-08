@@ -31,6 +31,7 @@ import {
   FaPlusCircle,
   FaPen,
   FaCheckCircle,
+  FaCheck,
   FaWindowClose,
   FaBook,
   FaFileImage,
@@ -111,6 +112,7 @@ addIcons(
   FaArrowLeft,
   FaChevronRight,
   FaChevronLeft,
+  FaCheck
 )
 
 // const Fa = Object.values({ ...FaIcons });
