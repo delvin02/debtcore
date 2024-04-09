@@ -35,8 +35,5 @@ const task = computed(() => taskSchema.parse(props.row.original))
 	<div class="flex gap-1">
 		<DataTableEditModal :row="task" />
 		<DataTableEditPasswordModal :row="task" />
-		<Button class="w-fit p-2 h-fit" variant="outline">
-			<VIcon name="fa-building" class="h-4 w-4" />
-		</Button>
 	</div>
 </template>

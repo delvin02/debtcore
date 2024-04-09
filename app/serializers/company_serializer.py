@@ -6,7 +6,7 @@ class CompanySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Company
-        fields = ['id', 'name', 'whatsapp_business_account_id', 'is_active']
+        fields = ['id', 'name', 'phone', 'email', 'website', 'whatsapp_business_account_id', 'is_active']
       
     def create(self, validated_data):
       user = self.context['request'].user
@@ -25,7 +25,7 @@ class CompanyChangeSerializer(serializers.Serializer):
 
     class Meta:
         model = Company
-        fields = ['id']
+        fields = ['id', 'name', 'phone', 'email', 'website']
         
 
 class CompanySelectListSerializer(serializers.ModelSerializer):

@@ -1,14 +1,25 @@
 from django.core.management.base import BaseCommand
-from app.models import User, Company
+from app.models import User, Company, Country
+import pycountry
 
 class Command(BaseCommand):
     help = 'Seed initial data'
 
     def handle(self, *args, **options):
+        self.seed_countries()
         self.seed_companies()
         self.seed_users()
         self.stdout.write(self.style.SUCCESS('Data seeded successfully!'))
 
+    def seed_countries(self):
+        for country in pycountry.countries:
+            # Using get_or_create to avoid duplicating countries
+            obj, created = Country.objects.get_or_create(
+                name=country.name,
+                defaults={'code': country.alpha_2} 
+            )
+            self.stdout.write(f'Created company: {country.name}')
+        
     def seed_companies(self):
         if not Company.objects.filter(name='DebtCore').exists():
             company = Company.objects.create(
