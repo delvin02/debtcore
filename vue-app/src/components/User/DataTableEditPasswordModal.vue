@@ -43,13 +43,13 @@ const props = defineProps<DataTableEditModalProps>()
 interface UserModal {
 	id?: string
 	password: string
-  confirm_password: string
+	confirm_password: string
 }
 
 const form = reactive<UserModal>({
 	id: props.row.id,
-  password: '',
-  confirm_password: ''
+	password: '',
+	confirm_password: ''
 })
 
 const is_loading = ref(false)
@@ -57,13 +57,23 @@ const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
-
 async function submit() {
-  error_message.value = null
+	error_message.value = null
 	if (form.password != form.confirm_password) {
 		error_message.value = 'Passwords do not match.'
 		return
 	}
+
+	if (form.password == '' || form.confirm_password == '') {
+		error_message.value = 'Password cannot be blank.'
+		return
+	}
+
+	if (form.password.length < 8) {
+		error_message.value = 'Passowrd must consists more than 8 characters'
+		return
+	}
+
 	is_loading.value = true
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
@@ -85,8 +95,8 @@ async function submit() {
 			variant: 'success'
 		})
 
-    form.confirm_password = ''
-    form.password = ''
+		form.confirm_password = ''
+		form.password = ''
 	} catch (error) {
 		let errorMessage = 'An unexpected error occurred.' // Default error message
 		if (axios.isAxiosError(error) && error.response) {
@@ -115,18 +125,12 @@ async function submit() {
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 }
-
 </script>
 
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="hidden h-8  lg:flex"
-				@click="toggleDialog"
-			>
+			<Button variant="default" size="sm" class="hidden h-8 lg:flex" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-lock" class="size-4" />
 			</Button>
@@ -148,7 +152,7 @@ function toggleDialog() {
 							v-model="form.password"
 							placeholder="********"
 							class="col-span-3"
-              type="password"
+							type="password"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
@@ -158,11 +162,11 @@ function toggleDialog() {
 							v-model="form.confirm_password"
 							placeholder="********"
 							class="col-span-3"
-              type="password"
+							type="password"
 						/>
 					</div>
 				</div>
-        <div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
+				<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
 					<Label for="name" class="text-red-600 col-span-3 col-start-2">
 						<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />
 						{{ error_message }}

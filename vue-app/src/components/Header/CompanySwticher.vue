@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import {
 	Dialog,
 	DialogContent,
@@ -7,11 +7,19 @@ import {
 	DialogTitle,
 	DialogFooter
 } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList
+} from '@/components/ui/command'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { computed, ref, reactive } from 'vue'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import type { SelectList, GenericSelectListModel } from '@/common/SelectList'
 import axios from 'axios'
@@ -20,16 +28,11 @@ import { useAuthStore } from '@/store/user'
 
 const auth = useAuthStore()
 
-interface AccountSwitcherProps {
-
-}
-const props = defineProps<AccountSwitcherProps>()
-
 interface CompanySwitcherForm {
-  company: number | null
+	company: number | string
 }
 const form = reactive<CompanySwitcherForm>({
-  company: parseInt(auth.user?.company_id) ?? null
+	company: parseInt(auth.user?.company_id ?? '0')
 })
 
 const companies: GenericSelectListModel = reactive({
@@ -64,19 +67,27 @@ async function fetchCompanies() {
 
 const init_form = async () => {
 	await fetchCompanies()
-
 }
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const { toast } = useToast()
 
-async function submit() {
+function toggleDialog() {
+	if (!is_dialog_open.value) {
+		init_form()
+	}
+	is_dialog_open.value = !is_dialog_open.value
+}
+
+async function handleCompanySelect(company: any) {
 	is_loading.value = true
+	form.company = company.id
+	companies.is_open = false
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
-		const response = await axios.patch(
-			'http://127.0.0.1:8000/api/user',
+		const response = await axios.post(
+			'http://127.0.0.1:8000/api/user/change-company/',
 			{
 				...form
 			},
@@ -87,7 +98,8 @@ async function submit() {
 				}
 			}
 		)
-		// toggleDialog()
+		is_dialog_open.value = false
+		auth.get_user()
 		toast({
 			title: response.data.Result,
 			variant: 'success'
@@ -117,40 +129,18 @@ async function submit() {
 	}
 }
 
-function toggleDialog() {
-	if (!is_dialog_open.value) {
-		init_form()
-	}
-	is_dialog_open.value = !is_dialog_open.value
-}
-
-
-function handleCompanySelect(company: any) {
-	form.company = company.id
-
-	companies.is_open = false
-}
-
-
-
 // const selectedEmail = ref<string>(props.accounts[0].email)
 </script>
 
 <template>
-  <div>
+	<div>
 		<div>
-			<Button
-				variant="ghost"
-				size="sm"
-				class="underline"
-				@click="toggleDialog"
-			>
-      {{ auth.user?.company_name }}
-      
+			<Button variant="ghost" size="sm" class="underline" @click="toggleDialog">
+				{{ auth.user?.company_name }}
 			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
-			<DialogContent :isSideBar="false" class="sm:max-w-[700px] z-40">
+			<DialogContent :isSideBar="false" class="sm:max-w-[600px]">
 				<DialogHeader>
 					<DialogTitle>Change Company</DialogTitle>
 					<DialogDescription>
@@ -190,7 +180,7 @@ function handleCompanySelect(company: any) {
 										/>
 									</Button>
 								</PopoverTrigger>
-								<PopoverContent class="w-[500px] p-1">
+								<PopoverContent class="w-[400px] p-1">
 									<Command>
 										<CommandInput class="h-9" placeholder="Search company..." />
 										<CommandEmpty>No company found.</CommandEmpty>
@@ -203,7 +193,8 @@ function handleCompanySelect(company: any) {
 													@select="() => handleCompanySelect(company)"
 												>
 													{{ company.label }}
-													<VIcon name="fa-check"
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.company === company.id
@@ -220,18 +211,6 @@ function handleCompanySelect(company: any) {
 						</div>
 					</div>
 				</div>
-				<DialogFooter class="flex justify-end">
-					<Button type="submit" @click="submit" :disabled="is_loading">
-						<VIcon
-							name="fa-circle-notch"
-							v-if="is_loading"
-							animation="spin"
-							speed="slow"
-							class="w-fit h-fit mr-2"
-						/>
-						Edit</Button
-					>
-				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	</div>

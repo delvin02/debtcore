@@ -120,8 +120,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',    
-    # ASYNC 
-    'adrf',
     'corsheaders'
 
 ]

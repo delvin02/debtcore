@@ -28,23 +28,75 @@ import axios from 'axios'
 import { useTableStore } from '@/store/table'
 import type { Task } from '@/components/Company/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
+import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
+import { string } from 'zod'
 
 const tableStore = inject('tableStore', useTableStore('company'))
 // Form Modal
 interface Company {
-	id?: number
 	name?: string
-	// country: string;
+	phone: string
+	email: string
+	website: string
+
+	// Address
+	streetAddress: string
+	city: string
+	state: string
+	// country: SelectList | null
+
+	business_registration_id: string
 	whatsapp_business_account_id: string
 }
 
 const form = reactive<Company>({
-	id: undefined,
 	name: '',
-	whatsapp_business_account_id: ''
+	phone: '',
+	email: '',
+	website: '',
+
+	streetAddress: '',
+	city: '',
+	state: '',
+	// country: null,
+	business_registration_id: '',
+	whatsapp_business_account_id: '',
 })
 
-const companies = ref<Task | null>()
+const countries: GenericSelectListModel= reactive({
+	is_loading: true,
+	is_open: false,
+	data: [{ value: '', label: '' }]
+})
+
+// async function fetchCountries() {
+// 	countries.is_loading = true
+// 	try {
+// 		const companyResponse = await axios.get('http://127.0.0.1:8000/api/country/list', {
+// 			withCredentials: true,
+// 			headers: {
+// 				'Cache-Control': 'no-cache',
+// 				Pragma: 'no-cache',
+// 				Expires: '0'
+// 			}
+// 		})
+
+// 		countries.data = companyResponse.data.Result.map((company: SelectList) => ({
+// 			id: company.id,
+// 			value: company.value,
+// 			label: company.label
+// 		}))
+// 	} catch (error) {
+// 		console.error('There was an error fetching the select list:', error)
+// 	} finally {
+// 		countries.is_loading = false
+// 	}
+// }
+
+// const init_form = async () => {
+// 	await fetchCountries()
+// }
+
 const open = ref(false)
 const value = ref('')
 const is_loading = ref(false)
@@ -95,8 +147,17 @@ async function submit() {
 	}
 }
 function toggleDialog() {
+	// if (!is_dialog_open.value) {
+	// 	init_form()
+	// }
 	is_dialog_open.value = !is_dialog_open.value
 }
+
+// function handleCountrySelect(country: any) {
+// 	form.country = country.id
+
+// 	countries.is_open = false
+// }
 </script>
 
 <template>
@@ -123,7 +184,7 @@ function toggleDialog() {
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right"> Name </Label>
+						<Label for="name" class="text-right required:"> Name </Label>
 						<Input
 							id="name"
 							v-model="form.name"
@@ -131,6 +192,38 @@ function toggleDialog() {
 							class="col-span-3"
 						/>
 					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="phone" class="text-right required:"> Phone </Label>
+						<Input
+							id="phone"
+							v-model="form.phone"
+							placeholder="012-9886348"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="email" class="text-right leading-normal">
+							Email
+						</Label>
+						<Input
+							id="email"
+							v-model="form.email"
+							placeholder="hello@example.com"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="website" class="text-right leading-normal">
+							Website
+						</Label>
+						<Input
+							id="website"
+							v-model="form.website"
+							placeholder="www.kckok.my"
+							class="col-span-3"
+						/>
+					</div>
+		
 
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">

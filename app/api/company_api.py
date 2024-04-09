@@ -41,15 +41,13 @@ class CompanyView(APIView):
         company_id = kwargs.get('company_id')
         if company_id:
             company = get_object_or_404(Company, pk=company_id)
-            if not company:
-                return JsonResponse({'error': 'Company not found'}, status=404)
-            company.name = request.data.get('name')
-            company.whatsapp_business_account_id = request.data.get('whatsapp_business_account_id')
-            company.is_active = request.data.get('is_active')
-            company.save()
-            return JsonResponse({'Result': 'Company updated successfully'})
     
-    
+            serializer = CompanySerializer(company, data=request.data, partial=True)  # Allow partial updates
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'Result': 'Company updated successfully'}, status=status.HTTP_200_OK)
+            return Response({'error': 'Failed to update company', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
 
 class CompanyChangeView(APIView):
     permission_classes = [IsAdminUser]
@@ -57,7 +55,7 @@ class CompanyChangeView(APIView):
     def post(self, request):
         serializer = CompanyChangeSerializer(data=request.data, context={'user': request.user})
         if serializer.is_valid():
-            company_id = request.data.get('id')
+            company_id = request.data.get('company')
             
             user = request.user
             

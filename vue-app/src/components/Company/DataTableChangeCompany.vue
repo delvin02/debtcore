@@ -1,12 +1,13 @@
 <script setup lang="ts">
-
 import { Button } from '@/components/ui/button'
 import { ref, reactive, inject } from 'vue'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
 import type { Task } from './data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useAuthStore } from '@/store/user'
 
+const auth = useAuthStore()
 interface DataTableEditModalProps {
 	row: Task
 }
@@ -15,16 +16,15 @@ const props = defineProps<DataTableEditModalProps>()
 
 // Form Modal
 interface ChangeCompany {
-	id?: number
+	company?: number
 }
 
 const form = reactive<ChangeCompany>({
-	id: props.row.id,
+	company: props.row.id
 })
 
 const is_loading = ref(false)
 const { toast } = useToast()
-
 
 async function changeCompany() {
 	is_loading.value = true
@@ -43,6 +43,7 @@ async function changeCompany() {
 				}
 			}
 		)
+		auth.get_user()
 		toast({
 			title: response.data.Result,
 			variant: 'success'
@@ -72,28 +73,17 @@ async function changeCompany() {
 	}
 }
 async function submit() {
-  await changeCompany()
+	await changeCompany()
 }
 </script>
 
 <template>
-<div>
 	<div>
-		<Button
-			variant="outline"
-			size="sm"
-			class="hidden h-8 lg:flex"
-			@click="submit"
-		>
-			<VIcon name="fa-building" v-if="!is_loading" class="size-4" />
-      <VIcon
-						name="fa-circle-notch"
-						v-else
-						animation="spin"
-						speed="slow"
-						class="size-4"
-					/>
-		</Button>
+		<div>
+			<Button variant="outline" size="sm" class="hidden h-8 lg:flex" @click="submit">
+				<VIcon name="fa-building" v-if="!is_loading" class="size-4" />
+				<VIcon name="fa-circle-notch" v-else animation="spin" speed="slow" class="size-4" />
+			</Button>
+		</div>
 	</div>
-</div>
 </template>

@@ -158,9 +158,33 @@ const init_form = async () => {
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
+const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
+function validateForm() {
+	const validations = [
+		{ condition: form.name === '', message: 'Name cannot be blank' },
+		{ condition: form.email === '', message: 'Email cannot be blank' },
+		{ condition: form.company == null, message: 'Company must be selected' }
+	]
+
+	for (let validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
+		}
+	}
+
+	return true
+}
+
 async function submit() {
+	const isValid = validateForm()
+	if (!isValid) {
+		return
+	}
+
+	// process form
 	is_loading.value = true
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
@@ -321,7 +345,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleCompanySelect(company)"
 												>
 													{{ company.label }}
-													<VIcon name="fa-check"
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.company === company.id
@@ -384,7 +409,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleRoleSelect(role)"
 												>
 													{{ role.label }}
-													<VIcon name="fa-check"
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.role === role.id
@@ -399,6 +425,12 @@ function handleRoleSelect(role: SelectList) {
 								</PopoverContent>
 							</Popover>
 						</div>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
+						<Label for="name" class="text-red-600 col-span-3 col-start-2">
+							<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />
+							{{ error_message }}
+						</Label>
 					</div>
 				</div>
 				<DialogFooter class="flex justify-end">

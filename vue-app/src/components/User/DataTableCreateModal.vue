@@ -141,10 +141,32 @@ const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
+function validateForm() {
+	const validations = [
+		{ condition: form.name === '', message: 'Name cannot be blank' },
+		{ condition: form.email === '', message: 'Email cannot be blank' },
+		{ condition: form.company == null, message: 'Company must be selected' },
+		{ condition: form.password != form.confirm_password, message: 'Passwords do not match' },
+		{
+			condition: form.password.length < 9,
+			message: 'Password must consists more than 8 characters'
+		},
+		{ condition: form.password == '', message: 'Password cannot be blank' }
+	]
+
+	for (let validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
+		}
+	}
+
+	return true // Indicate form is valid
+}
+
 async function submit() {
-	error_message.value = null
-	if (form.password != form.confirm_password) {
-		error_message.value = 'Passwords do not match.'
+	const isValid = validateForm()
+	if (!isValid) {
 		return
 	}
 	is_loading.value = true
@@ -307,7 +329,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleCompanySelect(company)"
 												>
 													{{ company.label }}
-													<VIcon name="fa-check"
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.company === company.id
@@ -370,7 +393,8 @@ function handleRoleSelect(role: SelectList) {
 													@select="() => handleRoleSelect(role)"
 												>
 													{{ role.label }}
-													<VIcon name="fa-check"
+													<VIcon
+														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
 															form.role === role.id

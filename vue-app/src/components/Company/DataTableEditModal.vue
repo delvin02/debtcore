@@ -42,26 +42,33 @@ const props = defineProps<DataTableEditModalProps>()
 
 // Form Modal
 interface Company {
-	id?: number
+	id: number
 	name?: string
+	phone?: string
+	email?: string
+	website?: string
 	// country: string;
-	whatsapp_business_account_id: string,
+	whatsapp_business_account_id: string
 	is_active: boolean
 }
 
 const form = reactive<Company>({
 	id: props.row.id,
 	name: props.row.name,
+	phone: '',
+	email: '',
+	website: '',
+
 	//
 	whatsapp_business_account_id: '',
 	is_active: false
 })
 
-const companies = [{ value: 'semix sdn bhd', label: 'Semix Sdn Bhd' }]
 const open = ref(false)
 const value = ref('')
 const is_loading = ref(true)
 const is_dialog_open = ref(false)
+const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
 async function init() {
@@ -69,6 +76,9 @@ async function init() {
 		const response = await axios.get(`http://127.0.0.1:8000/api/company/${props.row.id}/`)
 
 		form.name = response.data.Result.name
+		form.phone = response.data.Result.phone
+		form.email = response.data.Result.email
+		form.website = response.data.Result.website
 		form.whatsapp_business_account_id = response.data.Result.whatsapp_business_account_id
 		form.is_active = response.data.Result.is_active
 		is_loading.value = false
@@ -77,9 +87,28 @@ async function init() {
 	}
 }
 
-async function submit() {
-	is_loading.value = true
+function validateForm() {
+	const validations = [{ condition: form.name === '', message: 'Name cannot be blank' }]
 
+	for (let validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
+		}
+	}
+
+	return true // Indicate form is valid
+}
+
+async function submit() {
+	// checking
+	const isValid = validateForm()
+	if (!isValid) {
+		return
+	}
+
+	// process
+	is_loading.value = true
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.patch(
@@ -133,130 +162,109 @@ function toggleDialog() {
 </script>
 
 <template>
-<div>
 	<div>
-		<Button
-			variant="default"
-			size="sm"
-			class="hidden h-8 ml-2 lg:flex"
-			@click="toggleDialog"
-		>
-			<VIcon name="fa-pen" class="size-4" />
-		</Button>
-	</div>
-	<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
-		<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
-			<DialogHeader>
-				<DialogTitle>Edit Company</DialogTitle>
-				<DialogDescription>
-					Insert the details of the company here. Click edit when you're done.
-				</DialogDescription>
-			</DialogHeader>
-			<!-- :validation-schema="vendorSchema" -->
-			<div class="grid gap-4 py-4">
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="name" class="text-right"> Name </Label>
-					<Input
-						id="name"
-						v-model="form.name"
-						placeholder="Geroge Sdn Bhd"
-						class="col-span-3"
-					/>
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="companyname" class="text-right"> Country </Label>
-					<div class="col-span-3">
-						<Popover v-model:open="open">
-							<PopoverTrigger as-child>
-								<Button
-									variant="outline"
-									role="combobox"
-									:aria-expanded="open"
-									class="w-full justify-between px-3"
-								>
-									{{
-										value
-											? companies.find((company) => company.value === value)
-													?.label
-											: 'Select company'
-									}}
-									<VIcon
-										name="fa-angle-down"
-										class="h-4 w-4 shrink-0 opacity-50"
-									/>
-								</Button>
-							</PopoverTrigger>
-							<PopoverContent class="w-[500px] p-1">
-								<Command>
-									<CommandInput class="h-9" placeholder="Search framework..." />
-									<CommandEmpty>No framework found.</CommandEmpty>
-									<CommandList>
-										<CommandGroup>
-											<CommandItem
-												v-for="company in companies"
-												:key="company.value"
-												:value="company.value"
-												@select="
-													(ev) => {
-														if (typeof ev.detail.value === 'string') {
-															value = ev.detail.value
-														}
-														open = false
-													}
-												"
-											>
-												{{ company.label }}
-												<VIcon name="fa-check"
-													:class="
-														cn(
-															'ml-auto h-4 w-4',
-															value === company.value
-																? 'opacity-100'
-																: 'opacity-0'
-														)
-													"
-												/>
-											</CommandItem>
-										</CommandGroup>
-									</CommandList>
-								</Command>
-							</PopoverContent>
-						</Popover>
+		<div>
+			<Button
+				variant="default"
+				size="sm"
+				class="hidden h-8 ml-2 lg:flex"
+				@click="toggleDialog"
+			>
+				<VIcon name="fa-pen" class="size-4" />
+			</Button>
+		</div>
+		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
+			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
+				<DialogHeader>
+					<DialogTitle>Edit Company</DialogTitle>
+					<DialogDescription>
+						Insert the details of the company here. Click edit when you're done.
+					</DialogDescription>
+				</DialogHeader>
+				<!-- :validation-schema="vendorSchema" -->
+				<div class="grid gap-4 py-4">
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="name" class="text-right required:"> Name </Label>
+						<Input
+							id="name"
+							v-model="form.name"
+							placeholder="Geroge Sdn Bhd"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="phone" class="text-right required:"> Phone </Label>
+						<Input
+							id="phone"
+							v-model="form.phone"
+							placeholder="012-9886348"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="email" class="text-right leading-normal">
+							Email
+						</Label>
+						<Input
+							id="email"
+							v-model="form.email"
+							placeholder="hello@example.com"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="website" class="text-right leading-normal">
+							Website
+						</Label>
+						<Input
+							id="website"
+							v-model="form.website"
+							placeholder="www.kckok.my"
+							class="col-span-3"
+						/>
+					</div>
+
+					<Separator />
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="name" class="text-right leading-normal">
+							Whatsapp Business Account ID
+						</Label>
+						<Input
+							id="name"
+							v-model="form.whatsapp_business_account_id"
+							placeholder="XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX"
+							class="col-span-3"
+						/>
+					</div>
+					<Separator />
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="is_active" class="text-right leading-normal"> Is Active </Label>
+						<Checkbox
+							id="is_active"
+							:checked="form.is_active"
+							@update:checked="form.is_active = !form.is_active"
+						/>
 					</div>
 				</div>
-				<Separator />
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="name" class="text-right leading-normal">
-						Whatsapp Business Account ID
+				<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
+					<Label for="name" class="text-red-600 col-span-3 col-start-2">
+						<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />
+						{{ error_message }}
 					</Label>
-					<Input
-						id="name"
-						v-model="form.whatsapp_business_account_id"
-						placeholder="XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX"
-						class="col-span-3"
-					/>
 				</div>
-				<Separator />
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="is_active" class="text-right leading-normal">
-						Is Active
-					</Label>
-					<Checkbox id="is_active" :checked="form.is_active" @update:checked="form.is_active=!form.is_active"/>
-				</div>
-			</div>
-			<DialogFooter class="flex justify-end">
-				<Button type="submit" @click="submit" :disabled="is_loading">
-					<VIcon
-						name="fa-circle-notch"
-						v-if="is_loading"
-						animation="spin"
-						speed="slow"
-						class="w-fit h-fit mr-2"
-					/>
-					Edit</Button
-				>
-			</DialogFooter>
-		</DialogContent>
-	</Dialog>
-</div>
+				<DialogFooter class="flex justify-end">
+					<Button type="submit" @click="submit" :disabled="is_loading">
+						<VIcon
+							name="fa-circle-notch"
+							v-if="is_loading"
+							animation="spin"
+							speed="slow"
+							class="w-fit h-fit mr-2"
+						/>
+						Edit</Button
+					>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	</div>
 </template>

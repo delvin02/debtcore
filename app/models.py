@@ -22,10 +22,39 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_superuser', True)
         return self._create_user(email, password, name, **extra_fields)
 
+class Country(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    name = models.CharField(max_length=100, unique=True, verbose_name="Country Name")
+    code = models.CharField(max_length=2, unique=True, verbose_name="Country Code")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Countries"
+    
+class Address(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    streetAddress = models.CharField(max_length=255, verbose_name="Street Address")
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="addresses")
+
+    def __str__(self):
+        return f"{self.streetAddress}, {self.city}, {self.state}, {self.country.name}"
+
+    class Meta:
+        verbose_name_plural = "Addresses"
+        
 class Company(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(unique=True, null=True)
+    phone = models.CharField(max_length=15, null=True)
+    website = models.URLField(max_length=255, null=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="companies", null=True)
     
+    business_registration_id = models.CharField(max_length=255, null=True)
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
     whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
         

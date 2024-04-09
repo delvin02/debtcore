@@ -36,7 +36,7 @@ class UserView(APIView):
         serializer = UserSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'Result': 'User created'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,7 +48,7 @@ class UserView(APIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'Result': 'User updated'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
