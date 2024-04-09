@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from "axios";
 import type {AxiosResponse} from 'axios'
+import { useRouter } from 'vue-router';
 
 interface User {
   id: string;
@@ -96,8 +97,12 @@ export const useAuthStore = defineStore('auth', {
               this.is_admin = response.data.is_admin
           })
           .catch((error: any) => {
-              // error toast here
-              console.log('error', error)
+              if (error.response && error.response.status === 401) {
+                this.redirectToLogin();
+              } else {
+                // Show an error toast
+                console.log('error', error);
+              }
           })
       },
       set_token(data: UserAuthenticateResponse) {
@@ -148,6 +153,10 @@ export const useAuthStore = defineStore('auth', {
           console.error(error);
           this.remove_token(); 
         }
-      }
+      },
+      redirectToLogin() {
+        const router = useRouter();
+        router.push({ name: '/login'});
+    },
   }
 });

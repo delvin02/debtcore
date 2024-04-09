@@ -2,20 +2,51 @@
 import tasks from '@/components/Customer/data/tasks.json'
 import DataTable from '@/components/Customer/DataTable.vue'
 import { columns } from '@/components/Customer/columns'
+import type { Task } from '@/components/Customer/data/schema'
+import axios from 'axios'
+import { onMounted, provide, onBeforeUnmount } from 'vue'
+import { useTableStore } from '@/store/table'
+
+const tableStore = useTableStore('customer')
+
+const customersUrl = 'http://127.0.0.1:8000/api/customer'
+const map_function = (task: any): Task => {
+	const serialized_task = {
+		id: task.id,
+		name: task.name,
+		company_name: task.company_name,
+		whatsapp_phone_number: task.whatsapp_phone_number,
+		email: task.email,
+		outstanding_debts: task.outstanding_debts
+	}
+	return serialized_task
+}
+
+onMounted(async () => {
+	await tableStore.fetch(customersUrl, 0, map_function) // Pass the URL when calling the action
+})
+
+provide('tableStore', tableStore)
+
+onBeforeUnmount(() => {
+	tableStore.$reset()
+})
 </script>
 
 <template>
+	<div class="p-8 space-y-8 h-full">
+		<div class="flex items-center justify-between space-y-2">
+			<div>
+				<h2 class="text-2xl font-bold tracking-tight">Customer</h2>
+				<p class="text-muted-foreground">Here&apos;s a list of your existing customers!</p>
+			</div>
+		</div>
 
-
-    <div class="p-8 space-y-8">
-        <div class="flex items-center justify-between space-y-2">
-            <div>
-                <h2 class="text-2xl font-bold tracking-tight">Customers</h2>
-                <p class="text-muted-foreground">
-                    Here&apos;s a list of your existing customers!
-                </p>
-            </div>
-        </div>
-        <DataTable :data="tasks" :columns="columns" />
-    </div>
+		<div v-if="tableStore.is_loading" class="text-center">
+			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
+		</div>
+		<div v-else>
+			<DataTable :data="tableStore.tasks" :columns="columns" />
+		</div>
+	</div>
 </template>

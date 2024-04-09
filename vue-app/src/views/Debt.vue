@@ -11,7 +11,7 @@ const data: Task[] = tasks.map((task: any) => ({
 	status: task.status,
 	invoice: task.invoice,
 	companyName: task.companyName,
-	due_date: new Date(task.due_date), // Convert due_date to Date object
+	due_date: new Date(task.due_date),
 	amount: task.amount
 }))
 </script>

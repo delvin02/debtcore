@@ -32,13 +32,32 @@ class Country(models.Model):
 
     class Meta:
         verbose_name_plural = "Countries"
-    
+
+class State(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    name = models.CharField(max_length=100, unique=True, verbose_name="Country Name")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "states"
+
+class City(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    name = models.CharField(max_length=100, unique=True, verbose_name="Country Name")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "cities"
 class Address(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     streetAddress = models.CharField(max_length=255, verbose_name="Street Address")
-    city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="addresses")
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="city_address")
+    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name="state_address")
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="country_address")
 
     def __str__(self):
         return f"{self.streetAddress}, {self.city}, {self.state}, {self.country.name}"
@@ -102,7 +121,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (3, 'Company Staff'),
     )
     
-    role = models.CharField(max_length=12, choices=ROLE_CHOICES, default='companystaff')
+    role = models.CharField(max_length=12, choices=ROLE_CHOICES, default='3')
     
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
@@ -113,3 +132,73 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
+
+class Customer(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    name = models.CharField(max_length=255, blank=True, null=False)
+    business_registration_id = models.CharField(max_length=255, null=True)
+
+    company = models.ForeignKey(Company, related_name="user_company", on_delete=models.CASCADE)
+
+    whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
+    email = models.EmailField(unique=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="customer_address", null=True)
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_customers",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
+    created_date = models.DateTimeField(default=timezone.now)
+
+    last_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="updated_customers",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )   
+    last_updated_date = models.DateTimeField(blank=True, null=True)
+
+class Debt(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_debt")
+    invoice = models.CharField(max_length=255, null=False)
+    due_date = models.DateField(null=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
+
+    STATUS_CHOICES = (
+        (1, 'Draft'),
+        (2, 'In Progress'),
+        (3, 'Claiming'),
+        (4, 'Verifying Payment'),
+        (5, 'Done'),
+        (6, 'Canceled')
+    )
+
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_debts",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
+    created_date = models.DateTimeField(default=timezone.now)
+
+    last_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="updated_debts",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )   
+    last_updated_date = models.DateTimeField(blank=True, null=True)

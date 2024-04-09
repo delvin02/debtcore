@@ -76,4 +76,4 @@ class UserRoleChoicesAPIView(APIView):
     def get(self, request, *args, **kwargs):
         role_choices = [{"key": key, "value": value} for key, value in User.ROLE_CHOICES]
         serializer = UserRoleChoiceSerializer(role_choices, many=True)
-        return Response({'data': serializer.data}, status=200)
+        return Response({'Result': serializer.data}, status=200)

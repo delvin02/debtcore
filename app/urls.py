@@ -22,6 +22,14 @@ urlpatterns = [
 
     path('api/company', CompanyView.as_view(), name="get_companies"),
     path('api/company/<int:company_id>/', CompanyView.as_view(), name="get_company"),  
-    path('api/company/list', GetCompanySelectList.as_view(), name="company_get_list")
+    path('api/company/list', GetCompanySelectList.as_view(), name="company_get_list"),
+
+    path('api/customer', CustomerView.as_view(), name="get_companies"),
+    path('api/customer/<int:customer_id>/', CustomerView.as_view(), name="get_company"),  
+    path('api/customer/list', GetCustomerSelectList.as_view(), name="get_customer_list"),
+
+    path('api/country/list', GetCountrySelectList.as_view(), name="get_country_list")
+
+
 
 ]

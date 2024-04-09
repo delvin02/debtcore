@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar/Sidebar.vue'
 import Header from './components/Header/Header.vue'
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ComponentMethods } from '@/components/Header/Header.vue'
 import { useAuthStore } from '@/store/user'
@@ -12,8 +12,10 @@ import Toaster from '@/components/ui/toast/Toaster.vue'
 
 import axios from 'axios'
 
+const router = useRouter()
 const route = useRoute()
-const user = useAuthStore()
+
+const auth = useAuthStore()
 const hideSidebar = computed(() => route.meta.hideNavigation)
 
 const mainHeaderRef = ref<ComponentMethods | null>(null)
@@ -41,9 +43,9 @@ onUnmounted(() => {
 provide('height', wrapperHeight)
 
 onBeforeMount(async () => {
-	await user.init()
+	await auth.init()
 
-	const token = user.access_token
+	const token = auth.access_token
 	if (token) {
 		axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
 	} else {

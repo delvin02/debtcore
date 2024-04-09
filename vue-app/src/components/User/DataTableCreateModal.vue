@@ -285,7 +285,7 @@ function handleRoleSelect(role: SelectList) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="companyname" class="text-right"> Company </Label>
+						<Label for="companyname" class="text-right"> Country </Label>
 						<div class="col-span-3">
 							<Popover v-model:open="companies.is_open">
 								<PopoverTrigger as-child>

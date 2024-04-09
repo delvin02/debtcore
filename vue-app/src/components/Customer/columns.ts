@@ -24,7 +24,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Name"}),
-    cell: ({ row }) => h('div', { class: 'w-20 underline' }, row.getValue('name')),
+    cell: ({ row }) => h('div', { class: 'w-fit underline' }, row.getValue('name')),
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {
@@ -34,28 +34,23 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "companyName",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Company"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('companyName')),
-    enableSorting: false,
-    enableHiding: false,
-    filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase() ?? '';
-      const filterValueLower = value?.toString().toLowerCase();
-      return rowValueLower.includes(filterValueLower);    
-    },
-  },
-  {
-    accessorKey: "phoneNumber",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Phone"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('phoneNumber')),
+    accessorKey: "email",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Email"}),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('email')),
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'outstanding',
+    accessorKey: "whatsapp_phone_number",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Whatsapp Phone"}),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('whatsapp_phone_number')),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'outstanding_debts',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Outstanding Debts' }),
-    cell: ({ row }) => h(Badge, { variant: 'destructive' }, row.getValue('outstanding') + " MYR"),
+    cell: ({ row }) => h(Badge, { variant: 'destructive' }, row.getValue('outstanding_debts') + " MYR"),
     enableSorting: true,
     enableHiding: true,
 
