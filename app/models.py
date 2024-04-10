@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.utils import timezone
 from django.conf import settings
+from .validators import *
 import uuid
 
 class CustomUserManager(UserManager):
@@ -32,38 +33,6 @@ class Country(models.Model):
 
     class Meta:
         verbose_name_plural = "Countries"
-
-class State(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField(max_length=100, unique=True, verbose_name="Country Name")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "states"
-
-class City(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField(max_length=100, unique=True, verbose_name="Country Name")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = "cities"
-class Address(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    streetAddress = models.CharField(max_length=255, verbose_name="Street Address")
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="city_address")
-    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name="state_address")
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="country_address")
-
-    def __str__(self):
-        return f"{self.streetAddress}, {self.city}, {self.state}, {self.country.name}"
-
-    class Meta:
-        verbose_name_plural = "Addresses"
         
 class Company(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
@@ -71,7 +40,12 @@ class Company(models.Model):
     email = models.EmailField(unique=True, null=True)
     phone = models.CharField(max_length=15, null=True)
     website = models.URLField(max_length=255, null=True)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="companies", null=True)
+    
+    streetAddress = models.CharField(max_length=255, verbose_name="Street Address", null=True)
+    city = models.CharField(max_length=255, verbose_name="city", null=True)
+    state = models.CharField(max_length=255, verbose_name="state", null=True)
+    postcode = models.CharField(max_length=255, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="country_address")
     
     business_registration_id = models.CharField(max_length=255, null=True)
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
@@ -109,7 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255, blank=True, null=False)
     surname = models.CharField(max_length=100, blank=True, null=True)
 
-    company = models.ForeignKey(Company, related_name="company", on_delete=models.CASCADE, null=True)
+    company = models.ForeignKey(Company, related_name="company_user", on_delete=models.CASCADE, null=True)
     
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -136,14 +110,19 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Customer(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=255, blank=True, null=False)
-    business_registration_id = models.CharField(max_length=255, null=True)
+    business_registration_id = models.CharField(max_length=255, blank=True, null=True)
 
-    company = models.ForeignKey(Company, related_name="user_company", on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, related_name="company_customer", on_delete=models.CASCADE)
 
     whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
     email = models.EmailField(unique=True)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="customer_address", null=True)
-
+    
+    streetAddress = models.CharField(max_length=255, verbose_name="Street Address", null=True)
+    city = models.CharField(max_length=255, verbose_name="city", null=True)
+    state = models.CharField(max_length=255, verbose_name="state", null=True)
+    postcode = models.CharField(max_length=255, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="customer_country")
+    
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="created_customers",
@@ -183,6 +162,9 @@ class Debt(models.Model):
 
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')
 
+    # Document
+    document = models.ImageField(upload_to=debt_document_path, validators=[validate_file_extension])
+    
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="created_debts",

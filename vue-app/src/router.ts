@@ -80,7 +80,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const isAuthenticated:boolean = useAuthStore().isAuthenticated
+  const auth = useAuthStore()
+  const isAuthenticated = auth.isAuthenticated
   const requiresAuth = to.meta.requiresAuth ?? true
 
   if (requiresAuth && !isAuthenticated) {

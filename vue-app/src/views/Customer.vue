@@ -17,6 +17,7 @@ const map_function = (task: any): Task => {
 		company_name: task.company_name,
 		whatsapp_phone_number: task.whatsapp_phone_number,
 		email: task.email,
+		country_name: task.country_name,
 		outstanding_debts: task.outstanding_debts
 	}
 	return serialized_task

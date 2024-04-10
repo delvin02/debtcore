@@ -34,20 +34,24 @@ class CustomerView(APIView):
         serializer = CustomerSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=200)
-        return JsonResponse({"error": "Customer failed to create", "details": serializer.errors}, status=400)
+            return JsonResponse(serializer.data, status=201)  # Consider using 201 for Created
+        else:
+            errors = {"error": "Customer creation failed.", "details": {}}
+            for field, messages in serializer.errors.items():
+                # Assuming messages is a list of error strings
+                errors["details"][field] = " ".join(messages)  # Join messages for simplicity
+            return JsonResponse(errors, status=400)
 
     def patch(self, request, *args, **kwargs):
         customer_id = kwargs.get('customer_id')
-        if customer_id:
-            customer = get_object_or_404(Customer, pk=customer_id)
-            if not customer:
-                return JsonResponse({'error': 'Customer not found'}, status=404)
-            customer.name = request.data.get('name')
-            customer.whatsapp_business_account_id = request.data.get('whatsapp_business_account_id')
-            customer.is_active = request.data.get('is_active')
-            customer.save()
-            return JsonResponse({'Result': 'Customer updated successfully'})
+        customer_to_update = get_object_or_404(Customer, pk=customer_id) 
+        serializer = CustomerEditSerializer(customer_to_update, data=request.data, partial=True, context={'request': request})
+
+        if serializer.is_valid():
+            customer = serializer.save()
+            return Response({'Result': 'Customer updated'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 
@@ -93,8 +97,3 @@ class CustomerUtils:
         except Customer.DoesNotExist:
             return None
         
-'''
-
-GET ASYNC FUNCTIONS
-
-'''

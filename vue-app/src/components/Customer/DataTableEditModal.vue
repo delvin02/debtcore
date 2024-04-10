@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject } from 'vue'
+import { ref, reactive, inject, watch } from 'vue'
 import { cn } from '@/lib/utils'
 import {
 	Command,
@@ -31,8 +31,11 @@ import type { Task } from './data/schema'
 import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
+import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
+import _ from 'lodash'
 
-const tableStore = inject('tableStore', useTableStore('company'))
+
+const tableStore = inject('tableStore', useTableStore('customer'))
 
 interface DataTableEditModalProps {
 	row: Task
@@ -42,45 +45,83 @@ const props = defineProps<DataTableEditModalProps>()
 
 // Form Modal
 interface Company {
-	id: number
 	name?: string
-	phone?: string
-	email?: string
-	website?: string
-	// country: string;
-	whatsapp_business_account_id: string
-	is_active: boolean
+	business_registration_id: string
+	whatsapp_phone_number: string
+	email: string
+	// Address
+
+	streetAddress?: string
+	postcode?: string
+	city?: string 
+	state?: string 
+	country?: number | null
 }
 
 const form = reactive<Company>({
-	id: props.row.id,
-	name: props.row.name,
-	phone: '',
+	name: '',
+	business_registration_id: '',
+	whatsapp_phone_number: '',
 	email: '',
-	website: '',
 
-	//
-	whatsapp_business_account_id: '',
-	is_active: false
+	streetAddress: '',
+	postcode: '',
+	city: '',
+	state: '',
+	country: null
 })
 
-const open = ref(false)
-const value = ref('')
+const countries: GenericSelectListModel = reactive({
+	is_loading: false,
+	is_open: false,
+	data: [{ value: '', label: '' }]
+})
+
+const searchCountryQuery = ref('')
+
+async function fetchCountries(query?: string) {
+	countries.is_loading = true
+	try {
+		const response = await axios.get(
+			`http://127.0.0.1:8000/api/country/list?search=${query || ''}`,
+			{
+				withCredentials: true,
+				headers: {
+					'Cache-Control': 'no-cache',
+					Pragma: 'no-cache',
+					Expires: '0'
+				}
+			}
+		)
+
+		countries.data = response.data.Result
+		console.log(countries.data)
+	} catch (error) {
+		console.error('There was an error fetching the select list:', error)
+	} finally {
+		countries.is_loading = false
+	}
+}
+
 const is_loading = ref(true)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
+watch(
+	searchCountryQuery,
+	_.debounce(async (newQuery) => {
+		if (is_dialog_open.value) {
+			await fetchCountries(newQuery)
+		}
+	}, 500)
+)
+
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/company/${props.row.id}/`)
+		const response = await axios.get(`http://127.0.0.1:8000/api/customer/${props.row.id}/`)
 
-		form.name = response.data.Result.name
-		form.phone = response.data.Result.phone
-		form.email = response.data.Result.email
-		form.website = response.data.Result.website
-		form.whatsapp_business_account_id = response.data.Result.whatsapp_business_account_id
-		form.is_active = response.data.Result.is_active
+		Object.assign(form, response.data.Result);
 		is_loading.value = false
 	} catch (error) {
 		is_loading.value = false
@@ -88,7 +129,12 @@ async function init() {
 }
 
 function validateForm() {
-	const validations = [{ condition: form.name === '', message: 'Name cannot be blank' }]
+	const validations = [
+		{ condition: form.name === '', message: 'Name cannot be blank' },
+		{ condition: form.whatsapp_phone_number === '', message: 'Whatsapp Phone cannot be blank' },
+		{ condition: form.email === '', message: 'Email cannot be blank' },
+		{ condition: form.country == null, message: 'Country cannot be blank' }
+	]
 
 	for (let validation of validations) {
 		if (validation.condition) {
@@ -112,7 +158,7 @@ async function submit() {
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/company/${props.row.id}/`,
+			`http://127.0.0.1:8000/api/customer/${props.row.id}/`,
 			{
 				...form
 			},
@@ -154,10 +200,18 @@ async function submit() {
 	}
 }
 function toggleDialog() {
-	if (!is_dialog_open.value) {
-		init()
-	}
 	is_dialog_open.value = !is_dialog_open.value
+
+	if (is_dialog_open.value) {
+		 init()
+		 fetchCountries(searchCountryQuery.value)
+	}
+}
+
+function handleCountrySelect(country: any) {
+	form.country = country.id
+
+	countries.is_open = false
 }
 </script>
 
@@ -170,21 +224,25 @@ function toggleDialog() {
 				class="hidden h-8 ml-2 lg:flex"
 				@click="toggleDialog"
 			>
+				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-pen" class="size-4" />
 			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Edit Company</DialogTitle>
+					<DialogTitle>Create Custsomer</DialogTitle>
 					<DialogDescription>
-						Insert the details of the company here. Click edit when you're done.
+						Insert the details of the customer here. Click create when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right required:"> Name </Label>
+						<Label for="name" class="text-right"> Company Name 
+							<span class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full">*</span>
+
+						</Label>
 						<Input
 							id="name"
 							v-model="form.name"
@@ -193,16 +251,22 @@ function toggleDialog() {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="phone" class="text-right required:"> Phone </Label>
+						<Label for="whatsapp_phone" class="text-right required:">
+							Whatsapp Phone
+							<span class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full">*</span>
+
+						</Label>
 						<Input
-							id="phone"
-							v-model="form.phone"
+							id="whatsapp_phone"
+							v-model="form.whatsapp_phone_number"
 							placeholder="012-9886348"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal"> Email </Label>
+						<Label for="email" class="text-right leading-normal"> Email 
+							<span class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full">*</span>
+						</Label>
 						<Input
 							id="email"
 							v-model="form.email"
@@ -211,43 +275,121 @@ function toggleDialog() {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="website" class="text-right leading-normal"> Website </Label>
-						<Input
-							id="website"
-							v-model="form.website"
-							placeholder="www.kckok.my"
-							class="col-span-3"
-						/>
-					</div>
-
-					<Separator />
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right leading-normal">
-							Whatsapp Business Account ID
+						<Label for="business_registration_id" class="text-right">
+							Business ID
 						</Label>
 						<Input
-							id="name"
-							v-model="form.whatsapp_business_account_id"
-							placeholder="XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX"
+							id="business_registration_id"
+							v-model="form.business_registration_id"
+							placeholder="820720-X"
 							class="col-span-3"
 						/>
 					</div>
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="is_active" class="text-right leading-normal"> Is Active </Label>
-						<Checkbox
-							id="is_active"
-							:checked="form.is_active"
-							@update:checked="form.is_active = !form.is_active"
+						<Label for="email" class="text-right leading-normal"> Address </Label>
+						<Input
+							id="email"
+							v-model="form.streetAddress"
+							placeholder="Lot 2000, Taman Jalan Indah"
+							class="col-span-3"
 						/>
 					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="state" class="text-right leading-normal"> State </Label>
+						<Input
+							id="state"
+							v-model="form.state"
+							placeholder="Selangor"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="city" class="text-right leading-normal"> City </Label>
+						<Input
+							id="city"
+							v-model="form.city"
+							placeholder="Puchong"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="email" class="text-right leading-normal"> Post Code </Label>
+						<Input
+							id="email"
+							v-model="form.postcode"
+							placeholder="22000"
+							class="col-span-3"
+						/>
+					</div>
+					<Separator />
 				</div>
-				<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
-					<Label for="name" class="text-red-600 col-span-3 col-start-2">
-						<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />
-						{{ error_message }}
-					</Label>
-				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="country" class="text-right leading-normal"> Country </Label>
+						<div class="col-span-3">
+							<Popover v-model:open="countries.is_open">
+								<PopoverTrigger as-child>
+									<Button
+										variant="outline"
+										role="combobox"
+										:aria-expanded="countries.is_open"
+										class="w-full justify-between px-3"
+										:disabled="countries.is_loading"
+									>
+										{{
+											form.country
+												? countries.data.find(
+														(country) => country.id === form.country
+													)?.label
+												: 'Select country'
+										}}
+										<VIcon
+											name="fa-circle-notch"
+											v-if="countries.is_loading"
+											animation="spin"
+											class="w-4 h-4 mr-2"
+										/>
+										<VIcon
+											v-else
+											name="fa-angle-down"
+											class="h-4 w-4 shrink-0 opacity-50"
+										/>
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent class="w-[500px] p-1">
+									<Command>
+										<CommandInput
+											class="h-9"
+											v-model="searchCountryQuery"
+											placeholder="Search country..."
+										/>
+										<CommandEmpty>No country found.</CommandEmpty>
+										<CommandList>
+											<CommandGroup>
+												<CommandItem
+													v-for="country in countries.data"
+													:key="country.id"
+													:value="country.value ?? ''"
+													@select="() => handleCountrySelect(country)"
+												>
+													{{ country.label }}
+													<VIcon
+														name="fa-check"
+														:class="[
+															'ml-auto h-4 w-4',
+															form.country === country.id
+																? 'opacity-100'
+																: 'opacity-0'
+														]"
+													/>
+												</CommandItem>
+											</CommandGroup>
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
+						</div>
+					</div>
 				<DialogFooter class="flex justify-end">
 					<Button type="submit" @click="submit" :disabled="is_loading">
 						<VIcon
@@ -257,7 +399,7 @@ function toggleDialog() {
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-						Edit</Button
+						Create</Button
 					>
 				</DialogFooter>
 			</DialogContent>

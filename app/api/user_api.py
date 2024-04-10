@@ -45,7 +45,6 @@ class UserView(APIView):
         user_id = request.data.get('id')
         user_to_update = get_object_or_404(User, pk=user_id) 
         serializer = UserEditSerializer(user_to_update, data=request.data, partial=True, context={'request': request})
-
         if serializer.is_valid():
             user = serializer.save()
             return Response({'Result': 'User updated'}, status=status.HTTP_201_CREATED)

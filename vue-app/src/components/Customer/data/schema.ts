@@ -7,6 +7,7 @@ export const taskSchema = z.object({
   name: z.string().min(2).max(50),
   whatsapp_phone_number: z.string(),
   email: z.string(),
+  country_name: z.string(),
   outstanding_debts: z.number()
 })
 

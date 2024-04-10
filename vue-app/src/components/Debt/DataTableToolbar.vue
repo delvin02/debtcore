@@ -6,7 +6,7 @@ import type { Task } from './data/schema'
 import { statuses } from './data/data'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
 import DataTableViewOptions from './DataTableViewOptions.vue'
-import DataTableAddVendor from './DataTableAddVendor.vue'
+import DataTableCreateDebt from './DataTableCreateDebt.vue'
 // import Cross2Icon from '~icons/radix-icons/cross-2'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -51,6 +51,6 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
             </Button>
         </div>
         <DataTableViewOptions :table="table" />
-        <DataTableAddVendor :table="table" />
+        <DataTableCreateDebt :table="table" />
     </div>
 </template>

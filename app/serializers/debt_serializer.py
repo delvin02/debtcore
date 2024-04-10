@@ -1,38 +1,33 @@
 from rest_framework import serializers
-from app.models import Customer  
+from app.models import Debt  
 from django.utils import timezone
 from .country_serializer import CountrySerializer
 
-class CustomerSerializer(serializers.ModelSerializer):
-    streetAddress = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    city = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    state = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    postcode = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    
+class DebtSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Customer
-        fields = ['name', 'business_registration_id', 
-                  'whatsapp_phone_number', 
-                  'email', 
-                  'streetAddress', 
-                  'city', 
-                  'state', 
-                  'postcode', 
-                  'country'
+        model = Debt
+        fields = ['customer', 'invoice', 
+                  'due_date', 
+                  'amount',
+                  'status',
+                  'document'
                   ]
       
     def create(self, validated_data):
-      user = self.context['request'].user
+        user = self.context['request'].user
     
-      if not user.company:
-        raise serializers.ValidationError("User must belong to a company to create a customer.")
+        if not user.company:
+            raise serializers.ValidationError("User must belong to a company to create a debt record.")
 
-      validated_data['company'] = user.company
-
-      validated_data['created_by'] = user
-      validated_data['last_updated_by'] = user
-      validated_data['last_updated_date'] = timezone.now()
-      return super().create(validated_data)
+        validated_data['created_by'] = user
+        validated_data['last_updated_by'] = user
+        validated_data['last_updated_date'] = timezone.now()
+        
+        # Assuming the `Debt` model has a `company` field that references the `Company` model
+        # Otherwise, remove this line if the company should not be directly associated with the debt
+        validated_data['company'] = user.company
+        
+        return super().create(validated_data)
     
     def update(self, instance, validated_data):
         user = self.context['request'].user
@@ -46,14 +41,14 @@ class CustomerSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class CustomerEditSerializer(serializers.ModelSerializer):
+class DebtEditSerializer(serializers.ModelSerializer):
     streetAddress = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
     city = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
     state = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
     postcode = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
     
     class Meta:
-        model = Customer
+        model = Debt
         fields = ['id', 'name', 'business_registration_id', 
                   'whatsapp_phone_number', 
                   'email', 
@@ -64,12 +59,12 @@ class CustomerEditSerializer(serializers.ModelSerializer):
                   'country'
                   ]
             
-class CustomerTableSerializer(serializers.ModelSerializer):
+class DebtTableSerializer(serializers.ModelSerializer):
     outstanding_debts = serializers.SerializerMethodField()
     country_name = serializers.SerializerMethodField()
     
     class Meta:
-        model = Customer
+        model = Debt
         fields = ['id', 'name', 'whatsapp_phone_number', 'email', 'country_name', 'outstanding_debts']
 
     def get_outstanding_debts(self, obj):
@@ -82,25 +77,27 @@ class CustomerTableSerializer(serializers.ModelSerializer):
     def get_country_name(self, obj):
         return obj.country.name
       
-class CustomerChangeSerializer(serializers.Serializer):
+class DebtChangeSerializer(serializers.Serializer):
 
     class Meta:
-        model = Customer
+        model = Debt
         fields = ['id', 'name', 'phone', 'email', 'website']
         
 
-class CustomerSelectListSerializer(serializers.ModelSerializer):
-    label = serializers.SerializerMethodField(source='name')
-    value = serializers.SerializerMethodField(source='name')
+class DebtSelectListSerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField(source='key')
+    value = serializers.SerializerMethodField(source='value')
+    label = serializers.SerializerMethodField(source='value')
+
     class Meta:
-        model = Customer
+        model = Debt
         fields = ['id', 'value', 'label']
 
-    def get_value(self, obj):
-        return obj.name.lower() if isinstance(obj.name, str) else obj.name
+    def get_id (self, obj):
+        return obj['key']
     
+    def get_value(self, obj):
+        return obj['value'].lower()
+
     def get_label(self, obj):
-        if isinstance(obj.name, str):
-            return ' '.join(word.capitalize() for word in obj.name.split())
-        else:
-            return obj.name
+        return ' '.join(word.capitalize() for word in obj['value'].split())

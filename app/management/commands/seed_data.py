@@ -18,9 +18,13 @@ class Command(BaseCommand):
                 name=country.name,
                 defaults={'code': country.alpha_2} 
             )
-            self.stdout.write(f'Created company: {country.name}')
+        self.stdout.write('Created countries')
         
     def seed_companies(self):
+        country, _ = Country.objects.get_or_create(
+            name="Malaysia", 
+            defaults={'code': 'MY'} 
+        )
         if not Company.objects.filter(name='DebtCore').exists():
             company = Company.objects.create(
                 name='DebtCore',
@@ -29,8 +33,10 @@ class Command(BaseCommand):
                 created_by=None,
                 last_updated_by=None,
                 is_active=True,
-                is_onboarded=True
+                is_onboarded=True,
+                country=country
             )
+            
             self.stdout.write(f'Created company: {company.name}')
 
     def seed_users(self):
@@ -42,4 +48,4 @@ class Command(BaseCommand):
                 company=Company.objects.get(name='DebtCore'),
                 role=1
             )
-            self.stdout.write(f'Created admin user: {admin_user.email}')
+            self.stdout.write(f'Created admin user: {admin_user.name}')

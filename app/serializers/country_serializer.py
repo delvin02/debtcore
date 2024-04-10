@@ -2,7 +2,11 @@ from rest_framework import serializers
 from app.models import Country  
 from django.utils import timezone
 
-
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = ['name']
+        
 class CountrySelectListSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField(source='name')
     value = serializers.SerializerMethodField(source='name')

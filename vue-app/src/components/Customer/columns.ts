@@ -39,13 +39,29 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('email')),
     enableSorting: false,
     enableHiding: false,
+    meta: {
+      title: "Email"
+    },
   },
   {
     accessorKey: "whatsapp_phone_number",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Whatsapp Phone"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('whatsapp_phone_number')),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('whatsapp_phone_number')),
     enableSorting: false,
     enableHiding: false,
+    meta: {
+      title: "Whatsapp Phone"
+    },
+  },
+  {
+    accessorKey: "country_name",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Country"}),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('country_name')),
+    enableSorting: false,
+    enableHiding: false,
+    meta: {
+      title: "Company Name"
+    },
   },
   {
     accessorKey: 'outstanding_debts',
@@ -53,7 +69,9 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => h(Badge, { variant: 'destructive' }, row.getValue('outstanding_debts') + " MYR"),
     enableSorting: true,
     enableHiding: true,
-
+    meta: {
+      title: "Outstanding Debt"
+    },
   },
   {
     id: 'actions',

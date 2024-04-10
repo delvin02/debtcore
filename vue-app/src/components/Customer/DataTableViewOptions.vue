@@ -28,6 +28,8 @@ const columns = computed(() =>
         .filter((column) => typeof column.accessorFn !== 'undefined' && 
         column.getCanHide())
 )
+
+console.log(columns)
 </script>
 
 <template>
@@ -49,7 +51,7 @@ const columns = computed(() =>
                 :checked="column.getIsVisible()"
                 @update:checked="(value) => column.toggleVisibility(!!value)"
             >
-                {{ column.id }}
+                {{ column.columnDef.meta?.title || column.id }}
             </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
     </DropdownMenu>
