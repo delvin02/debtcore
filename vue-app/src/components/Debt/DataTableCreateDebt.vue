@@ -170,7 +170,7 @@ async function submit() {
 			},
 			{
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'multipart/form-data',
 					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
 				}
 			}
