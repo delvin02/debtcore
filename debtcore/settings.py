@@ -209,6 +209,14 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app', 'static'),
 ]
 
+# Base directory where uploaded files will be stored
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# URL prefix for accessing the uploaded files
+MEDIA_URL = '/media/'
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

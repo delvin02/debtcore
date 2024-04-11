@@ -40,6 +40,7 @@ import type { Task } from '@/components/Company/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
+import moment from 'moment';
 
 const tableStore = inject('tableStore', useTableStore('debt'))
 // Form Modal
@@ -47,7 +48,7 @@ interface Debt {
 	invoice?: string
 	customer?: number | null
 	amount?: number | string | null
-	due_date: Date | null
+	due_date: Date | string | null
 	status: number | null
 	document: File | null
 }
@@ -121,6 +122,7 @@ async function fetchStatuses() {
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
+const due_date = ref()
 const { toast } = useToast()
 
 watch(
@@ -223,13 +225,10 @@ function handleFileChange(event: Event) {
 	}
 }
 
-function updateDueDate(payload: DatePickerModel | undefined) {
-	console.log(payload)
-	if (payload?.date) {
-		form.due_date = payload.date
-	} else {
-		form.due_date = null
-	}
+function updateDueDate(payload: any) {
+		
+	const date = new Date(payload); 
+	form.due_date = format(date, 'yyyy-MM-dd');
 }
 </script>
 
@@ -375,7 +374,7 @@ function updateDueDate(payload: DatePickerModel | undefined) {
 										<VIcon name="fa-calendar" class="mr-2 h-4 w-4" />
 										<span>{{
 											form.due_date
-												? format(form.due_date, 'yyyy-MM-dd')
+												? form.due_date
 												: 'Pick a date'
 										}}</span>
 									</Button>
@@ -383,7 +382,12 @@ function updateDueDate(payload: DatePickerModel | undefined) {
 								<PopoverContent class="w-auto p-0">
 									<Calendar
 										v-model="form.due_date"
-										@update:model-value="console.log('test')"
+										@update:model-value="updateDueDate($event)"
+										:masks="{ L: 'YYYY-MM-DD' }"
+										:modelConfig="{
+											type: 'string', 
+											mask: 'YYYY/MM/DD'
+										}"
 									></Calendar>
 								</PopoverContent>
 							</Popover>

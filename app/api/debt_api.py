@@ -79,6 +79,28 @@ class DebtChangeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
+
+class DebtDocumentView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        debt_id = kwargs.get('debt_id')
+        debt = get_object_or_404(Debt, pk=debt_id)
+        serializer = DebtDocumentViewSerializer(debt, context={'request': request})
+        return Response({'Result':serializer.data})
+    
+    def patch(self, request, *args, **kwargs):
+        debt_id = kwargs.get('debt_id')
+        debt = get_object_or_404(Debt, pk=debt_id)
+        # Ensure you're using 'partial=True' for partial updates
+        serializer = DebtDocumentViewSerializer(debt, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'Result': serializer.data})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
 class DebtStatusChoicesAPIView(APIView):
     def get(self, request, *args, **kwargs):
         status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES]

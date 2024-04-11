@@ -16,6 +16,7 @@
   "dependencies": {
     "@kalimahapps/vue-icons": "^1.4.0",
     "@tanstack/vue-table": "^8.14.0",
+    "@tato30/vue-pdf": "^1.9.6",
     "@vee-validate/zod": "^4.12.6",
     "@vue-hero-icons/outline": "^1.7.2",
     "@vueuse/core": "^10.9.0",
@@ -26,6 +27,8 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.359.0",
     "lucide-vue-next": "^0.359.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
     "oh-vue-icons": "^1.0.0-rc3",
     "pinia": "^2.1.7",
     "radix-vue": "^1.5.3",

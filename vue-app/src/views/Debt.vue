@@ -15,7 +15,7 @@ const map_function = (task: any): Task => {
 		id: task.id,
 		status: task.status,
 		invoice: task.invoice,
-		companyName: task.companyName,
+		customer_name: task.customer_name,
 		due_date: new Date(task.due_date),
 		amount: task.amount
 	}

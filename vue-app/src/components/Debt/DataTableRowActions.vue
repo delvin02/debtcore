@@ -21,6 +21,7 @@ import {
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import DataTableEditModal from './DataTableEditModal.vue'
+import DataTableCheckAttachment from './DataTableCheckAttachment.vue'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
@@ -33,5 +34,6 @@ const task = computed(() => taskSchema.parse(props.row.original))
 <template>
 	<div class="flex gap-1">
 		<DataTableEditModal :row="task" />
+		<DataTableCheckAttachment :row="task" />
 	</div>
 </template>

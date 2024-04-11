@@ -41,9 +41,9 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "companyName",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Company"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('companyName')),
+    accessorKey: "customer_name",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Customer"}),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('customer_name')),
     enableSorting: true,
     enableHiding: true,
     enableColumnFilter: true,
@@ -53,7 +53,7 @@ export const columns: ColumnDef<Task>[] = [
       return rowValueLower.includes(filterValueLower);    
     },
     meta: {
-      title: "Company"
+      title: "Customer"
     },
   },
   {
@@ -100,7 +100,7 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: "status",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Status"}),
     cell: ({ row }) => {
-      const status = statuses.find(status => status.value === row.original.status)
+      const status = statuses.find(status => status.value === row.original.status.toString())
       
       if (!status)
         return null
@@ -123,6 +123,31 @@ export const columns: ColumnDef<Task>[] = [
     },
     meta: {
       title: "Status"
+    },
+  },
+  {
+    accessorKey: "Attachment",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Attachment"}),
+    cell: ({ row }) => {
+
+      const status = row.getValue('document') !== null ? {
+        icon: 'bi-check', 
+        iconClass: 'bg-green-600',
+      } : {
+        icon: 'bi-x', 
+        iconClass: 'bg-red-600', 
+      };
+    
+      // Return only the VIcon component
+      return h(VIcon, {  
+        name: status.icon, 
+        class: `${status.iconClass} mr-1 h-8 w-8 rounded-full fill-white`, // Use the dynamic class for icon color
+      });
+    },
+    enableSorting: true,
+    enableHiding: true,
+    meta: {
+      title: "Attachment"
     },
   },
   {

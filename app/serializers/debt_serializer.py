@@ -4,6 +4,7 @@ from django.utils import timezone
 from .country_serializer import CountrySerializer
 
 class DebtSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Debt
         fields = ['customer', 'invoice', 
@@ -23,9 +24,7 @@ class DebtSerializer(serializers.ModelSerializer):
         validated_data['last_updated_by'] = user
         validated_data['last_updated_date'] = timezone.now()
         
-        # Assuming the `Debt` model has a `company` field that references the `Company` model
-        # Otherwise, remove this line if the company should not be directly associated with the debt
-        validated_data['company'] = user.company
+        validated_data['company_id'] = user.company
         
         return super().create(validated_data)
     
@@ -42,40 +41,24 @@ class DebtSerializer(serializers.ModelSerializer):
         return instance
 
 class DebtEditSerializer(serializers.ModelSerializer):
-    streetAddress = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    city = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    state = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    postcode = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    
     class Meta:
         model = Debt
-        fields = ['id', 'name', 'business_registration_id', 
-                  'whatsapp_phone_number', 
-                  'email', 
-                  'streetAddress', 
-                  'city', 
-                  'state', 
-                  'postcode', 
-                  'country'
+        fields = ['id', 'customer', 'invoice', 
+                  'due_date', 
+                  'amount',
+                  'status',
+                  'document'
                   ]
             
 class DebtTableSerializer(serializers.ModelSerializer):
-    outstanding_debts = serializers.SerializerMethodField()
-    country_name = serializers.SerializerMethodField()
-    
+    customer_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Debt
-        fields = ['id', 'name', 'whatsapp_phone_number', 'email', 'country_name', 'outstanding_debts']
-
-    def get_outstanding_debts(self, obj):
-        return 0.01
-        # try:
-        #     debt = Debt.objects.filter(customer=obj, is_paid=False).aggregate(sum=models.Sum('amount'))['sum']
-        #     return debt or 0
-        # except (Debt.DoesNotExist, TypeError):
-        #     return 0
-    def get_country_name(self, obj):
-        return obj.country.name
+        fields = ['id', 'invoice', 'customer_name', 'due_date', 'amount', 'status', 'document'
+]
+    def get_customer_name(self, obj):
+        return obj.customer.name
       
 class DebtChangeSerializer(serializers.Serializer):
 
@@ -83,6 +66,22 @@ class DebtChangeSerializer(serializers.Serializer):
         model = Debt
         fields = ['id', 'name', 'phone', 'email', 'website']
         
+
+
+class DebtDocumentViewSerializer(serializers.ModelSerializer):
+    document_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Debt
+        fields = ['id', 'document', 'document_url']
+        read_only_fields = ['document_url'] 
+
+    def get_document_url(self, obj):
+        request = self.context.get('request')
+        if obj.document and hasattr(obj.document, 'url'):
+            return request.build_absolute_uri(obj.document.url)
+        else:
+            return None
 
 class DebtSelectListSerializer(serializers.Serializer):
     id = serializers.SerializerMethodField(source='key')

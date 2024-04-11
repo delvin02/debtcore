@@ -2,6 +2,9 @@ from django.urls import path
 from app.views import *
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .api.api import *
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 app_name = 'webapp'
 urlpatterns = [
@@ -32,9 +35,10 @@ urlpatterns = [
     
     path('api/debt', DebtView.as_view(), name="get_companies"),
     path('api/debt/<int:debt_id>/', DebtView.as_view(), name="get_company"),  
+    path('api/debt/<int:debt_id>/document/', DebtDocumentView.as_view(), name='debt-document'),
     path('api/status/list', DebtStatusChoicesAPIView.as_view(), name="get_customer_list"),
 
 
 
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -4,7 +4,7 @@ import os
 def debt_document_path(instance, filename):
     user_id = instance.created_by.id
     customer_id = instance.customer.id  
-    invoice_id = instance.id
+    invoice_id = instance.invoice
   
     safe_filename = os.path.basename(filename)
     

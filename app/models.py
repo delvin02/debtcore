@@ -145,6 +145,7 @@ class Customer(models.Model):
 
 class Debt(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
+    company_id = models.ForeignKey(Company, related_name="company_debt", on_delete=models.CASCADE)
 
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_debt")
     invoice = models.CharField(max_length=255, null=False)
@@ -163,7 +164,7 @@ class Debt(models.Model):
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')
 
     # Document
-    document = models.ImageField(upload_to=debt_document_path, validators=[validate_file_extension])
+    document = models.FileField(upload_to=debt_document_path, validators=[validate_file_extension])
     
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
