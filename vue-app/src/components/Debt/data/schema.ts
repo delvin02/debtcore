@@ -8,7 +8,8 @@ export const taskSchema = z.object({
   invoice: z.string(),
   customer_name: z.string().min(2).max(50),
   due_date: z.date(),
-  amount: z.string()
+  amount: z.string(),
+  document_url: z.string().url()
 })
 
 export type Task = z.infer<typeof taskSchema>

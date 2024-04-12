@@ -52,14 +52,21 @@ class DebtEditSerializer(serializers.ModelSerializer):
             
 class DebtTableSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
+    document_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Debt
-        fields = ['id', 'invoice', 'customer_name', 'due_date', 'amount', 'status', 'document'
+        fields = ['id', 'invoice', 'customer_name', 'due_date', 'amount', 'status', 'document_url'
 ]
     def get_customer_name(self, obj):
         return obj.customer.name
       
+    def get_document_url(self, obj):
+        request = self.context.get('request')
+        if obj.document and hasattr(obj.document, 'url'):
+            return request.build_absolute_uri(obj.document.url)
+        else:
+            return None
 class DebtChangeSerializer(serializers.Serializer):
 
     class Meta:

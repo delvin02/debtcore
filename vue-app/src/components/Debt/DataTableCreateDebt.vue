@@ -40,7 +40,6 @@ import type { Task } from '@/components/Company/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
-import moment from 'moment';
 
 const tableStore = inject('tableStore', useTableStore('debt'))
 // Form Modal
@@ -159,7 +158,6 @@ async function submit() {
 		return
 	}
 	is_loading.value = true
-	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.post(
 			'http://127.0.0.1:8000/api/debt',
@@ -168,8 +166,7 @@ async function submit() {
 			},
 			{
 				headers: {
-					'Content-Type': 'multipart/form-data',
-					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
+					'Content-Type': 'multipart/form-data'
 				}
 			}
 		)
@@ -226,9 +223,8 @@ function handleFileChange(event: Event) {
 }
 
 function updateDueDate(payload: any) {
-		
-	const date = new Date(payload); 
-	form.due_date = format(date, 'yyyy-MM-dd');
+	const date = new Date(payload)
+	form.due_date = format(date, 'yyyy-MM-dd')
 }
 </script>
 
@@ -373,9 +369,7 @@ function updateDueDate(payload: any) {
 									>
 										<VIcon name="fa-calendar" class="mr-2 h-4 w-4" />
 										<span>{{
-											form.due_date
-												? form.due_date
-												: 'Pick a date'
+											form.due_date ? form.due_date : 'Pick a date'
 										}}</span>
 									</Button>
 								</PopoverTrigger>
@@ -385,7 +379,7 @@ function updateDueDate(payload: any) {
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{
-											type: 'string', 
+											type: 'string',
 											mask: 'YYYY/MM/DD'
 										}"
 									></Calendar>

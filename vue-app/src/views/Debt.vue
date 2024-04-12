@@ -17,7 +17,8 @@ const map_function = (task: any): Task => {
 		invoice: task.invoice,
 		customer_name: task.customer_name,
 		due_date: new Date(task.due_date),
-		amount: task.amount
+		amount: task.amount,
+		document_url: task.document_url
 	}
 	return serialized_task
 }
@@ -50,6 +51,3 @@ onBeforeUnmount(() => {
 		</div>
 	</div>
 </template>
-
-
-

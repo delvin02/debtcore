@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject, watch, computed } from 'vue'
+import { ref, reactive, inject, watch, computed, onMounted } from 'vue'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
@@ -21,6 +21,7 @@ import type { Task } from '@/components/Debt/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
 const tableStore = inject('tableStore', useTableStore('debt'))
@@ -33,29 +34,27 @@ const props = defineProps<DataTableEditModalProps>()
 
 // Form Modal
 interface Debt {
-  document: string | File | null
-  document_url: string | null
+	document: string | File | null
+	document_url: string | null
 }
 
 const form = reactive<Debt>({
-  document: null,
-	document_url: null
+	document: null,
+	document_url: props.row.document_url
 })
-
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
+const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const error_message = ref<String | null>(null)
-const due_date = ref()
 const { toast } = useToast()
-const { pdf } = usePDF("http://127.0.0.1:8000/media/upload/debt/f78da295-5440-4af6-b957-1f309b4f4598/1/INV-9982/Inv_260423.pdf")
-
+const { pdf } = usePDF(props.row.document_url)
 
 async function init() {
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/document/`)
 
-    form.document_url = response.data.Result.document_url
+		form.document_url = response.data.Result.document_url
 
 		is_loading.value = false
 	} catch (error) {
@@ -63,6 +62,20 @@ async function init() {
 	}
 }
 
+const onPdfLoaded = () => {
+	const canvas = document.querySelector<HTMLCanvasElement>('#vp > div > div > div > canvas')
+	if (canvas) {
+		const canvasHeight = canvas.offsetHeight
+		const maxHeight = 680
+		const minHeight = window.innerHeight - 250 // Adjust as needed based on your UI requirements
+
+		if (canvasHeight && canvasHeight < maxHeight && canvasHeight > minHeight) {
+			dialogContentHeight.value = canvasHeight
+		} else {
+			dialogContentHeight.value = Math.min(Math.max(canvasHeight, minHeight), maxHeight)
+		}
+	}
+}
 // function validateForm() {
 // 	const validations = [
 // 		{ condition: form.invoice == null, message: 'Invoice cannot be blank' },
@@ -95,7 +108,7 @@ async function submit() {
 			},
 			{
 				headers: {
-					'Content-Type': 'multipart/form-data',
+					'Content-Type': 'multipart/form-data'
 				}
 			}
 		)
@@ -128,7 +141,7 @@ async function submit() {
 }
 
 function replace() {
-  form.document_url = null
+	form.document_url = null
 }
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
@@ -138,7 +151,6 @@ function toggleDialog() {
 }
 
 function handleFileChange(event: Event) {
-  
 	const input = event.target as HTMLInputElement
 	if (input.files?.length) {
 		form.document = input.files[0] // Assign the first selected file
@@ -149,23 +161,21 @@ function handleFileChange(event: Event) {
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="hidden h-8 lg:flex"
-				@click="toggleDialog"
-			>
+			<Button variant="default" size="sm" class="hidden h-8 lg:flex" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-regular-file-image" class="size-4" />
 			</Button>
 		</div>
-		<Dialog  class="my-2" :open="is_dialog_open" @update:open="is_dialog_open = $event">
-			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
+		<Dialog class="my-2" :open="is_dialog_open" @update:open="is_dialog_open = $event">
+			<DialogContent :isSideBar="false" class="sm:max-w-fit">
 				<DialogHeader>
 					<DialogTitle>Attachment Overview</DialogTitle>
 				</DialogHeader>
-        <div>
-          <div v-if="!form.document_url" class="grid grid-cols-4 items-center gap-x-4 text-primary">
+				<div>
+					<div
+						v-if="!form.document_url"
+						class="grid grid-cols-4 items-center gap-x-4 text-primary"
+					>
 						<Label for="mobile" class="text-right"> Attachment </Label>
 						<div class="col-span-3">
 							<Input
@@ -181,29 +191,49 @@ function handleFileChange(event: Event) {
 							PNG, JPG or JPEG, PDF
 						</p>
 					</div>
-          <div v-else-if="form.document_url.endsWith('.pdf')">
-            <VuePDF :pdf="pdf" />
-          </div>
-          <img v-else :src="form.document_url" alt="Document preview" class="object-contain"/>          <!-- Non-image document link -->
-        </div>
+					<div v-else-if="form.document_url.endsWith('.pdf')">
+						<ScrollArea
+							class="border border-primary"
+							style="width: 640px; overflow-y: auto; overflow-x: hidden"
+							:style="{ height: dialogContentHeight + 'px' }"
+						>
+							<VuePDF :pdf="pdf" fit-parent @loaded="onPdfLoaded" />
+						</ScrollArea>
+					</div>
+					<img
+						v-else
+						:src="form.document_url"
+						alt="Document preview"
+						class="object-contain"
+					/>
+				</div>
 				<DialogFooter class="flex justify-end">
-					<Button class="bg-red-600 text-white" @click="replace" v-if="form.document_url" :disabled="is_loading">
-
+					<Button
+						class="bg-red-600 text-white"
+						@click="replace"
+						v-if="form.document_url"
+						:disabled="is_loading"
+					>
 						Replace</Button
 					>
-          <Button @click="submit" v-else :disabled="is_loading">
-            <VIcon
+					<Button @click="submit" v-else :disabled="is_loading">
+						<VIcon
 							name="fa-circle-notch"
 							v-if="is_loading"
 							animation="spin"
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-            Update
-          </Button
-          >
+						Update
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	</div>
 </template>
+
+<style scoped>
+canvas {
+	@apply object-contain;
+}
+</style>

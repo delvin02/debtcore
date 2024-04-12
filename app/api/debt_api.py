@@ -27,7 +27,7 @@ class DebtView(APIView):
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
             debts = Debt.objects.all()
-            serializer = DebtTableSerializer(debts, many=True)
+            serializer = DebtTableSerializer(debts, many=True, context={'request': request})
             return JsonResponse({'Result': serializer.data}, status=200)
     
     def post(self, request, *args, **kwargs):
