@@ -54,18 +54,16 @@ interface Debt {
 	invoice?: number
 	customer?: number | null
 	amount?: number | string | null
-	due_date: Date | null
+	due_date: Date | string | null
 	status: number | null
-	document: File | null
 }
 
 const form = reactive<Debt>({
 	invoice: props.row.id,
 	customer: null,
-	amount: null,
-	due_date: props.row.due_date,
-	status: null,
-	document: null
+	amount: props.row.amount,
+	due_date: new Date(props.row.due_date),
+	status: props.row.status,
 })
 
 const customers: GenericSelectListModel = reactive({
@@ -129,7 +127,6 @@ async function fetchStatuses() {
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
-const due_date = ref()
 const { toast } = useToast()
 
 watch(
@@ -180,8 +177,8 @@ async function submit() {
 	is_loading.value = true
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
-		const response = await axios.post(
-			'http://127.0.0.1:8000/api/debt',
+		const response = await axios.patch(
+			`http://127.0.0.1:8000/api/debt/${props.row.id}/`,
 			{
 				...form
 			},
@@ -195,7 +192,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'Company created successfully.',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -238,15 +235,10 @@ function handleStatusSelect(status: any) {
 	statuses.is_open = false
 }
 
-function handleFileChange(event: Event) {
-	const input = event.target as HTMLInputElement
-	if (input.files?.length) {
-		form.document = input.files[0] // Assign the first selected file
-	}
-}
 
 function updateDueDate(payload: any) {
-	form.due_date = new Date(payload)
+	const date = new Date(payload)
+	form.due_date = format(date, 'yyyy-MM-dd')
 }
 </script>
 
@@ -266,9 +258,9 @@ function updateDueDate(payload: any) {
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Create Debt</DialogTitle>
+					<DialogTitle>Edit Debt</DialogTitle>
 					<DialogDescription>
-						Insert the details of the debt here. Click create when you're done.
+						Insert the details of the debt here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
@@ -390,11 +382,9 @@ function updateDueDate(payload: any) {
 											)
 										"
 									>
-										<VIcon name="fa-calendar" class="mr-2 h-4 w-4" />
+										<VIcon name="bi-calendar-fill" class="mr-2 size-4" />
 										<span>{{
-											form.due_date
-												? format(form.due_date, 'yyyy-MM-dd')
-												: 'Pick a date'
+											form.due_date ?? 'Select a date'
 										}}</span>
 									</Button>
 								</PopoverTrigger>
@@ -403,6 +393,10 @@ function updateDueDate(payload: any) {
 										v-model="form.due_date"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
+										:modelConfig="{
+											type: 'string',
+											mask: 'YYYY/MM/DD'
+										}"
 									></Calendar>
 								</PopoverContent>
 							</Popover>
@@ -485,7 +479,7 @@ function updateDueDate(payload: any) {
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-						Create</Button
+						Edit</Button
 					>
 				</DialogFooter>
 			</DialogContent>

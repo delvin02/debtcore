@@ -231,9 +231,9 @@ function handleCountrySelect(country: any) {
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Create Custsomer</DialogTitle>
+					<DialogTitle>Edit Custsomer</DialogTitle>
 					<DialogDescription>
-						Insert the details of the customer here. Click create when you're done.
+						Insert the details of the customer here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
@@ -399,7 +399,7 @@ function handleCountrySelect(country: any) {
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-						Create</Button
+						Edit</Button
 					>
 				</DialogFooter>
 			</DialogContent>

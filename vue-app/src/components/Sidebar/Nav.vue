@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { RouterLink } from 'vue-router'
-import { useSideBarStore } from '@/store/index'
+import { useSideBarStore } from '@/store/sidebar'
 import { onMounted } from 'vue'
 
 export interface LinkProp {
@@ -93,3 +93,4 @@ const store = useSideBarStore()
 		</nav>
 	</div>
 </template>
+@/store/sidebar

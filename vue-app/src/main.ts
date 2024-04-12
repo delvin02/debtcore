@@ -47,7 +47,7 @@ import {
   FaArrowLeft,
   FaChevronRight,
   FaChevronLeft,
-  FaRegularFileImage 
+  FaRegularFileImage
 } from 'oh-vue-icons/icons/fa/index.js'
 
 import { 
@@ -60,7 +60,8 @@ import {
   BiArrowUpSquareFill,
   BiFileEarmarkFont,
   BiX,
-  BiCheck, 
+  BiCheck,
+  BiCalendarFill 
  } from "oh-vue-icons/icons/bi/index.js";
 
  import { MdCancel, MdPendingactions  } from "oh-vue-icons/icons/md/index.js";
@@ -118,7 +119,8 @@ addIcons(
   FaCheck,
   BiX,
   BiCheck,
-  FaRegularFileImage 
+  FaRegularFileImage,
+  BiCalendarFill  
 )
 
 // const Fa = Object.values({ ...FaIcons });

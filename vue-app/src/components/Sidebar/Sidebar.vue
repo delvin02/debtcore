@@ -5,7 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
-import { useSideBarStore } from '@/store/index'
+import { useSideBarStore } from '@/store/sidebar'
 import { useAuthStore } from '@/store/user'
 
 interface MailProps {
@@ -133,3 +133,4 @@ const links2: LinkProp[] = [
 	</ResizablePanel>
 	<ResizableHandle id="resize-handle-1" with-handle />
 </template>
+@/store/sidebar

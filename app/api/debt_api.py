@@ -48,8 +48,8 @@ class DebtView(APIView):
         serializer = DebtEditSerializer(debt_to_update, data=request.data, partial=True, context={'request': request})
 
         if serializer.is_valid():
-            debt = serializer.save()
-            return Response({'Result': 'Debt updated'}, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response({'Result': 'Debt updated.'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -96,13 +96,13 @@ class DebtDocumentView(APIView):
         serializer = DebtDocumentViewSerializer(debt, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response({'Result': serializer.data})
+            return Response({'Result': 'Attachment updated'})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class DebtStatusChoicesAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES]
+        status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES[:2]]
         serializer = DebtSelectListSerializer(status_choices, many=True)
         return Response({'Result': serializer.data}, status=200)

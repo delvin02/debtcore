@@ -115,7 +115,7 @@ class Customer(models.Model):
     company = models.ForeignKey(Company, related_name="company_customer", on_delete=models.CASCADE)
 
     whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     
     streetAddress = models.CharField(max_length=255, verbose_name="Street Address", null=True)
     city = models.CharField(max_length=255, verbose_name="city", null=True)

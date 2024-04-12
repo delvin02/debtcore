@@ -147,7 +147,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'Company created successfully.',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {

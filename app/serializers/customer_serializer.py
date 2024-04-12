@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from app.models import Customer  
+from app.models import Customer, Debt
 from django.utils import timezone
 from .country_serializer import CountrySerializer
+from django.db import models
 
 class CustomerSerializer(serializers.ModelSerializer):
     streetAddress = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
@@ -73,12 +74,14 @@ class CustomerTableSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'whatsapp_phone_number', 'email', 'country_name', 'outstanding_debts']
 
     def get_outstanding_debts(self, obj):
-        return 0.01
-        # try:
-        #     debt = Debt.objects.filter(customer=obj, is_paid=False).aggregate(sum=models.Sum('amount'))['sum']
-        #     return debt or 0
-        # except (Debt.DoesNotExist, TypeError):
-        #     return 0
+        try:
+            debt = Debt.objects.filter(customer=obj).exclude(status=6).aggregate(sum=models.Sum('amount'))['sum']
+            if debt is not None:
+                return round(float(debt), 2)
+            else:
+                return 0.0
+        except (Debt.DoesNotExist, TypeError):
+            return 0
     def get_country_name(self, obj):
         return obj.country.name
       

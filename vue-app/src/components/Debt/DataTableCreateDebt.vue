@@ -111,6 +111,8 @@ async function fetchStatuses() {
 		})
 
 		statuses.data = response.data.Result
+		// defaulted to 'draft'
+		form.status = 1
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -173,7 +175,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'Company created successfully.',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -218,9 +220,34 @@ function handleStatusSelect(status: any) {
 function handleFileChange(event: Event) {
 	const input = event.target as HTMLInputElement
 	if (input.files?.length) {
-		form.document = input.files[0] // Assign the first selected file
+		const file = input.files[0] 
+
+		// only PDF
+		if (file.type !== "application/pdf") {
+
+			toast({
+				title: "Please select a PDF file",
+				variant: 'destructive'
+			})
+			input.value = '';
+      return; 
+    }
+
+    // Check if the file size is under 5MB
+    if (file.size > 5 * 1024 * 1024) {
+
+			toast({
+				title: "The file size must be under 5MB",
+				variant: 'destructive'
+			})
+			input.value = '';
+      return; 
+    }
+		form.document= file
+
 	}
 }
+
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
@@ -348,13 +375,19 @@ function updateDueDate(payload: any) {
 						</Label>
 						<Input
 							id="amount"
-							v-model="form.amount"
-							placeholder="800.00"
+							:modelValue="form.amount === null ? '' : form.amount"
+							@update:modelValue="newValue => form.amount = newValue === '' ? null : newValue"							placeholder="800.00"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right"> Due Date </Label>
+						<Label for="email" class="text-right"> Due Date 
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
+						
 						<div class="col-span-3">
 							<Popover>
 								<PopoverTrigger as-child>
@@ -461,7 +494,7 @@ function updateDueDate(payload: any) {
 						<p
 							class="col-start-2 col-span-3 mt-1 text-sm text-gray-500 dark:text-gray-300"
 						>
-							SVG, PNG, JPG or JPEG, PDF (MAX. 1080x720px).
+							Accepted Type: <b>PDF</b> (MAX. 1080x720px)
 						</p>
 					</div>
 				</div>

@@ -66,8 +66,12 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'outstanding_debts',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Outstanding Debts' }),
-    cell: ({ row }) => h(Badge, { variant: 'destructive' }, row.getValue('outstanding_debts') + " MYR"),
-    enableSorting: true,
+    cell: ({ row }) => {
+      const outstandingDebts = row.getValue('outstanding_debts');
+      // Determine the badge variant based on the outstanding debts value
+      const badgeVariant = outstandingDebts === 0 || outstandingDebts === 0.0 ? 'success' : 'destructive';
+      return h(Badge, { variant: badgeVariant }, `${outstandingDebts} MYR`);
+    },    enableSorting: true,
     enableHiding: true,
     meta: {
       title: "Outstanding Debt"

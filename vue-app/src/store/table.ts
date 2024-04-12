@@ -47,6 +47,13 @@ export const useTableStore = (key: string) => {
       set_page_size(size: number) {
         this.page_size = size;
       },
+      $reset() {
+        this.tasks = [];
+        this.is_loading = false;
+        this.page_index = 0;
+        this.page_size = 10;
+        this.fetch_url = '';
+      }
     },
   })();
 };

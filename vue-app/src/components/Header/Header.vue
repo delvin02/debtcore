@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import CompanySwitcher from './CompanySwticher.vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { useSideBarStore } from '@/store/index'
+import { useSideBarStore } from '@/store/sidebar'
 import { useAuthStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 
@@ -148,3 +148,4 @@ const logout = () => {
         <div v-else class="p-8 text-center text-muted-foreground">No message selected</div> -->
 	</div>
 </template>
+@/store/sidebar

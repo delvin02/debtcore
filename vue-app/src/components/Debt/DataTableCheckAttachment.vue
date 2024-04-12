@@ -43,12 +43,26 @@ const form = reactive<Debt>({
 	document_url: props.row.document_url
 })
 
+
+
+
+function onError(reason: any) {
+  toast({
+    title: `PDF loading error: ${reason}`,
+    variant: 'destructive'
+  })
+}
+// default page
+const page = ref(1)
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
-const { pdf } = usePDF(props.row.document_url)
+const { pdf, pages, info } = usePDF(props.row.document_url, {
+  onError
+})
+
 
 async function init() {
 	try {
@@ -66,39 +80,22 @@ const onPdfLoaded = () => {
 	const canvas = document.querySelector<HTMLCanvasElement>('#vp > div > div > div > canvas')
 	if (canvas) {
 		const canvasHeight = canvas.offsetHeight
-		const maxHeight = 680
-		const minHeight = window.innerHeight - 250 // Adjust as needed based on your UI requirements
+		const maxHeight = window.innerHeight - 250
+		const minHeight = 680
 
-		if (canvasHeight && canvasHeight < maxHeight && canvasHeight > minHeight) {
+		if (maxHeight > canvasHeight && canvasHeight < minHeight) {
 			dialogContentHeight.value = canvasHeight
-		} else {
+		} else if (maxHeight > canvasHeight){
+      dialogContentHeight.value = maxHeight
+    }else {
 			dialogContentHeight.value = Math.min(Math.max(canvasHeight, minHeight), maxHeight)
 		}
 	}
 }
-// function validateForm() {
-// 	const validations = [
-// 		{ condition: form.invoice == null, message: 'Invoice cannot be blank' },
-// 		{ condition: form.due_date?.toString == null, message: 'Due Date cannot be blank' },
-// 		{ condition: form.status == null, message: 'Status cannot be blank' },
-// 		{ condition: form.customer == null, message: 'Customer cannot be blank' }
-// 	]
 
-// 	for (let validation of validations) {
-// 		if (validation.condition) {
-// 			error_message.value = validation.message
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
 
 async function submit() {
-	// checking
-	// const isValid = validateForm()
-	// if (!isValid) {
-	// 	return
-	// }
+
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
@@ -115,7 +112,7 @@ async function submit() {
 		toggleDialog()
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: 'Attachment updated.',
+			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
@@ -153,7 +150,31 @@ function toggleDialog() {
 function handleFileChange(event: Event) {
 	const input = event.target as HTMLInputElement
 	if (input.files?.length) {
-		form.document = input.files[0] // Assign the first selected file
+		const file = input.files[0] 
+
+		// only PDF
+		if (file.type !== "application/pdf") {
+
+			toast({
+				title: "Please select a PDF file",
+				variant: 'destructive'
+			})
+			input.value = '';
+      return; 
+    }
+
+    // Check if the file size is under 5MB
+    if (file.size > 5 * 1024 * 1024) {
+
+			toast({
+				title: "The file size must be under 5MB",
+				variant: 'destructive'
+			})
+			input.value = '';
+      return; 
+    }
+		form.document= file
+
 	}
 }
 </script>
@@ -192,13 +213,32 @@ function handleFileChange(event: Event) {
 						</p>
 					</div>
 					<div v-else-if="form.document_url.endsWith('.pdf')">
+            <div class="flex justify-center my-auto items-center place-items-center mb-2">
+              <Button variant="secondary" @click="page = page > 1 ? page - 1 : page">
+                <VIcon name="fa-chevron-left" class="size-fit" />
+              </Button>
+              <span class="mx-2">{{ page }} / {{ pages }}</span>
+              <Button variant="secondary" @click="page = page < pages ? page + 1 : page">
+                <VIcon name="fa-chevron-right" class="size-fit" />
+              </Button>
+            </div>
 						<ScrollArea
 							class="border border-primary"
-							style="width: 640px; overflow-y: auto; overflow-x: hidden"
+							style="width: 720px; overflow-y: auto; overflow-x: hidden"
 							:style="{ height: dialogContentHeight + 'px' }"
 						>
-							<VuePDF :pdf="pdf" fit-parent @loaded="onPdfLoaded" />
-						</ScrollArea>
+							<VuePDF :pdf="pdf" :page="page" fit-parent @loaded="onPdfLoaded" annonation-layer>
+                <div class="flex justify-center my-auto items-center place-items-center">
+                  <VIcon
+                    name="fa-circle-notch"
+                    animation="spin"
+                    speed="slow"
+                    class="size-8 mr-2 my-auto"
+                  />
+                </div>
+              </VuePDF>
+						
+            </ScrollArea>
 					</div>
 					<img
 						v-else
@@ -232,8 +272,3 @@ function handleFileChange(event: Event) {
 	</div>
 </template>
 
-<style scoped>
-canvas {
-	@apply object-contain;
-}
-</style>

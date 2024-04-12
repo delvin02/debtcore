@@ -24,3 +24,4 @@ class GetCountrySelectList(APIView):
 
         serializer = CountrySelectListSerializer(countries, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
+    

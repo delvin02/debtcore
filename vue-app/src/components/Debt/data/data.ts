@@ -23,6 +23,7 @@ export const labels = [
   },
 ]
 
+
 export const statuses = [
   {
     value: '1',
@@ -31,13 +32,13 @@ export const statuses = [
   },
   {
     value: '2',
-    label: 'Claiming',
-    icon: 'fa-circle'
+    label: 'In Progress',
+    icon: 'bi-stopwatch'
   },
   {
     value: '3',
-    label: 'In Progress',
-    icon: 'bi-stopwatch',
+    label: 'Claiming',
+    icon: 'fa-circle'
   },
   {
     value: '4',

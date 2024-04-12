@@ -97,6 +97,29 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
+    accessorKey: "document_url",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Attachment"}),
+    cell: ({ row }) => {
+      const status = row.getValue('document_url') != null ? {
+        icon: 'bi-check', 
+        iconClass: 'bg-green-600',
+      } : {
+        icon: 'bi-x', 
+        iconClass: 'bg-red-600', 
+      };
+    
+      return h(VIcon, {  
+        name: status.icon, 
+        class: `${status.iconClass} mr-1 h-8 w-8 rounded-full fill-white`, // Use the dynamic class for icon color
+      });
+    },
+    enableSorting: true,
+    enableHiding: true,
+    meta: {
+      title: "Attachment"
+    },
+  },
+  {
     accessorKey: "status",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Status"}),
     cell: ({ row }) => {
@@ -123,31 +146,6 @@ export const columns: ColumnDef<Task>[] = [
     },
     meta: {
       title: "Status"
-    },
-  },
-  {
-    accessorKey: "Attachment",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Attachment"}),
-    cell: ({ row }) => {
-
-      const status = row.getValue('document') !== null ? {
-        icon: 'bi-check', 
-        iconClass: 'bg-green-600',
-      } : {
-        icon: 'bi-x', 
-        iconClass: 'bg-red-600', 
-      };
-    
-      // Return only the VIcon component
-      return h(VIcon, {  
-        name: status.icon, 
-        class: `${status.iconClass} mr-1 h-8 w-8 rounded-full fill-white`, // Use the dynamic class for icon color
-      });
-    },
-    enableSorting: true,
-    enableHiding: true,
-    meta: {
-      title: "Attachment"
     },
   },
   {

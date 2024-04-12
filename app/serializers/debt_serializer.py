@@ -47,7 +47,6 @@ class DebtEditSerializer(serializers.ModelSerializer):
                   'due_date', 
                   'amount',
                   'status',
-                  'document'
                   ]
             
 class DebtTableSerializer(serializers.ModelSerializer):

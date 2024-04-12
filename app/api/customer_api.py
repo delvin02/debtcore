@@ -34,7 +34,8 @@ class CustomerView(APIView):
         serializer = CustomerSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)  # Consider using 201 for Created
+            return JsonResponse({'Result': f"{serializer.data.get('name')} created successfully"}, status=201)
+
         else:
             errors = {"error": "Customer creation failed.", "details": {}}
             for field, messages in serializer.errors.items():
