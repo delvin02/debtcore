@@ -4,3 +4,4 @@ from .company_serializer import *
 from .customer_serializer import *
 from .country_serializer import *
 from .debt_serializer import *
+from .debt_backlog_serializer import *

@@ -36,29 +36,34 @@ import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
 import { useTableStore } from '@/store/table'
-import type { Task } from '@/components/Company/data/schema'
+import type { Task } from '@/components/Debt/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 
 const tableStore = inject('tableStore', useTableStore('debt'))
+
+interface DataTableEditModalProps {
+	row: Task
+}
+
+const props = defineProps<DataTableEditModalProps>()
+
 // Form Modal
 interface Debt {
-	invoice?: string
+	invoice?: number
 	customer?: number | null
 	amount?: number | string | null
 	due_date: Date | string | null
 	status: number | null
-	document: File | null
 }
 
 const form = reactive<Debt>({
-	invoice: '',
+	invoice: props.row.id,
 	customer: null,
-	amount: null,
-	due_date: null,
-	status: null,
-	document: null
+	amount: props.row.amount,
+	due_date: new Date(props.row.due_date),
+	status: props.row.status,
 })
 
 const customers: GenericSelectListModel = reactive({
@@ -91,6 +96,7 @@ async function fetchCountries(query?: string) {
 		)
 
 		customers.data = response.data.Result
+
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -111,8 +117,6 @@ async function fetchStatuses() {
 		})
 
 		statuses.data = response.data.Result
-		// defaulted to 'draft'
-		form.status = 1
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -123,7 +127,6 @@ async function fetchStatuses() {
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
-const due_date = ref()
 const { toast } = useToast()
 
 watch(
@@ -135,9 +138,22 @@ watch(
 	}, 500)
 )
 
+async function init() {
+	try {
+		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/`)
+
+		Object.assign(form, response.data.Result);
+
+
+		is_loading.value = false
+	} catch (error) {
+		is_loading.value = false
+	}
+}
+
 function validateForm() {
 	const validations = [
-		{ condition: form.invoice === '', message: 'Invoice cannot be blank' },
+		{ condition: form.invoice == null, message: 'Invoice cannot be blank' },
 		{ condition: form.due_date?.toString == null, message: 'Due Date cannot be blank' },
 		{ condition: form.status == null, message: 'Status cannot be blank' },
 		{ condition: form.customer == null, message: 'Customer cannot be blank' }
@@ -149,8 +165,7 @@ function validateForm() {
 			return false
 		}
 	}
-
-	return true // Indicate form is valid
+	return true
 }
 
 async function submit() {
@@ -160,15 +175,17 @@ async function submit() {
 		return
 	}
 	is_loading.value = true
+	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
-		const response = await axios.post(
-			'http://127.0.0.1:8000/api/debt',
+		const response = await axios.patch(
+			`http://127.0.0.1:8000/api/debt/${props.row.id}/`,
 			{
 				...form
 			},
 			{
 				headers: {
-					'Content-Type': 'multipart/form-data'
+					'Content-Type': 'multipart/form-data',
+					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
 				}
 			}
 		)
@@ -202,6 +219,7 @@ async function submit() {
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	if (is_dialog_open.value) {
+		init()
 		fetchCountries(searchCustomerQuery.value)
 		fetchStatuses()
 	}
@@ -217,33 +235,6 @@ function handleStatusSelect(status: any) {
 	statuses.is_open = false
 }
 
-function handleFileChange(event: Event) {
-	const input = event.target as HTMLInputElement
-	if (input.files?.length) {
-		const file = input.files[0]
-
-		// only PDF
-		if (file.type !== 'application/pdf') {
-			toast({
-				title: 'Please select a PDF file',
-				variant: 'destructive'
-			})
-			input.value = ''
-			return
-		}
-
-		// Check if the file size is under 5MB
-		if (file.size > 5 * 1024 * 1024) {
-			toast({
-				title: 'The file size must be under 5MB',
-				variant: 'destructive'
-			})
-			input.value = ''
-			return
-		}
-		form.document = file
-	}
-}
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
@@ -261,15 +252,15 @@ function updateDueDate(payload: any) {
 				@click="toggleDialog"
 			>
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
-				<VIcon name="fa-plus" class="size-4" />
+				<VIcon name="fa-pen" class="size-4" />
 			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Create Debt</DialogTitle>
+					<DialogTitle>Edit Debt</DialogTitle>
 					<DialogDescription>
-						Insert the details of the debt here. Click create when you're done.
+						Insert the details of the debt here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
@@ -372,22 +363,13 @@ function updateDueDate(payload: any) {
 						<Input
 							id="amount"
 							:modelValue="form.amount === null ? '' : form.amount"
-							@update:modelValue="
-								(newValue) => (form.amount = newValue === '' ? null : newValue)
-							"
+							@update:modelValue="newValue => form.amount = newValue === '' ? null : newValue"
 							placeholder="800.00"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right">
-							Due Date
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
-
+						<Label for="email" class="text-right"> Due Date </Label>
 						<div class="col-span-3">
 							<Popover>
 								<PopoverTrigger as-child>
@@ -400,12 +382,9 @@ function updateDueDate(payload: any) {
 											)
 										"
 									>
-										<VIcon
-											name="fa-regular-calendar-alt"
-											class="mr-2 h-4 w-4"
-										/>
+										<VIcon name="bi-calendar-fill" class="mr-2 size-4" />
 										<span>{{
-											form.due_date ? form.due_date : 'Pick a date'
+											form.due_date ?? 'Select a date'
 										}}</span>
 									</Button>
 								</PopoverTrigger>
@@ -424,13 +403,7 @@ function updateDueDate(payload: any) {
 						</div>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="mobile" class="text-right">
-							Status
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
+						<Label for="mobile" class="text-right"> Status </Label>
 						<div class="col-span-3">
 							<Popover v-model:open="statuses.is_open">
 								<PopoverTrigger as-child>
@@ -489,29 +462,6 @@ function updateDueDate(payload: any) {
 							</Popover>
 						</div>
 					</div>
-					<Separator />
-					<div class="grid grid-cols-4 items-center gap-x-4 text-primary">
-						<Label for="mobile" class="text-right">
-							Attachment
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
-						<div class="col-span-3">
-							<Input
-								id="name"
-								type="file"
-								@change="handleFileChange"
-								class="col-span-3"
-							/>
-						</div>
-						<p
-							class="col-start-2 col-span-3 mt-1 text-sm text-gray-500 dark:text-gray-300"
-						>
-							Accepted Type: <b>PDF</b> (MAX. 5MB)
-						</p>
-					</div>
 				</div>
 				<Separator />
 				<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
@@ -529,7 +479,7 @@ function updateDueDate(payload: any) {
 							speed="slow"
 							class="w-fit h-fit mr-2"
 						/>
-						Create</Button
+						Edit</Button
 					>
 				</DialogFooter>
 			</DialogContent>

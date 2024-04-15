@@ -5,7 +5,6 @@ import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
 import DataTableCheckAttachment from './DataTableCheckAttachment.vue'
 import DataTableEditModal from './DataTableEditModal.vue'
-import DataTableBacklog from './DataTableBacklog.vue'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
@@ -19,6 +18,5 @@ const task = computed(() => taskSchema.parse(props.row.original))
 	<div class="flex gap-1">
 		<DataTableEditModal :row="task" />
 		<DataTableCheckAttachment :row="task" />
-		<DataTableBacklog :row="task" />
 	</div>
 </template>

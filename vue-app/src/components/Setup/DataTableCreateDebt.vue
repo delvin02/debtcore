@@ -220,30 +220,34 @@ function handleStatusSelect(status: any) {
 function handleFileChange(event: Event) {
 	const input = event.target as HTMLInputElement
 	if (input.files?.length) {
-		const file = input.files[0]
+		const file = input.files[0] 
 
 		// only PDF
-		if (file.type !== 'application/pdf') {
-			toast({
-				title: 'Please select a PDF file',
-				variant: 'destructive'
-			})
-			input.value = ''
-			return
-		}
+		if (file.type !== "application/pdf") {
 
-		// Check if the file size is under 5MB
-		if (file.size > 5 * 1024 * 1024) {
 			toast({
-				title: 'The file size must be under 5MB',
+				title: "Please select a PDF file",
 				variant: 'destructive'
 			})
-			input.value = ''
-			return
-		}
-		form.document = file
+			input.value = '';
+      return; 
+    }
+
+    // Check if the file size is under 5MB
+    if (file.size > 5 * 1024 * 1024) {
+
+			toast({
+				title: "The file size must be under 5MB",
+				variant: 'destructive'
+			})
+			input.value = '';
+      return; 
+    }
+		form.document= file
+
 	}
 }
+
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
@@ -372,22 +376,18 @@ function updateDueDate(payload: any) {
 						<Input
 							id="amount"
 							:modelValue="form.amount === null ? '' : form.amount"
-							@update:modelValue="
-								(newValue) => (form.amount = newValue === '' ? null : newValue)
-							"
-							placeholder="800.00"
+							@update:modelValue="newValue => form.amount = newValue === '' ? null : newValue"							placeholder="800.00"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right">
-							Due Date
+						<Label for="email" class="text-right"> Due Date 
 							<span
 								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
 								>*</span
 							>
 						</Label>
-
+						
 						<div class="col-span-3">
 							<Popover>
 								<PopoverTrigger as-child>
@@ -400,10 +400,7 @@ function updateDueDate(payload: any) {
 											)
 										"
 									>
-										<VIcon
-											name="fa-regular-calendar-alt"
-											class="mr-2 h-4 w-4"
-										/>
+										<VIcon name="fa-calendar" class="mr-2 h-4 w-4" />
 										<span>{{
 											form.due_date ? form.due_date : 'Pick a date'
 										}}</span>
@@ -424,13 +421,7 @@ function updateDueDate(payload: any) {
 						</div>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="mobile" class="text-right">
-							Status
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
+						<Label for="mobile" class="text-right"> Status </Label>
 						<div class="col-span-3">
 							<Popover v-model:open="statuses.is_open">
 								<PopoverTrigger as-child>
@@ -491,13 +482,7 @@ function updateDueDate(payload: any) {
 					</div>
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-x-4 text-primary">
-						<Label for="mobile" class="text-right">
-							Attachment
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
+						<Label for="mobile" class="text-right"> Attachment </Label>
 						<div class="col-span-3">
 							<Input
 								id="name"
@@ -509,7 +494,7 @@ function updateDueDate(payload: any) {
 						<p
 							class="col-start-2 col-span-3 mt-1 text-sm text-gray-500 dark:text-gray-300"
 						>
-							Accepted Type: <b>PDF</b> (MAX. 5MB)
+							Accepted Type: <b>PDF</b> (MAX. 1080x720px)
 						</p>
 					</div>
 				</div>

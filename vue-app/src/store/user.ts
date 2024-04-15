@@ -41,7 +41,8 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
       isAuthenticated: (state: AuthState) => !!state.user, 
-      getUser: (state: AuthState) => state.user
+      getUser: (state: AuthState) => state.user,
+      getUsername: (state: AuthState) => state.user?.name
   },
   actions: {
       async init() {

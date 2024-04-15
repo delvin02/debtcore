@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import {
-	Archive,
-	ArchiveX,
-	Clock,
-	Forward,
-	MoreVertical,
-	Reply,
-	ReplyAll,
-	Trash2
-} from 'lucide-vue-next'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { ref, defineExpose, inject, onMounted } from 'vue'
 // import addDays from 'date-fns/addDays'
 // import addHours from 'date-fns/addHours'
@@ -79,6 +71,25 @@ const logout = () => {
 				</div>
 			</div>
 			<div class="ml-auto flex items-center gap-2"></div>
+			<router-link to="/setup" v-slot="{ isActive }">
+				<a
+					:class="
+						cn(
+							buttonVariants({
+								variant: isActive ? 'default' : 'ghost',
+								size: 'icon'
+							}),
+							'h-9 w-9 flex items-center justify-center',
+							true
+								? 'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white'
+								: ''
+						)
+					"
+				>
+					<VIcon name="fa-cogs" class="size-4" />
+					<span class="sr-only"></span>
+				</a>
+			</router-link>
 			<Separator orientation="vertical" class="mx-2 h-6" />
 			<DropdownMenu>
 				<DropdownMenuTrigger as-child>

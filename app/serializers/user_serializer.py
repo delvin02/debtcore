@@ -20,8 +20,6 @@ class UserSerializer(serializers.ModelSerializer):
         if 'company' not in validated_data:
             raise serializers.ValidationError({'company': 'Company is required.'})
         
-
-        request = self.context.get('request')
         user = User.objects._create_user(
             name=validated_data.get('name', ''),
             email=validated_data.get('email'),

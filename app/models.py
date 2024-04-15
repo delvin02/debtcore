@@ -50,7 +50,8 @@ class Company(models.Model):
     business_registration_id = models.CharField(max_length=255, null=True)
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
     whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
-        
+    
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="created_companies",
@@ -145,7 +146,7 @@ class Customer(models.Model):
 
 class Debt(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    company_id = models.ForeignKey(Company, related_name="company_debt", on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, related_name="company_debt", on_delete=models.CASCADE)
 
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_debt")
     invoice = models.CharField(max_length=255, null=False)
@@ -185,3 +186,36 @@ class Debt(models.Model):
         default=None
     )   
     last_updated_date = models.DateTimeField(blank=True, null=True)
+
+class DebtBacklog(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    debt = models.ForeignKey(Debt, related_name="debt_backlog", on_delete=models.CASCADE)
+    message = models.TextField(null=False)
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_debt_backlog",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
+    created_date = models.DateTimeField(default=timezone.now)
+    is_system_generated = models.BooleanField(default=False)
+    
+
+
+class WhatsappMessageTemplate(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    name = models.CharField(max_length=255)
+    language = models.CharField(max_length=10)
+    status = models.CharField(max_length=50)
+    category = models.CharField(max_length=100)
+    template_id = models.CharField(max_length=255)
+    components = models.JSONField()
+
+    company = models.ForeignKey(Company, related_name="company_whatsapp_template", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+

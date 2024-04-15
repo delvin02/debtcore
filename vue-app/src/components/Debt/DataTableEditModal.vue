@@ -63,7 +63,7 @@ const form = reactive<Debt>({
 	customer: null,
 	amount: props.row.amount,
 	due_date: new Date(props.row.due_date),
-	status: props.row.status,
+	status: props.row.status
 })
 
 const customers: GenericSelectListModel = reactive({
@@ -96,7 +96,6 @@ async function fetchCountries(query?: string) {
 		)
 
 		customers.data = response.data.Result
-
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -141,12 +140,10 @@ watch(
 async function init() {
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/`)
-
-		Object.assign(form, response.data.Result);
-
-
-		is_loading.value = false
+		Object.assign(form, response.data.Result)
 	} catch (error) {
+		console.log(error)
+	} finally {
 		is_loading.value = false
 	}
 }
@@ -234,7 +231,6 @@ function handleStatusSelect(status: any) {
 	form.status = status.id
 	statuses.is_open = false
 }
-
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
@@ -363,7 +359,9 @@ function updateDueDate(payload: any) {
 						<Input
 							id="amount"
 							:modelValue="form.amount === null ? '' : form.amount"
-							@update:modelValue="newValue => form.amount = newValue === '' ? null : newValue"
+							@update:modelValue="
+								(newValue) => (form.amount = newValue === '' ? null : newValue)
+							"
 							placeholder="800.00"
 							class="col-span-3"
 						/>
@@ -383,9 +381,7 @@ function updateDueDate(payload: any) {
 										"
 									>
 										<VIcon name="bi-calendar-fill" class="mr-2 size-4" />
-										<span>{{
-											form.due_date ?? 'Select a date'
-										}}</span>
+										<span>{{ form.due_date ?? 'Select a date' }}</span>
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
