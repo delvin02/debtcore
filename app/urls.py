@@ -9,6 +9,7 @@ from django.conf.urls.static import static
 app_name = 'webapp'
 urlpatterns = [
     path('', HomeView.as_view(), name='homepage'),
+    path('x/api/whatsapp', WhatsappWebhook.as_view(), name="whatsapp" ),
     path('api/me/', me, name="me"),
     path('api/login', LoginView.as_view(), name="token_obtain"),
     path('api/refresh', TokenRefreshView.as_view(), name="token_refresh"),
@@ -26,6 +27,7 @@ urlpatterns = [
     path('api/company', CompanyView.as_view(), name="get_companies"),
     path('api/company/<int:company_id>/', CompanyView.as_view(), name="get_company"),  
     path('api/company/list', GetCompanySelectList.as_view(), name="company_get_list"),
+    path('api/company/setup/', CompanySetupView.as_view(), name="get_companies"),
 
     path('api/customer', CustomerView.as_view(), name="get_companies"),
     path('api/customer/<int:customer_id>/', CustomerView.as_view(), name="get_company"),  

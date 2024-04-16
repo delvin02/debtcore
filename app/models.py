@@ -49,7 +49,7 @@ class Company(models.Model):
     
     business_registration_id = models.CharField(max_length=255, null=True)
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
-    whatsapp_phone_number = models.CharField(max_length=20, blank=True, null=True)  
+    whatsapp_phone_number_id = models.CharField(max_length=20, blank=True, null=True)  
     
 
     created_by = models.ForeignKey(
@@ -72,8 +72,10 @@ class Company(models.Model):
     )    
     last_updated_date = models.DateTimeField(blank=True, null=True)
     
+    notes = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
     is_onboarded = models.BooleanField(default=False)
+    date_live = models.DateField(null=True, blank=True)
     
     def __str__(self):
        return self.name
@@ -219,3 +221,22 @@ class WhatsappMessageTemplate(models.Model):
     def __str__(self):
         return self.name
 
+# class MessageTemplate(models.Model):
+#     id = models.AutoField(primary_key=True, unique=True)
+#     name = models.CharField(max_length=512)
+    
+#     CATEGORY_CHOICES = (
+#         (1, 'UTILITY'),
+#         (2, 'AUTHENTICATION'),
+#         (3, 'MARKETING'),
+#         (4, 'Verifying Payment')
+#     )
+
+#     category = models.CharField(max_length=12, choices=CATEGORY_CHOICES, default='1')
+
+
+    
+#     company = models.ForeignKey(Company, related_name="company_whatsapp_template", on_delete=models.CASCADE)
+
+#     def __str__(self):
+#         return self.name

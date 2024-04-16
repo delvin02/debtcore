@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import TemplateView
 from django.utils import timezone
 from django.shortcuts import render
 import json
+import hmac
+import hashlib
 from app.models import *
 from django.contrib.auth import login, logout
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -30,6 +32,7 @@ class HomeView(TemplateView):
 class MathGameView(TemplateView):
     template_name = "webapp/math-game.html"
 
+
 @api_view(['GET'])
 def me(request):    
     if request.user.is_authenticated:
@@ -46,7 +49,53 @@ def me(request):
         # Return an appropriate response if the user is not authenticated
         return JsonResponse({"error": "User is not authenticated"}, status=401)
     
+class WhatsappWebhook(APIView):
+    permission_classes = []  
+    authentication_classes = ()
     
+    def get(self, request):
+        """
+        WhatsApp will send a GET request to your webhook URL with the following query parameters:
+        - hub.mode
+        - hub.challenge
+        - hub.verify_token
+
+        You need to verify 'hub.verify_token' and respond with 'hub.challenge' if the tokens match.
+        """
+        hub_mode = request.GET.get('hub.mode')
+        token = request.GET.get('hub.verify_token')
+        challenge = request.GET.get('hub.challenge')
+
+        # You should replace 'YOUR_VERIFY_TOKEN' with the verify token
+        # you set up in your WhatsApp API application settings.
+        if hub_mode == 'subscribe' and token == 'e7be42f9-6173-48b6-8054-58f36003dc88':
+            return HttpResponse(challenge, content_type="text/plain")
+        return HttpResponse('Failed validation', status=403)
+
+    def post(self, request):
+        received_signature = request.headers.get('X-Hub-Signature-256', '').replace('sha256=', '')
+        app_secret = '8fdb5ab982c637f71d8f49983a4e5a19'  # Your app's secret key
+        
+        # Compute the HMAC SHA256 signature
+        hmac_gen = hmac.new(
+            key=app_secret.encode(),
+            msg=request.body,  # Ensure that the request body is raw
+            digestmod=hashlib.sha256
+        )
+        calculated_signature = hmac_gen.hexdigest()
+
+        # Securely compare the computed signature with the received signature
+        if not hmac.compare_digest(calculated_signature, received_signature):
+            return HttpResponse('Invalid signature', status=403)
+
+        # Handle the validated incoming data
+        # Parse the request body as JSON, process data, etc.
+        data = request.body  # You would parse and use the message data appropriately
+
+        # Implement your logic here
+
+        return JsonResponse({'status': 'received'}, status=200)
+            
 class SignUpView(APIView):
     permission_classes = []  
     authentication_classes = ()

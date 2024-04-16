@@ -26,7 +26,17 @@ class CompanyChangeSerializer(serializers.Serializer):
     class Meta:
         model = Company
         fields = ['id', 'name', 'phone', 'email', 'website']
-        
+
+class CompanySetupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['id', 'name', 'country', 
+                  'whatsapp_business_account_id', 
+                  'whatsapp_phone_number_id', 
+                  'notes',
+                  'is_active',
+                  'is_onboarded',
+                  'date_live']
 
 class CompanySelectListSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField(source='name')

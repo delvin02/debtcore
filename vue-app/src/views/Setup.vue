@@ -5,6 +5,7 @@ import { columns } from '@/components/Debt/columns'
 import type { Task } from '@/components/Debt/data/schema'
 import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount } from 'vue'
+import Import from '@/components/Setup/Import.vue'
 import { useTableStore } from '@/store/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 const tableStore = useTableStore('debt')
@@ -35,14 +36,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="p-8 space-y-8 h-full">
+	<div class="p-8 space-y-4 h-full">
 		<div class="flex items-center justify-between space-y-2">
 			<div>
-				<h2 class="text-2xl font-bold tracking-tight">Settings</h2>
+				<h2 class="text-2xl font-bold tracking-tight">Setup</h2>
 			</div>
 		</div>
+		<hr/>
 
-		<Tabs default-value="account" class="w-full">
+
+		<Import />
+		<!-- <DataTable :data="tableStore.tasks" :columns="columns" /> -->
+
+		<!-- <Tabs default-value="account" class="w-full">
 			<TabsList>
 				<TabsTrigger value="template"> Templates </TabsTrigger>
 				<TabsTrigger value="profile"> Profile </TabsTrigger>
@@ -57,6 +63,6 @@ onBeforeUnmount(() => {
 					<DataTable :data="tableStore.tasks" :columns="columns" />
 				</div>
 			</TabsContent>
-		</Tabs>
+		</Tabs> -->
 	</div>
 </template>

@@ -74,11 +74,21 @@ class CompanyChangeView(APIView):
                                 status=status.HTTP_403_FORBIDDEN)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+class CompanySetupView(APIView):
+    permission_classes = [IsAdminUser]
+    
+
+    def get(self, request):
+        company = request.user.company
+        if not company:
+            return JsonResponse({'error': 'Company not found'}, status=404)
+        serializer = CompanySetupSerializer(company)
+        return JsonResponse({'Result': serializer.data}, status=200)
     
         
 class GetCompanySelectList(APIView):
     permission_classes = [IsAdminUser]
-
 
     def get(self, request, format=None):
         companies = Company.objects.all()

@@ -41,50 +41,44 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 
-const tableStore = inject('tableStore', useTableStore('debt'))
-
-interface DataTableEditModalProps {
-	row: Task
-}
-
-const props = defineProps<DataTableEditModalProps>()
 
 // Form Modal
-interface Debt {
-	invoice?: number
-	customer?: number | null
-	amount?: number | string | null
-	due_date: Date | string | null
-	status: number | null
+interface CompanyForm {
+  name: string
+  country: number | ''
+  whatsapp_business_account_id: string
+  whatsapp_phone_number_id: string
+	notes: string
+	is_active: boolean
+	is_onboarded: boolean
+	live_date: Date | string | ''
 }
 
-const form = reactive<Debt>({
-	invoice: props.row.id,
-	customer: null,
-	amount: props.row.amount,
-	due_date: new Date(props.row.due_date),
-	status: props.row.status,
+const form = reactive<CompanyForm>({
+	name: '',
+  country: '',
+  whatsapp_business_account_id: '',
+  whatsapp_phone_number_id: '',
+	notes: '',
+	is_active: false,
+	is_onboarded: false,
+	live_date: ''
 })
 
-const customers: GenericSelectListModel = reactive({
+const countries: GenericSelectListModel = reactive({
 	is_loading: false,
 	is_open: false,
 	data: [{ value: '', label: '' }]
 })
 
-const statuses: GenericSelectListModel = reactive({
-	is_loading: false,
-	is_open: false,
-	data: [{ value: '', label: '' }]
-})
 
-const searchCustomerQuery = ref('')
+const searchCountryQuery = ref('')
 
 async function fetchCountries(query?: string) {
-	customers.is_loading = true
+	countries.is_loading = true
 	try {
 		const response = await axios.get(
-			`http://127.0.0.1:8000/api/customer/list?search=${query || ''}`,
+			`http://127.0.0.1:8000/api/country/list?search=${query || ''}`,
 			{
 				withCredentials: true,
 				headers: {
@@ -95,34 +89,15 @@ async function fetchCountries(query?: string) {
 			}
 		)
 
-		customers.data = response.data.Result
+		countries.data = response.data.Result
 
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
-		customers.is_loading = false
+		countries.is_loading = false
 	}
 }
 
-async function fetchStatuses() {
-	customers.is_loading = true
-	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/status/list`, {
-			withCredentials: true,
-			headers: {
-				'Cache-Control': 'no-cache',
-				Pragma: 'no-cache',
-				Expires: '0'
-			}
-		})
-
-		statuses.data = response.data.Result
-	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
-	} finally {
-		statuses.is_loading = false
-	}
-}
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
@@ -130,7 +105,7 @@ const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
 watch(
-	searchCustomerQuery,
+	searchCountryQuery,
 	_.debounce(async (newQuery) => {
 		if (is_dialog_open.value) {
 			await fetchCountries(newQuery)
@@ -140,7 +115,7 @@ watch(
 
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/`)
+		const response = await axios.get(`http://127.0.0.1:8000/api/company/setup/`)
 
 		Object.assign(form, response.data.Result);
 
@@ -153,10 +128,10 @@ async function init() {
 
 function validateForm() {
 	const validations = [
-		{ condition: form.invoice == null, message: 'Invoice cannot be blank' },
-		{ condition: form.due_date?.toString == null, message: 'Due Date cannot be blank' },
-		{ condition: form.status == null, message: 'Status cannot be blank' },
-		{ condition: form.customer == null, message: 'Customer cannot be blank' }
+		{ condition: form.name == null, message: 'Invoice cannot be blank' },
+		{ condition: form.country?.toString == null, message: 'Due Date cannot be blank' },
+		{ condition: form.whatsapp_business_account_id == null, message: 'Status cannot be blank' },
+		{ condition: form.whatsapp_phone_number_id == null, message: 'Customer cannot be blank' }
 	]
 
 	for (let validation of validations) {
@@ -175,22 +150,19 @@ async function submit() {
 		return
 	}
 	is_loading.value = true
-	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/debt/${props.row.id}/`,
+			`http://127.0.0.1:8000/api/debt/1/`,
 			{
 				...form
 			},
 			{
 				headers: {
-					'Content-Type': 'multipart/form-data',
-					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
+					'Content-Type': 'application/json',
 				}
 			}
 		)
 		toggleDialog()
-		await tableStore.refresh(tableStore.page_index)
 		toast({
 			title: response.data.Result,
 			variant: 'success'
@@ -220,25 +192,20 @@ function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	if (is_dialog_open.value) {
 		init()
-		fetchCountries(searchCustomerQuery.value)
-		fetchStatuses()
+		fetchCountries(searchCountryQuery.value)
 	}
 }
 
-function handleCustomerSelect(customer: any) {
-	form.customer = customer.id
-	customers.is_open = false
+function handleCountrySelect(country: any) {
+	form.country = country.id
+	countries.is_open = false
 }
 
-function handleStatusSelect(status: any) {
-	form.status = status.id
-	statuses.is_open = false
-}
 
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
-	form.due_date = format(date, 'yyyy-MM-dd')
+	form.live_date = format(date, 'yyyy-MM-dd')
 }
 </script>
 
@@ -248,11 +215,11 @@ function updateDueDate(payload: any) {
 			<Button
 				variant="default"
 				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
+				class="p-2"
 				@click="toggleDialog"
 			>
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
-				<VIcon name="fa-pen" class="size-4" />
+				Edit Company
 			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
@@ -275,7 +242,7 @@ function updateDueDate(payload: any) {
 						</Label>
 						<Input
 							id="invoice"
-							v-model="form.invoice"
+							v-model="form.name"
 							placeholder="INV-001"
 							class="col-span-3"
 						/>
@@ -289,25 +256,25 @@ function updateDueDate(payload: any) {
 							>
 						</Label>
 						<div class="col-span-3">
-							<Popover v-model:open="customers.is_open">
+							<Popover v-model:open="countries.is_open">
 								<PopoverTrigger as-child>
 									<Button
 										variant="outline"
 										role="combobox"
-										:aria-expanded="customers.is_open"
+										:aria-expanded="countries.is_open"
 										class="w-full justify-between px-3"
-										:disabled="customers.is_loading"
+										:disabled="countries.is_loading"
 									>
 										{{
-											form.customer
-												? customers.data.find(
-														(customer) => customer.id === form.customer
+											form.country
+												? countries.data.find(
+														(country) => country.id === form.country
 													)?.label
 												: 'Select customer'
 										}}
 										<VIcon
 											name="fa-circle-notch"
-											v-if="customers.is_loading"
+											v-if="countries.is_loading"
 											animation="spin"
 											class="w-4 h-4 mr-2"
 										/>
@@ -322,24 +289,24 @@ function updateDueDate(payload: any) {
 									<Command>
 										<CommandInput
 											class="h-9"
-											v-model="searchCustomerQuery"
+											v-model="searchCountryQuery"
 											placeholder="Search country..."
 										/>
-										<CommandEmpty>No customer found.</CommandEmpty>
+										<CommandEmpty>No country found.</CommandEmpty>
 										<CommandList>
 											<CommandGroup>
 												<CommandItem
-													v-for="customer in customers.data"
-													:key="customer.id"
-													:value="customer.value ?? ''"
-													@select="() => handleCustomerSelect(customer)"
+													v-for="country in countries.data"
+													:key="country.id"
+													:value="country.value ?? ''"
+													@select="() => handleCountrySelect(country)"
 												>
-													{{ customer.label }}
+													{{ country.label }}
 													<VIcon
 														name="fa-check"
 														:class="[
 															'ml-auto h-4 w-4',
-															form.customer === customer.id
+															form.country === country.id
 																? 'opacity-100'
 																: 'opacity-0'
 														]"
@@ -353,114 +320,19 @@ function updateDueDate(payload: any) {
 						</div>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="amount" class="text-right">
-							Amount
+						<Label for="whatsapp_business_id" class="text-right">
+							WABA ID
 							<span
 								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
 								>*</span
 							>
 						</Label>
 						<Input
-							id="amount"
-							:modelValue="form.amount === null ? '' : form.amount"
-							@update:modelValue="newValue => form.amount = newValue === '' ? null : newValue"
-							placeholder="800.00"
+							id="whatsapp_business_id"
+							v-model="form.whatsapp_business_account_id"
+							placeholder="XXXXXXXXXXXX"
 							class="col-span-3"
 						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right"> Due Date </Label>
-						<div class="col-span-3">
-							<Popover>
-								<PopoverTrigger as-child>
-									<Button
-										:variant="'outline'"
-										:class="
-											cn(
-												'w-full justify-start text-left font-normal',
-												!form.due_date && 'text-muted-foreground'
-											)
-										"
-									>
-										<VIcon name="bi-calendar-fill" class="mr-2 size-4" />
-										<span>{{
-											form.due_date ?? 'Select a date'
-										}}</span>
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent class="w-auto p-0">
-									<Calendar
-										v-model="form.due_date"
-										@update:model-value="updateDueDate($event)"
-										:masks="{ L: 'YYYY-MM-DD' }"
-										:modelConfig="{
-											type: 'string',
-											mask: 'YYYY/MM/DD'
-										}"
-									></Calendar>
-								</PopoverContent>
-							</Popover>
-						</div>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="mobile" class="text-right"> Status </Label>
-						<div class="col-span-3">
-							<Popover v-model:open="statuses.is_open">
-								<PopoverTrigger as-child>
-									<Button
-										variant="outline"
-										role="combobox"
-										:aria-expanded="statuses.is_open"
-										class="w-full justify-between px-3"
-										:disabled="statuses.is_loading"
-									>
-										{{
-											form.status
-												? statuses.data.find(
-														(status) => status.id === form.status
-													)?.label
-												: 'Select status'
-										}}
-										<VIcon
-											name="fa-circle-notch"
-											v-if="statuses.is_loading"
-											animation="spin"
-											class="w-4 h-4 mr-2"
-										/>
-										<VIcon
-											v-else
-											name="fa-angle-down"
-											class="h-4 w-4 shrink-0 opacity-50"
-										/>
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent class="w-[500px] p-1">
-									<Command>
-										<CommandList>
-											<CommandGroup>
-												<CommandItem
-													v-for="status in statuses.data"
-													:key="status.id"
-													:value="status.value ?? ''"
-													@select="() => handleStatusSelect(status)"
-												>
-													{{ status.label }}
-													<VIcon
-														name="fa-check"
-														:class="[
-															'ml-auto h-4 w-4',
-															form.status === status.id
-																? 'opacity-100'
-																: 'opacity-0'
-														]"
-													/>
-												</CommandItem>
-											</CommandGroup>
-										</CommandList>
-									</Command>
-								</PopoverContent>
-							</Popover>
-						</div>
 					</div>
 				</div>
 				<Separator />
