@@ -14,14 +14,15 @@ class GetCountrySelectList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        # large dataset 
         search_query = request.GET.get('search', '')
+        current_country_id = request.GET.get('current_country', None)
+        countries = Country.objects.all()[:20]
 
-        if search_query is not None and search_query.strip() !=  '':
+        if search_query:
             countries = Country.objects.filter(name__icontains=search_query)
-        else:
-            countries = Country.objects.all()[:20]  
+        if current_country_id:
+            countries = countries | Country.objects.filter(id=current_country_id)  # Ensure the selected country is included
 
-        serializer = CountrySelectListSerializer(countries, many=True)
+        serializer = CountrySelectListSerializer(countries.distinct(), many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     

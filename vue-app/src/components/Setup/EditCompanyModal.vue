@@ -7,7 +7,7 @@ import {
 	DialogTitle,
 	DialogFooter
 } from '@/components/ui/dialog'
-
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
@@ -22,6 +22,7 @@ import {
 	CommandItem,
 	CommandList
 } from '@/components/ui/command'
+import { Textarea } from '@/components/ui/textarea'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
 	Select,
@@ -41,28 +42,27 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 
-
 // Form Modal
 interface CompanyForm {
-  name: string
-  country: number | ''
-  whatsapp_business_account_id: string
-  whatsapp_phone_number_id: string
+	name: string
+	country: number | ''
+	whatsapp_business_account_id: string
+	whatsapp_phone_number_id: string
 	notes: string
 	is_active: boolean
 	is_onboarded: boolean
-	live_date: Date | string | ''
+	date_live: Date | string | null
 }
 
 const form = reactive<CompanyForm>({
 	name: '',
-  country: '',
-  whatsapp_business_account_id: '',
-  whatsapp_phone_number_id: '',
+	country: '',
+	whatsapp_business_account_id: '',
+	whatsapp_phone_number_id: '',
 	notes: '',
 	is_active: false,
 	is_onboarded: false,
-	live_date: ''
+	date_live: null
 })
 
 const countries: GenericSelectListModel = reactive({
@@ -70,7 +70,6 @@ const countries: GenericSelectListModel = reactive({
 	is_open: false,
 	data: [{ value: '', label: '' }]
 })
-
 
 const searchCountryQuery = ref('')
 
@@ -90,14 +89,12 @@ async function fetchCountries(query?: string) {
 		)
 
 		countries.data = response.data.Result
-
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
 		countries.is_loading = false
 	}
 }
-
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
@@ -107,7 +104,7 @@ const { toast } = useToast()
 watch(
 	searchCountryQuery,
 	_.debounce(async (newQuery) => {
-		if (is_dialog_open.value) {
+		if (countries.is_open) {
 			await fetchCountries(newQuery)
 		}
 	}, 500)
@@ -117,8 +114,7 @@ async function init() {
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/company/setup/`)
 
-		Object.assign(form, response.data.Result);
-
+		Object.assign(form, response.data.Result)
 
 		is_loading.value = false
 	} catch (error) {
@@ -128,10 +124,13 @@ async function init() {
 
 function validateForm() {
 	const validations = [
-		{ condition: form.name == null, message: 'Invoice cannot be blank' },
-		{ condition: form.country?.toString == null, message: 'Due Date cannot be blank' },
+		{ condition: form.name == null, message: 'Company cannot be blank' },
+		{ condition: form.country?.toString == null, message: 'Country cannot be blank' },
 		{ condition: form.whatsapp_business_account_id == null, message: 'Status cannot be blank' },
-		{ condition: form.whatsapp_phone_number_id == null, message: 'Customer cannot be blank' }
+		{
+			condition: form.whatsapp_phone_number_id == null,
+			message: 'Whatsapp phone number id cannot be blank'
+		}
 	]
 
 	for (let validation of validations) {
@@ -158,7 +157,7 @@ async function submit() {
 			},
 			{
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				}
 			}
 		)
@@ -201,23 +200,20 @@ function handleCountrySelect(country: any) {
 	countries.is_open = false
 }
 
-
-
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
 	form.live_date = format(date, 'yyyy-MM-dd')
+}
+
+function updateCountryQuery(event: any) {
+	searchCountryQuery.value = event.target.value
 }
 </script>
 
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="p-2"
-				@click="toggleDialog"
-			>
+			<Button variant="default" size="sm" class="p-2 px-3" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				Edit Company
 			</Button>
@@ -225,31 +221,31 @@ function updateDueDate(payload: any) {
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
-					<DialogTitle>Edit Debt</DialogTitle>
+					<DialogTitle>Edit Company</DialogTitle>
 					<DialogDescription>
-						Insert the details of the debt here. Click edit when you're done.
+						Insert the details of the company here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="invoice" class="text-right">
-							Invoice
+						<Label for="company_name" class="text-right">
+							Company Name
 							<span
 								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
 								>*</span
 							>
 						</Label>
 						<Input
-							id="invoice"
+							id="company_name"
 							v-model="form.name"
 							placeholder="INV-001"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="customer" class="text-right leading-normal">
-							Customer
+						<Label for="country" class="text-right leading-normal">
+							Country
 							<span
 								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
 								>*</span
@@ -270,7 +266,7 @@ function updateDueDate(payload: any) {
 												? countries.data.find(
 														(country) => country.id === form.country
 													)?.label
-												: 'Select customer'
+												: 'Select Country'
 										}}
 										<VIcon
 											name="fa-circle-notch"
@@ -291,6 +287,7 @@ function updateDueDate(payload: any) {
 											class="h-9"
 											v-model="searchCountryQuery"
 											placeholder="Search country..."
+											@input="updateCountryQuery"
 										/>
 										<CommandEmpty>No country found.</CommandEmpty>
 										<CommandList>
@@ -319,13 +316,10 @@ function updateDueDate(payload: any) {
 							</Popover>
 						</div>
 					</div>
+					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="whatsapp_business_id" class="text-right">
-							WABA ID
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
+							Whatsapp Business ID
 						</Label>
 						<Input
 							id="whatsapp_business_id"
@@ -334,8 +328,81 @@ function updateDueDate(payload: any) {
 							class="col-span-3"
 						/>
 					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="whatsapp_business_id" class="text-right">
+							Whatsapp Phone Number ID
+						</Label>
+						<Input
+							id="whatsapp_phone_number_id"
+							v-model="form.whatsapp_phone_number_id"
+							placeholder="XXXXXXXXXXXX"
+							class="col-span-3"
+						/>
+					</div>
+					<Separator />
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="is_active" class="text-right"> Notes </Label>
+						<Textarea
+							id="is_active"
+							v-model="form.notes"
+							placeholder="Leave your footnote here..."
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="is_active" class="text-right"> Is Active </Label>
+						<Checkbox
+							id="is_active"
+							v-model="form.is_active"
+							placeholder="XXXXXXXXXXXX"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="email" class="text-right">
+							Active Date
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
+
+						<div class="col-span-3">
+							<Popover>
+								<PopoverTrigger as-child>
+									<Button
+										:variant="'outline'"
+										:class="
+											cn(
+												'w-full justify-start text-left font-normal',
+												!form.date_live && 'text-muted-foreground'
+											)
+										"
+									>
+										<VIcon
+											name="fa-regular-calendar-alt"
+											class="mr-2 h-4 w-4"
+										/>
+										<span>{{
+											form.date_live ? form.date_live : 'Pick a date'
+										}}</span>
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent class="w-auto p-0">
+									<Calendar
+										v-model="form.date_live"
+										@update:model-value="updateDueDate($event)"
+										:masks="{ L: 'YYYY-MM-DD' }"
+										:modelConfig="{
+											type: 'string',
+											mask: 'YYYY/MM/DD'
+										}"
+									></Calendar>
+								</PopoverContent>
+							</Popover>
+						</div>
+					</div>
 				</div>
-				<Separator />
 				<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
 					<Label for="name" class="text-red-600 col-span-3 col-start-2">
 						<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />

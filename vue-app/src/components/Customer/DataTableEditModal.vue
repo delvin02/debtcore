@@ -34,7 +34,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 
-
 const tableStore = inject('tableStore', useTableStore('customer'))
 
 interface DataTableEditModalProps {
@@ -53,8 +52,8 @@ interface Company {
 
 	streetAddress?: string
 	postcode?: string
-	city?: string 
-	state?: string 
+	city?: string
+	state?: string
 	country?: number | null
 }
 
@@ -68,7 +67,7 @@ const form = reactive<Company>({
 	postcode: '',
 	city: '',
 	state: '',
-	country: null
+	country: 0
 })
 
 const countries: GenericSelectListModel = reactive({
@@ -79,23 +78,22 @@ const countries: GenericSelectListModel = reactive({
 
 const searchCountryQuery = ref('')
 
-async function fetchCountries(query?: string) {
+async function fetchCountries(query?: string, currentCountryId?: number) {
 	countries.is_loading = true
 	try {
-		const response = await axios.get(
-			`http://127.0.0.1:8000/api/country/list?search=${query || ''}`,
-			{
-				withCredentials: true,
-				headers: {
-					'Cache-Control': 'no-cache',
-					Pragma: 'no-cache',
-					Expires: '0'
-				}
+		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		if (currentCountryId) {
+			url += `&current_country=${currentCountryId}`
+		}
+		const response = await axios.get(url, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
-		)
-
+		})
 		countries.data = response.data.Result
-		console.log(countries.data)
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -111,17 +109,17 @@ const { toast } = useToast()
 watch(
 	searchCountryQuery,
 	_.debounce(async (newQuery) => {
-		if (is_dialog_open.value) {
-			await fetchCountries(newQuery)
-		}
-	}, 500)
+		await fetchCountries(newQuery, form.country!)
+	}, 300)
 )
-
 async function init() {
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/customer/${props.row.id}/`)
 
-		Object.assign(form, response.data.Result);
+		Object.assign(form, response.data.Result)
+		if (form.country) {
+			await fetchCountries('', form.country)
+		}
 		is_loading.value = false
 	} catch (error) {
 		is_loading.value = false
@@ -203,8 +201,8 @@ function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 
 	if (is_dialog_open.value) {
-		 init()
-		 fetchCountries(searchCountryQuery.value)
+		init()
+		fetchCountries(searchCountryQuery.value)
 	}
 }
 
@@ -212,6 +210,10 @@ function handleCountrySelect(country: any) {
 	form.country = country.id
 
 	countries.is_open = false
+}
+
+function updateCountryQuery(event: any) {
+	searchCountryQuery.value = event.target.value
 }
 </script>
 
@@ -239,9 +241,12 @@ function handleCountrySelect(country: any) {
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right"> Company Name 
-							<span class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full">*</span>
-
+						<Label for="name" class="text-right">
+							Company Name
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
 						</Label>
 						<Input
 							id="name"
@@ -253,8 +258,10 @@ function handleCountrySelect(country: any) {
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="whatsapp_phone" class="text-right required:">
 							Whatsapp Phone
-							<span class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full">*</span>
-
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
 						</Label>
 						<Input
 							id="whatsapp_phone"
@@ -264,8 +271,12 @@ function handleCountrySelect(country: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal"> Email 
-							<span class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full">*</span>
+						<Label for="email" class="text-right leading-normal">
+							Email
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
 						</Label>
 						<Input
 							id="email"
@@ -325,71 +336,81 @@ function handleCountrySelect(country: any) {
 					<Separator />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="country" class="text-right leading-normal"> Country </Label>
-						<div class="col-span-3">
-							<Popover v-model:open="countries.is_open">
-								<PopoverTrigger as-child>
-									<Button
-										variant="outline"
-										role="combobox"
-										:aria-expanded="countries.is_open"
-										class="w-full justify-between px-3"
-										:disabled="countries.is_loading"
-									>
-										{{
-											form.country
-												? countries.data.find(
-														(country) => country.id === form.country
-													)?.label
-												: 'Select country'
-										}}
+					<Label for="country" class="text-right leading-normal"> Country </Label>
+					<div class="col-span-3">
+						<Popover v-model:open="countries.is_open">
+							<PopoverTrigger as-child>
+								<Button
+									variant="outline"
+									role="combobox"
+									:aria-expanded="countries.is_open"
+									class="w-full justify-between px-3"
+									:disabled="countries.is_loading"
+								>
+									{{
+										form.country
+											? countries.data.find(
+													(country) => country.id === form.country
+												)?.label
+											: 'Select country'
+									}}
+									<VIcon
+										name="fa-circle-notch"
+										v-if="countries.is_loading"
+										animation="spin"
+										class="w-4 h-4 mr-2"
+									/>
+									<VIcon
+										v-else
+										name="fa-angle-down"
+										class="h-4 w-4 shrink-0 opacity-50"
+									/>
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent class="w-[500px] p-1">
+								<Command>
+									<CommandInput
+										class="h-9"
+										v-model="searchCountryQuery"
+										placeholder="Search country..."
+										@input="updateCountryQuery"
+									/>
+									<CommandEmpty>No country found.</CommandEmpty>
+									<CommandList v-if="!countries.is_loading">
+										<CommandGroup>
+											<CommandItem
+												v-for="country in countries.data"
+												:key="country.id"
+												:value="country.value ?? ''"
+												@select="() => handleCountrySelect(country)"
+											>
+												{{ country.label }}
+												<VIcon
+													name="fa-check"
+													:class="[
+														'ml-auto h-4 w-4',
+														form.country === country.id
+															? 'opacity-100'
+															: 'opacity-0'
+													]"
+												/>
+											</CommandItem>
+										</CommandGroup>
+									</CommandList>
+									<CommandList v-else>
 										<VIcon
 											name="fa-circle-notch"
-											v-if="countries.is_loading"
+											v-if="true"
 											animation="spin"
-											class="w-4 h-4 mr-2"
+											speed="slow"
+											class="w-fit h-fit mr-2 my-2 mx-auto"
 										/>
-										<VIcon
-											v-else
-											name="fa-angle-down"
-											class="h-4 w-4 shrink-0 opacity-50"
-										/>
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent class="w-[500px] p-1">
-									<Command>
-										<CommandInput
-											class="h-9"
-											v-model="searchCountryQuery"
-											placeholder="Search country..."
-										/>
-										<CommandEmpty>No country found.</CommandEmpty>
-										<CommandList>
-											<CommandGroup>
-												<CommandItem
-													v-for="country in countries.data"
-													:key="country.id"
-													:value="country.value ?? ''"
-													@select="() => handleCountrySelect(country)"
-												>
-													{{ country.label }}
-													<VIcon
-														name="fa-check"
-														:class="[
-															'ml-auto h-4 w-4',
-															form.country === country.id
-																? 'opacity-100'
-																: 'opacity-0'
-														]"
-													/>
-												</CommandItem>
-											</CommandGroup>
-										</CommandList>
-									</Command>
-								</PopoverContent>
-							</Popover>
-						</div>
+									</CommandList>
+								</Command>
+							</PopoverContent>
+						</Popover>
 					</div>
+				</div>
 				<DialogFooter class="flex justify-end">
 					<Button type="submit" @click="submit" :disabled="is_loading">
 						<VIcon
