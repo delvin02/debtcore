@@ -41,7 +41,7 @@ urlpatterns = [
     path('api/debt/<int:debt_id>/backlog/', DebtBacklogView.as_view(), name='debt-backlog'),
     path('api/status/list', DebtStatusChoicesAPIView.as_view(), name="get_customer_list"),
 
-
+    path('api/template', WhatsappTemplateView.as_view(), name="get_templates"),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

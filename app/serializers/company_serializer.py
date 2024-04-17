@@ -6,7 +6,7 @@ class CompanySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Company
-        fields = ['id', 'name', 'phone', 'email', 'website', 'whatsapp_business_account_id', 'is_active']
+        fields = ['id', 'name', 'country', 'phone', 'email','website', 'whatsapp_business_account_id', 'is_active']
       
     def create(self, validated_data):
       user = self.context['request'].user
@@ -37,6 +37,17 @@ class CompanySetupSerializer(serializers.ModelSerializer):
                   'is_active',
                   'is_onboarded',
                   'date_live']
+        
+    def validate_name(self, value):
+        # Check if there is an existing instance and if the name is unchanged
+        if self.instance and self.instance.name == value:
+            return value
+        
+        # Check if the name already exists in the database, excluding the current instance
+        if Company.objects.filter(name=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("A company with this name already exists.")
+        
+        return value
 
 class CompanySelectListSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField(source='name')
@@ -49,7 +60,4 @@ class CompanySelectListSerializer(serializers.ModelSerializer):
         return obj.name.lower() if isinstance(obj.name, str) else obj.name
     
     def get_label(self, obj):
-        if isinstance(obj.name, str):
-            return ' '.join(word.capitalize() for word in obj.name.split())
-        else:
-            return obj.name
+        return obj.name

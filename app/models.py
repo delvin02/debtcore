@@ -37,9 +37,9 @@ class Country(models.Model):
 class Company(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=255, unique=True)
-    email = models.EmailField(unique=True, null=True)
-    phone = models.CharField(max_length=15, null=True)
-    website = models.URLField(max_length=255, null=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
+    phone = models.CharField(max_length=15, null=True, blank=True)
+    website = models.URLField(max_length=255, null=True, blank=True)
     
     streetAddress = models.CharField(max_length=255, verbose_name="Street Address", null=True)
     city = models.CharField(max_length=255, verbose_name="city", null=True)
@@ -207,17 +207,42 @@ class DebtBacklog(models.Model):
     
 
 
-class WhatsappMessageTemplate(models.Model):
+class WhatsappTemplate(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=255)
     language = models.CharField(max_length=10)
+    
     status = models.CharField(max_length=50)
     category = models.CharField(max_length=100)
     template_id = models.CharField(max_length=255)
+    
+    message_delivered = models.IntegerField(default=0)
+    message_read = models.IntegerField(default=0)
+    
     components = models.JSONField()
 
     company = models.ForeignKey(Company, related_name="company_whatsapp_template", on_delete=models.CASCADE)
 
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_whatsapp_template",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
+    created_date = models.DateTimeField(default=timezone.now)
+
+    last_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="updated_whatsapp_template",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )   
+    last_updated_date = models.DateTimeField(blank=True, null=True)
+    
     def __str__(self):
         return self.name
 

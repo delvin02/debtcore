@@ -11,9 +11,10 @@ from app.models import Company
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
+from app.common.permission import IsAdminOrStaff
 
 class CompanyView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrStaff]
     
 
     def get(self, request, *args, **kwargs):
@@ -52,7 +53,7 @@ class CompanyView(APIView):
     
 
 class CompanyChangeView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrStaff]
 
     def post(self, request):
         serializer = CompanyChangeSerializer(data=request.data, context={'user': request.user})
@@ -76,7 +77,7 @@ class CompanyChangeView(APIView):
     
 
 class CompanySetupView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrStaff]
     
 
     def get(self, request):
@@ -86,9 +87,16 @@ class CompanySetupView(APIView):
         serializer = CompanySetupSerializer(company)
         return JsonResponse({'Result': serializer.data}, status=200)
     
-        
+    def patch(self, request, *args, **kwargs):
+        company = get_object_or_404(Company, pk=request.data.get('id'))
+        serializer = CompanySetupSerializer(company, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'Result': "Company edited successfully"}, status=200)
+        return JsonResponse({"error": "Company failed to update", "details": serializer.errors}, status=400)
+
 class GetCompanySelectList(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrStaff]
 
     def get(self, request, format=None):
         companies = Company.objects.all()

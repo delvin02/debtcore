@@ -112,7 +112,7 @@ const launchWhatsAppSignup = () => {
 										<CardDescription class="mt-4">When the connection requires authentication, click the <b>'Authenticate'</b> button. You will be taken to the QBO website to re-establish connection to your Organisation.</CardDescription>
 									
 
-										<CardDescription class="mt-8 text-blue-600 underline">Whatsapp Business's System<a href="https://metastatus.com/whatsapp-business-api">Status</a>.</CardDescription>
+										<CardDescription class="mt-8">Whatsapp Business API <a href="https://metastatus.com/whatsapp-business-api" class="text-blue-600 underline">Status</a>.</CardDescription>
 									</div>
 								</CardContent>
 							</CardHeader>

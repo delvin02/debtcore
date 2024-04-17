@@ -4,3 +4,4 @@ from .customer_api import *
 from .country_api import *
 from .debt_api import *
 from .debt_backlog_api import *
+from .template_api import *

@@ -6,6 +6,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
+	DialogScrollContent,
 	DialogFooter
 } from '@/components/ui/dialog'
 
@@ -153,7 +154,6 @@ async function submit() {
 
 	// process
 	is_loading.value = true
-	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.patch(
 			`http://127.0.0.1:8000/api/customer/${props.row.id}/`,
@@ -163,7 +163,6 @@ async function submit() {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
 				}
 			}
 		)
@@ -174,20 +173,7 @@ async function submit() {
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.' // Default error message
-		if (axios.isAxiosError(error) && error.response) {
-			// Check if the error details exist and are structured as expected
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				// Extract the first error message from the details object
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				// Fallback to a top-level 'error' field if present
-				errorMessage = error.response.data.error
-			}
-		}
+		let errorMessage = 'An unexpected error occurred.' 
 		toast({
 			title: 'Whoops, something went wrong',
 			description: errorMessage || '',
@@ -202,7 +188,6 @@ function toggleDialog() {
 
 	if (is_dialog_open.value) {
 		init()
-		fetchCountries(searchCountryQuery.value)
 	}
 }
 
@@ -231,184 +216,189 @@ function updateCountryQuery(event: any) {
 			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
-			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
+			<DialogScrollContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
 					<DialogTitle>Edit Custsomer</DialogTitle>
 					<DialogDescription>
 						Insert the details of the customer here. Click edit when you're done.
 					</DialogDescription>
 				</DialogHeader>
-				<!-- :validation-schema="vendorSchema" -->
-				<div class="grid gap-4 py-4">
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="name" class="text-right">
-							Company Name
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
-						<Input
-							id="name"
-							v-model="form.name"
-							placeholder="Geroge Sdn Bhd"
-							class="col-span-3"
-						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="whatsapp_phone" class="text-right required:">
-							Whatsapp Phone
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
-						<Input
-							id="whatsapp_phone"
-							v-model="form.whatsapp_phone_number"
-							placeholder="012-9886348"
-							class="col-span-3"
-						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal">
-							Email
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
-						</Label>
-						<Input
-							id="email"
-							v-model="form.email"
-							placeholder="hello@example.com"
-							class="col-span-3"
-						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="business_registration_id" class="text-right">
-							Business ID
-						</Label>
-						<Input
-							id="business_registration_id"
-							v-model="form.business_registration_id"
-							placeholder="820720-X"
-							class="col-span-3"
-						/>
-					</div>
-					<Separator />
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal"> Address </Label>
-						<Input
-							id="email"
-							v-model="form.streetAddress"
-							placeholder="Lot 2000, Taman Jalan Indah"
-							class="col-span-3"
-						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="state" class="text-right leading-normal"> State </Label>
-						<Input
-							id="state"
-							v-model="form.state"
-							placeholder="Selangor"
-							class="col-span-3"
-						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="city" class="text-right leading-normal"> City </Label>
-						<Input
-							id="city"
-							v-model="form.city"
-							placeholder="Puchong"
-							class="col-span-3"
-						/>
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal"> Post Code </Label>
-						<Input
-							id="email"
-							v-model="form.postcode"
-							placeholder="22000"
-							class="col-span-3"
-						/>
-					</div>
-					<Separator />
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="country" class="text-right leading-normal"> Country </Label>
-					<div class="col-span-3">
-						<Popover v-model:open="countries.is_open">
-							<PopoverTrigger as-child>
-								<Button
-									variant="outline"
-									role="combobox"
-									:aria-expanded="countries.is_open"
-									class="w-full justify-between px-3"
-									:disabled="countries.is_loading"
+				<div>
+					<div class="grid gap-4 py-4">
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="name" class="text-right">
+								Company Name
+								<span
+									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+									>*</span
 								>
-									{{
-										form.country
-											? countries.data.find(
-													(country) => country.id === form.country
-												)?.label
-											: 'Select country'
-									}}
-									<VIcon
-										name="fa-circle-notch"
-										v-if="countries.is_loading"
-										animation="spin"
-										class="w-4 h-4 mr-2"
-									/>
-									<VIcon
-										v-else
-										name="fa-angle-down"
-										class="h-4 w-4 shrink-0 opacity-50"
-									/>
-								</Button>
-							</PopoverTrigger>
-							<PopoverContent class="w-[500px] p-1">
-								<Command>
-									<CommandInput
-										class="h-9"
-										v-model="searchCountryQuery"
-										placeholder="Search country..."
-										@input="updateCountryQuery"
-									/>
-									<CommandEmpty>No country found.</CommandEmpty>
-									<CommandList v-if="!countries.is_loading">
-										<CommandGroup>
-											<CommandItem
-												v-for="country in countries.data"
-												:key="country.id"
-												:value="country.value ?? ''"
-												@select="() => handleCountrySelect(country)"
-											>
-												{{ country.label }}
+							</Label>
+							<Input
+								id="name"
+								v-model="form.name"
+								placeholder="Geroge Sdn Bhd"
+								class="col-span-3"
+							/>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="whatsapp_phone" class="text-right required:">
+								Whatsapp Phone
+								<span
+									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+									>*</span
+								>
+							</Label>
+							<Input
+								id="whatsapp_phone"
+								v-model="form.whatsapp_phone_number"
+								placeholder="012-9886348"
+								class="col-span-3"
+							/>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="email" class="text-right leading-normal">
+								Email
+								<span
+									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+									>*</span
+								>
+							</Label>
+							<Input
+								id="email"
+								v-model="form.email"
+								placeholder="hello@example.com"
+								class="col-span-3"
+							/>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="country" class="text-right leading-normal"> Country 
+								<span
+									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+									>*</span
+								>
+							</Label>
+							<div class="col-span-3">
+								<Popover v-model:open="countries.is_open">
+									<PopoverTrigger as-child>
+										<Button
+											variant="outline"
+											role="combobox"
+											:aria-expanded="countries.is_open"
+											class="w-full justify-between px-3"
+											:disabled="countries.is_loading"
+										>
+											{{
+												form.country
+													? countries.data.find(
+															(country) => country.id === form.country
+														)?.label
+													: 'Select country'
+											}}
+											<VIcon
+												name="fa-circle-notch"
+												v-if="countries.is_loading"
+												animation="spin"
+												class="w-4 h-4 mr-2"
+											/>
+											<VIcon
+												v-else
+												name="fa-angle-down"
+												class="h-4 w-4 shrink-0 opacity-50"
+											/>
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent class="w-[500px] p-1">
+										<Command>
+											<CommandInput
+												class="h-9"
+												v-model="searchCountryQuery"
+												placeholder="Search country..."
+												@input="updateCountryQuery"
+											/>
+											<CommandEmpty>No country found.</CommandEmpty>
+											<CommandList v-if="!countries.is_loading">
+												<CommandGroup>
+													<CommandItem
+														v-for="country in countries.data"
+														:key="country.id"
+														:value="country.value ?? ''"
+														@select="() => handleCountrySelect(country)"
+													>
+														{{ country.label }}
+														<VIcon
+															name="fa-check"
+															:class="[
+																'ml-auto h-4 w-4',
+																form.country === country.id
+																	? 'opacity-100'
+																	: 'opacity-0'
+															]"
+														/>
+													</CommandItem>
+												</CommandGroup>
+											</CommandList>
+											<CommandList v-else>
 												<VIcon
-													name="fa-check"
-													:class="[
-														'ml-auto h-4 w-4',
-														form.country === country.id
-															? 'opacity-100'
-															: 'opacity-0'
-													]"
+													name="fa-circle-notch"
+													v-if="true"
+													animation="spin"
+													speed="slow"
+													class="w-fit h-fit mr-2 my-2 mx-auto"
 												/>
-											</CommandItem>
-										</CommandGroup>
-									</CommandList>
-									<CommandList v-else>
-										<VIcon
-											name="fa-circle-notch"
-											v-if="true"
-											animation="spin"
-											speed="slow"
-											class="w-fit h-fit mr-2 my-2 mx-auto"
-										/>
-									</CommandList>
-								</Command>
-							</PopoverContent>
-						</Popover>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+							</div>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="business_registration_id" class="text-right">
+								Business ID
+							</Label>
+							<Input
+								id="business_registration_id"
+								v-model="form.business_registration_id"
+								placeholder="820720-X"
+								class="col-span-3"
+							/>
+						</div>
+						<Separator />
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="email" class="text-right leading-normal"> Address </Label>
+							<Input
+								id="email"
+								v-model="form.streetAddress"
+								placeholder="Lot 2000, Taman Jalan Indah"
+								class="col-span-3"
+							/>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="state" class="text-right leading-normal"> State </Label>
+							<Input
+								id="state"
+								v-model="form.state"
+								placeholder="Selangor"
+								class="col-span-3"
+							/>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="city" class="text-right leading-normal"> City </Label>
+							<Input
+								id="city"
+								v-model="form.city"
+								placeholder="Puchong"
+								class="col-span-3"
+							/>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="email" class="text-right leading-normal"> Post Code </Label>
+							<Input
+								id="email"
+								v-model="form.postcode"
+								placeholder="22000"
+								class="col-span-3"
+							/>
+						</div>
 					</div>
 				</div>
 				<DialogFooter class="flex justify-end">
@@ -423,7 +413,7 @@ function updateCountryQuery(event: any) {
 						Edit</Button
 					>
 				</DialogFooter>
-			</DialogContent>
+			</DialogScrollContent>
 		</Dialog>
 	</div>
 </template>

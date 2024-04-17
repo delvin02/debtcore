@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject } from 'vue'
+import { ref, reactive, inject, watch } from 'vue'
 import { cn } from '@/lib/utils'
 import {
 	Command,
@@ -31,6 +31,8 @@ import type { Task } from './data/schema'
 import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { Checkbox } from '@/components/ui/checkbox'
+import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
+import _ from 'lodash'
 
 const tableStore = inject('tableStore', useTableStore('company'))
 
@@ -44,6 +46,7 @@ const props = defineProps<DataTableEditModalProps>()
 interface Company {
 	id: number
 	name?: string
+	country?: number | null
 	phone?: string
 	email?: string
 	website?: string
@@ -55,6 +58,8 @@ interface Company {
 const form = reactive<Company>({
 	id: props.row.id,
 	name: props.row.name,
+	country: null,
+
 	phone: '',
 	email: '',
 	website: '',
@@ -64,23 +69,60 @@ const form = reactive<Company>({
 	is_active: false
 })
 
-const open = ref(false)
-const value = ref('')
+const countries: GenericSelectListModel = reactive({
+	is_loading: false,
+	is_open: false,
+	data: [{ value: '', label: '' }]
+})
+
+const searchCountryQuery = ref('')
+
+async function fetchCountries(query?: string, currentCountryId?: number) {
+	countries.is_loading = true
+	try {
+		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		if (currentCountryId) {
+			url += `&current_country=${currentCountryId}`
+		}
+		const response = await axios.get(url, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
+			}
+		})
+		countries.data = response.data.Result
+	} catch (error) {
+		console.error('There was an error fetching the select list:', error)
+	} finally {
+		countries.is_loading = false
+	}
+}
+
 const is_loading = ref(true)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
+watch(
+	searchCountryQuery,
+	_.debounce(async (newQuery) => {
+		if (countries.is_open) {
+			await fetchCountries(newQuery, form.country!)
+		}
+	}, 500)
+)
+
+
 async function init() {
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/company/${props.row.id}/`)
 
-		form.name = response.data.Result.name
-		form.phone = response.data.Result.phone
-		form.email = response.data.Result.email
-		form.website = response.data.Result.website
-		form.whatsapp_business_account_id = response.data.Result.whatsapp_business_account_id
-		form.is_active = response.data.Result.is_active
+		Object.assign(form, response.data.Result)
+		if (form.country) {
+			await fetchCountries('', form.country)
+		}
 		is_loading.value = false
 	} catch (error) {
 		is_loading.value = false
@@ -88,7 +130,11 @@ async function init() {
 }
 
 function validateForm() {
-	const validations = [{ condition: form.name === '', message: 'Name cannot be blank' }]
+	const validations = [
+		{ condition: form.name === '', message: 'Name cannot be blank' },
+		{ condition: form.country?.toString == null, message: 'Country cannot be blank' }
+
+	]
 
 	for (let validation of validations) {
 		if (validation.condition) {
@@ -109,7 +155,6 @@ async function submit() {
 
 	// process
 	is_loading.value = true
-	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.patch(
 			`http://127.0.0.1:8000/api/company/${props.row.id}/`,
@@ -119,7 +164,6 @@ async function submit() {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
 				}
 			}
 		)
@@ -130,23 +174,10 @@ async function submit() {
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.' // Default error message
-		if (axios.isAxiosError(error) && error.response) {
-			// Check if the error details exist and are structured as expected
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				// Extract the first error message from the details object
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				// Fallback to a top-level 'error' field if present
-				errorMessage = error.response.data.error
-			}
-		}
+		let errorMessage = 'An unexpected error occurred.';
 		toast({
 			title: 'Whoops, something went wrong',
-			description: errorMessage || '',
+			description: errorMessage,
 			variant: 'destructive'
 		})
 	} finally {
@@ -158,6 +189,15 @@ function toggleDialog() {
 		init()
 	}
 	is_dialog_open.value = !is_dialog_open.value
+}
+
+function handleCountrySelect(country: any) {
+	form.country = country.id
+	countries.is_open = false
+}
+
+function updateCountryQuery(event: any) {
+	searchCountryQuery.value = event.target.value
 }
 </script>
 
@@ -191,6 +231,80 @@ function toggleDialog() {
 							placeholder="Geroge Sdn Bhd"
 							class="col-span-3"
 						/>
+					</div>
+
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="country" class="text-right leading-normal">
+							Country
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
+						<div class="col-span-3">
+							<Popover v-model:open="countries.is_open">
+								<PopoverTrigger as-child>
+									<Button
+										variant="outline"
+										role="combobox"
+										:aria-expanded="countries.is_open"
+										class="w-full justify-between px-3"
+										:disabled="countries.is_loading"
+									>
+										{{
+											form.country
+												? countries.data.find(
+														(country) => country.id === form.country
+													)?.label
+												: 'Select Country'
+										}}
+										<VIcon
+											name="fa-circle-notch"
+											v-if="countries.is_loading"
+											animation="spin"
+											class="w-4 h-4 mr-2"
+										/>
+										<VIcon
+											v-else
+											name="fa-angle-down"
+											class="h-4 w-4 shrink-0 opacity-50"
+										/>
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent class="w-[500px] p-1">
+									<Command>
+										<CommandInput
+											class="h-9"
+											v-model="searchCountryQuery"
+											placeholder="Search country..."
+											@input="updateCountryQuery"
+										/>
+										<CommandEmpty>No country found.</CommandEmpty>
+										<CommandList>
+											<CommandGroup>
+												<CommandItem
+													v-for="country in countries.data"
+													:key="country.id"
+													:value="country.value ?? ''"
+													@select="() => handleCountrySelect(country)"
+												>
+													{{ country.label }}
+													<VIcon
+														name="fa-check"
+														:class="[
+															'ml-auto h-4 w-4',
+															form.country === country.id
+																? 'opacity-100'
+																: 'opacity-0'
+														]"
+													/>
+												</CommandItem>
+											</CommandGroup>
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
+						</div>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="phone" class="text-right required:"> Phone </Label>
@@ -238,7 +352,7 @@ function toggleDialog() {
 					</div>
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="is_active" class="text-right leading-normal"> Is Active </Label>
+						<Label for="is_active" class="text-right leading-normal"> Active </Label>
 						<Checkbox
 							id="is_active"
 							:checked="form.is_active"

@@ -5,7 +5,8 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter
+	DialogFooter,
+	DialogScrollContent
 } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -45,7 +46,7 @@ import _ from 'lodash'
 // Form Modal
 interface CompanyForm {
 	name: string
-	country: number | ''
+	country?: number | null
 	whatsapp_business_account_id: string
 	whatsapp_phone_number_id: string
 	notes: string
@@ -56,7 +57,7 @@ interface CompanyForm {
 
 const form = reactive<CompanyForm>({
 	name: '',
-	country: '',
+	country: 0,
 	whatsapp_business_account_id: '',
 	whatsapp_phone_number_id: '',
 	notes: '',
@@ -73,21 +74,21 @@ const countries: GenericSelectListModel = reactive({
 
 const searchCountryQuery = ref('')
 
-async function fetchCountries(query?: string) {
+async function fetchCountries(query?: string, currentCountryId?: number) {
 	countries.is_loading = true
 	try {
-		const response = await axios.get(
-			`http://127.0.0.1:8000/api/country/list?search=${query || ''}`,
-			{
-				withCredentials: true,
-				headers: {
-					'Cache-Control': 'no-cache',
-					Pragma: 'no-cache',
-					Expires: '0'
-				}
+		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		if (currentCountryId) {
+			url += `&current_country=${currentCountryId}`
+		}
+		const response = await axios.get(url, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
-		)
-
+		})
 		countries.data = response.data.Result
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
@@ -105,7 +106,7 @@ watch(
 	searchCountryQuery,
 	_.debounce(async (newQuery) => {
 		if (countries.is_open) {
-			await fetchCountries(newQuery)
+			await fetchCountries(newQuery, form.country!)
 		}
 	}, 500)
 )
@@ -115,22 +116,26 @@ async function init() {
 		const response = await axios.get(`http://127.0.0.1:8000/api/company/setup/`)
 
 		Object.assign(form, response.data.Result)
-
-		is_loading.value = false
+		if (form.country) {
+			await fetchCountries('', form.country)
+		}
 	} catch (error) {
+		is_dialog_open.value = false
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'An unexpected error occurred',
+			variant: 'destructive'
+		})
+
+	} finally {
 		is_loading.value = false
 	}
 }
 
 function validateForm() {
 	const validations = [
-		{ condition: form.name == null, message: 'Company cannot be blank' },
-		{ condition: form.country?.toString == null, message: 'Country cannot be blank' },
-		{ condition: form.whatsapp_business_account_id == null, message: 'Status cannot be blank' },
-		{
-			condition: form.whatsapp_phone_number_id == null,
-			message: 'Whatsapp phone number id cannot be blank'
-		}
+		{ condition: form.name == null || form.name == '' , message: 'Company name cannot be blank' },
+		{ condition: form.country?.toString == null, message: 'Country cannot be blank' }
 	]
 
 	for (let validation of validations) {
@@ -151,7 +156,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/debt/1/`,
+			`http://127.0.0.1:8000/api/company/setup/`,
 			{
 				...form
 			},
@@ -162,25 +167,15 @@ async function submit() {
 			}
 		)
 		toggleDialog()
+		error_message.value = ''
 		toast({
 			title: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.'
-		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				errorMessage = error.response.data.error
-			}
-		}
 		toast({
 			title: 'Whoops, something went wrong',
-			description: errorMessage || '',
+			description: 'An unexpected error occurred',
 			variant: 'destructive'
 		})
 	} finally {
@@ -202,7 +197,7 @@ function handleCountrySelect(country: any) {
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
-	form.live_date = format(date, 'yyyy-MM-dd')
+	form.date_live = format(date, 'yyyy-MM-dd')
 }
 
 function updateCountryQuery(event: any) {
@@ -219,7 +214,7 @@ function updateCountryQuery(event: any) {
 			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
-			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">
+			<DialogScrollContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
 					<DialogTitle>Edit Company</DialogTitle>
 					<DialogDescription>
@@ -239,7 +234,7 @@ function updateCountryQuery(event: any) {
 						<Input
 							id="company_name"
 							v-model="form.name"
-							placeholder="INV-001"
+							placeholder="George Sdn Bhd"
 							class="col-span-3"
 						/>
 					</div>
@@ -350,21 +345,26 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="is_active" class="text-right"> Is Active </Label>
+						<Label for="is_active" class="text-right"> Active </Label>
 						<Checkbox
 							id="is_active"
-							v-model="form.is_active"
-							placeholder="XXXXXXXXXXXX"
+							v-model:checked="form.is_active"
+							update:open="form.is_active = $event"
+							class="col-span-3"
+						/>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="is_onboarded" class="text-right"> Onboarded </Label>
+						<Checkbox
+							id="is_onboarded"
+							v-model:checked="form.is_onboarded"
+							update:open="form.is_active = $event"
 							class="col-span-3"
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="email" class="text-right">
 							Active Date
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
 						</Label>
 
 						<div class="col-span-3">
@@ -421,7 +421,7 @@ function updateCountryQuery(event: any) {
 						Edit</Button
 					>
 				</DialogFooter>
-			</DialogContent>
+			</DialogScrollContent>
 		</Dialog>
 	</div>
 </template>

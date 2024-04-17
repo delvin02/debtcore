@@ -43,7 +43,7 @@ def me(request):
             'company_id': request.user.company_id,
             'company_name': request.user.company.name
         }
-        is_admin = request.user.is_superuser
+        is_admin = request.user.is_superuser or request.user.is_staff
         return JsonResponse({"user": user_info, "is_admin": is_admin}, status=200)
     else:
         # Return an appropriate response if the user is not authenticated

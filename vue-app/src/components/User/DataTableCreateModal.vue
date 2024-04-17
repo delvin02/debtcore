@@ -95,11 +95,7 @@ async function fetchCompanies() {
 			}
 		})
 
-		companies.data = companyResponse.data.Result.map((company: SelectList) => ({
-			id: company.id,
-			value: company.value,
-			label: company.label
-		}))
+		companies.data = companyResponse.data.Result
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -119,11 +115,7 @@ async function fetchRoles() {
 			}
 		})
 
-		roles.data = roleResponse.data.data.map((role: SelectList) => ({
-			id: role.id,
-			value: role.value,
-			label: role.label
-		}))
+		roles.data = roleResponse.data.Result
 	} catch (error) {
 		console.error('There was an error fetching the select list:', error)
 	} finally {
@@ -285,7 +277,7 @@ function handleRoleSelect(role: SelectList) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="companyname" class="text-right"> Country </Label>
+						<Label for="companyname" class="text-right"> Company </Label>
 						<div class="col-span-3">
 							<Popover v-model:open="companies.is_open">
 								<PopoverTrigger as-child>

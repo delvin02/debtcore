@@ -3,7 +3,6 @@ import type { Row } from '@tanstack/vue-table'
 import { computed } from 'vue'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
-import DataTableCheckAttachment from './DataTableCheckAttachment.vue'
 import DataTableEditModal from './DataTableEditModal.vue'
 
 interface DataTableRowActionsProps {
@@ -17,6 +16,5 @@ const task = computed(() => taskSchema.parse(props.row.original))
 <template>
 	<div class="flex gap-1">
 		<DataTableEditModal :row="task" />
-		<DataTableCheckAttachment :row="task" />
 	</div>
 </template>

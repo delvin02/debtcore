@@ -131,11 +131,7 @@ async function init_user() {
 		const response = await axios.get(`http://127.0.0.1:8000/api/user/${props.row.id}/`)
 
 		// assigning fields initial value
-		form.name = response.data.Result.name
-		form.surname = response.data.Result.surname
-		form.email = response.data.Result.email
-		form.company = response.data.Result.company
-		form.role = response.data.Result.role
+		Object.assign(form, response.data.Result)
 	} catch (error) {
 		console.error(error)
 		is_loading.value = false

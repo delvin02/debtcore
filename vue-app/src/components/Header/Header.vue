@@ -45,6 +45,7 @@ const logout = () => {
 	auth.remove_token()
 	router.push('/login')
 }
+
 </script>
 
 <template>
@@ -71,7 +72,7 @@ const logout = () => {
 				</div>
 			</div>
 			<div class="ml-auto flex items-center gap-2"></div>
-			<router-link to="/setup" v-slot="{ isActive }">
+			<router-link to="/setup" v-slot="{ isActive }" v-if="auth.is_admin">
 				<a
 					:class="
 						cn(
@@ -90,7 +91,7 @@ const logout = () => {
 					<span class="sr-only"></span>
 				</a>
 			</router-link>
-			<Separator orientation="vertical" class="mx-2 h-6" />
+			<Separator orientation="vertical" class="mx-2 h-6" v-if="auth.is_admin"/>
 			<DropdownMenu>
 				<DropdownMenuTrigger as-child>
 					<Button variant="ghost" size="icon" class="mr-2">

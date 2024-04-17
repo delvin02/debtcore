@@ -18,9 +18,9 @@ export const labels = [
 
 export const statuses = [
   {
-    value: 'draft',
-    label: 'Draft',
-    icon: 'fa-pen',
+    value: 'approved',
+    label: 'Approved',
+    icon: 'bi-check-square',
   },
   {
     value: 'in progress',
@@ -29,15 +29,10 @@ export const statuses = [
     animation: 'spin'
   },
   {
-    value: 'active',
-    label: 'Active',
-    icon: 'fa-check-circle',
-  },
-  {
-    value: 'failed',
-    label: 'Failed',
-    icon: 'fa-window-close',
-  },
+    value: 'rejected',
+    label: 'Rejected',
+    icon: 'bi-x-square',
+  }
 ]
 
 export const priorities = [

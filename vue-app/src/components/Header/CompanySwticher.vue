@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { computed, ref, reactive } from 'vue'
+import { watch, ref, reactive } from 'vue'
 import { cn } from '@/lib/utils'
 import type { SelectList, GenericSelectListModel } from '@/common/SelectList'
 import axios from 'axios'
@@ -35,6 +35,10 @@ const form = reactive<CompanySwitcherForm>({
 	company: parseInt(auth.user?.company_id ?? '0')
 })
 
+watch(() => auth.user?.company_id, (newVal) => {
+  form.company = parseInt(newVal ?? '0');
+}, { immediate: true });
+
 const companies: GenericSelectListModel = reactive({
 	is_loading: true,
 	is_open: false,
@@ -42,6 +46,7 @@ const companies: GenericSelectListModel = reactive({
 })
 
 async function fetchCompanies() {
+	console.log("fetching company: "+ auth.user?.company_id)
 	companies.is_loading = true
 	try {
 		const companyResponse = await axios.get('http://127.0.0.1:8000/api/company/list', {
@@ -84,7 +89,6 @@ async function handleCompanySelect(company: any) {
 	is_loading.value = true
 	form.company = company.id
 	companies.is_open = false
-	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.post(
 			'http://127.0.0.1:8000/api/user/change-company/',
@@ -94,7 +98,6 @@ async function handleCompanySelect(company: any) {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					[drfCsrf.csrfHeaderName]: drfCsrf.csrfToken
 				}
 			}
 		)
@@ -105,23 +108,10 @@ async function handleCompanySelect(company: any) {
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.' // Default error message
-		if (axios.isAxiosError(error) && error.response) {
-			// Check if the error details exist and are structured as expected
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				// Extract the first error message from the details object
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				// Fallback to a top-level 'error' field if present
-				errorMessage = error.response.data.error
-			}
-		}
+		let errorMessage = 'An unexpected error occurred.' 
 		toast({
 			title: 'Whoops, something went wrong',
-			description: errorMessage || '',
+			description: errorMessage,
 			variant: 'destructive'
 		})
 	} finally {

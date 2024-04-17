@@ -23,6 +23,6 @@ class GetCountrySelectList(APIView):
         if current_country_id:
             countries = countries | Country.objects.filter(id=current_country_id)  # Ensure the selected country is included
 
-        serializer = CountrySelectListSerializer(countries.distinct(), many=True)
+        serializer = CountrySelectListSerializer(countries, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     
