@@ -61,7 +61,7 @@ const selectedMailData = computed(() => props.mails.find((item) => item.id === s
         <div class="basis-2/5 overflow-hidden">
             <Tabs default-value="all" class="border-r">
                 <div class="flex items-center px-4 py-2">
-                    <h1 class="text-xl font-bold">Whatsapp Message</h1>
+                    <h1 class="text-xl font-bold text-green-600 flex items-center place-items-center"><VIcon name="fa-whatsapp" class="size-6 mr-2 fill-green-600 my-auto"/>Whatsapp Message</h1>
                     <TabsList class="ml-auto">
                         <TabsTrigger value="all" class="text-zinc-600 dark:text-zinc-200">
                             Read
