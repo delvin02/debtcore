@@ -150,10 +150,24 @@ addIcons(
 //   return config
 // })
 
-const app = createApp(App).component('VIcon', OhVueIcon)
+// axios.defaults.baseURL = 'http://localhost:8000'
+// axios.defaults.withCredentials = true; 
 
-// axios.defaults.withCredentials = true;
-// app.config.globalProperties.$axios = axios;
+// function retrieveCSRFConfig() {
+//   const drfCsrfElement = document.getElementById('drf_csrf');
+//   if (drfCsrfElement) {
+//       return JSON.parse(drfCsrfElement.textContent || '{}');
+//   }
+//   return {};
+// }
+
+// // Configure Axios to use CSRF token
+// const csrfConfig = retrieveCSRFConfig();
+// if (csrfConfig.csrfToken && csrfConfig.csrfHeaderName) {
+//   axios.defaults.headers.common[csrfConfig.csrfHeaderName] = csrfConfig.csrfToken;
+// }
+
+const app = createApp(App).component('VIcon', OhVueIcon)
 
 app.use(createPinia())
 app.use(router)

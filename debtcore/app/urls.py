@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/status/list', DebtStatusChoicesAPIView.as_view(), name="get_customer_list"),
 
     path('api/template', WhatsappTemplateView.as_view(), name="get_templates"),
+    path('connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth")
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
