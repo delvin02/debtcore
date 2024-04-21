@@ -4,37 +4,28 @@ from django.utils import timezone
 
 
 class WhatsappTemplateSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(write_only=True)
     class Meta:
         model = WhatsappTemplate
-        fields = ['customer', 'invoice', 
-                  'due_date', 
-                  'amount',
-                  'status',
-                  'document'
-                  ]
-      
-    # def create(self, validated_data):
-    #     user = self.context['request'].user
-    
-    #     if not user.company:
-    #         raise serializers.ValidationError("User must belong to a company to create a debt record.")
+        fields = ['id', 'name', 'status', 'category', 'language', 'components']
 
-    #     validated_data['created_by'] = user
-    #     validated_data['last_updated_by'] = user
-    #     validated_data['last_updated_date'] = timezone.now()
-        
-    #     validated_data['company'] = user.company
-        
-    #     debt = super().create(validated_data)
-    #     DebtBacklog.objects.create(
-    #         debt=debt,
-    #         message=f"Debt invoice created for {debt.customer.name} with invoice number {debt.invoice}.",
-    #         created_by=user,
-    #         created_date=timezone.now(),
-    #         is_system_generated=True
-    #     )
 
-    #     return debt
+    def create(self, validated_data):
+        user = self.context['request'].user
+        if not user.company:
+            raise serializers.ValidationError("User must belong to a company to create a default template.")
+
+        template_id = validated_data.pop('id')  # Remove 'id' from validated_data
+        whatsapp_template = WhatsappTemplate.objects.create(
+            created_by=user,
+            created_date=timezone.now(),
+            last_updated_by=user,
+            last_updated_date=timezone.now(),
+            company=user.company,
+            template_id=template_id,  # Assign 'id' to 'template_id'
+            **validated_data
+        )
+        return whatsapp_template
 
     
     # def update(self, instance, validated_data):
@@ -48,15 +39,6 @@ class WhatsappTemplateSerializer(serializers.ModelSerializer):
         
     #     instance.save()
     #     return instance
-
-class WhatsappTemplateEditSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WhatsappTemplate
-        fields = ['id', 'customer', 'invoice', 
-                  'due_date', 
-                  'amount',
-                  'status',
-                  ]
             
 class WhatsappTemplateTableSerializer(serializers.ModelSerializer):
 
@@ -64,7 +46,9 @@ class WhatsappTemplateTableSerializer(serializers.ModelSerializer):
         model = WhatsappTemplate
         fields = ['id', 
                   'name', 
-                  'status', 
+                  'status',
+                  'language',
+                  'category',
                   'message_delivered', 
                   'message_read', 
                   'last_updated_date'

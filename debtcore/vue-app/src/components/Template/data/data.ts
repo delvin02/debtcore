@@ -84,3 +84,14 @@ export const headers = [
     value: 'none',
   }
 ]
+
+export const languages = [
+  {
+    label: 'en',
+    value: 'English'
+  },
+  {
+    label: 'my',
+    value: 'Bahasa Melayu'
+  }
+]

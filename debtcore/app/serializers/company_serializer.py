@@ -32,7 +32,6 @@ class CompanySetupSerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'name', 'country', 
                   'whatsapp_business_account_id', 
-                  'whatsapp_phone_number_id', 
                   'notes',
                   'is_active',
                   'is_onboarded',
@@ -48,6 +47,7 @@ class CompanySetupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A company with this name already exists.")
         
         return value
+    
 
 class CompanySelectListSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField(source='name')

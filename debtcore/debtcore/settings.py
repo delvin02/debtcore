@@ -13,16 +13,23 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
+import sys
+
+load_dotenv() 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+EXTERNAL_MODULE_PATH = BASE_DIR.parent
+# Add the external module path to sys.path
+sys.path.append(str(EXTERNAL_MODULE_PATH))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&cm@m^79&dc1qnh63=^%x9f=&c9%x$*-#voqcbm0_#-3%f#^+3'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -233,3 +240,9 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+META_APP_ID = os.getenv("META_APP_ID")
+META_APP_SECRET = os.getenv("META_APP_SECRET")
+META_AUTHENTICATE_URL = os.getenv("META_AUTHENTICATE_URL")
+META_SYSTEM_USER_ACCESS_TOKEN = os.getenv("META_SYSTEM_USER_ACCESS_TOKEN")
+
+DOMAIN = os.getenv("DOMAIN")

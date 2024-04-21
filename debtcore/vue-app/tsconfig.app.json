@@ -1,25 +1,41 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.d.ts","src/**/*.json", "package.json", "src/**/*.ts"],
-  "exclude": ["src/**/__tests__/*", "node_modules"],
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "src/**/*.d.ts",
+    "src/**/*.json",
+    "package.json",
+    "src/**/*.ts"
+  ],
+  "exclude": ["src/**/__tests__/*", "node_modules", "dist"],
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ESNEXT",
+    "module": "ESNEXT",
     "strict": true,
     "jsx": "preserve",
     "allowJs": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "composite": true,
+    "skipLibCheck": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./src/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "lib": ["es2018", "dom", "dom.iterable", "scripthost", "es2015", "esnext"],
     "plugins": [
-      { "name": "@babel/plugin-proposal-optional-chaining" },
-      { "name": "@babel/plugin-proposal-optional-chaining-assign" }
+      {
+        "name": "@babel/plugin-proposal-optional-chaining"
+      },
+      {
+        "name": "@babel/plugin-proposal-optional-chaining-assign"
+      }
     ]
   }
 }

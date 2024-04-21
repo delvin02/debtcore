@@ -3,7 +3,7 @@ import type { Row } from '@tanstack/vue-table'
 import { computed } from 'vue'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
-import DataTableEditModal from './DataTableEditModal.vue'
+import DataTableSetDefaultPhone from './DataTableSetDefaultPhone.vue'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
@@ -15,6 +15,6 @@ const task = computed(() => taskSchema.parse(props.row.original))
 
 <template>
 	<div class="flex gap-1">
-		<DataTableEditModal :row="task" />
+		<DataTableSetDefaultPhone :row="task" />
 	</div>
 </template>

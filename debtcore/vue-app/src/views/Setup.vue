@@ -1,37 +1,38 @@
 <script setup lang="ts">
-import tasks from '@/components/Debt/data/tasks.json'
-import DataTable from '@/components/Debt/DataTable.vue'
-import { columns } from '@/components/Debt/columns'
-import type { Task } from '@/components/Debt/data/schema'
+import tasks from '@/components/Setup/data/tasks.json'
+import DataTable from '@/components/Setup/DataTable.vue'
+import { columns } from '@/components/Setup/columns'
+import type { Task } from '@/components/Setup/data/schema'
 import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount } from 'vue'
 import Import from '@/components/Setup/Import.vue'
 import { useTableStore } from '@/store/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-const tableStore = useTableStore('debt')
 
-const debtsUrl = 'http://127.0.0.1:8000/api/debt'
+const phoneStore = useTableStore('phone')
+
+const setupPhoneUrl = '/api/setup/phone'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
-		status: task.status,
-		invoice: task.invoice,
-		customer_name: task.customer_name,
-		due_date: new Date(task.due_date),
-		amount: task.amount,
-		document_url: task.document_url
+		verified_name: task.verified_name,
+		quality_rating: task.quality_rating,
+		platform_type: task.platform_type,
+		last_onboarded_time: task.last_onboarded_time,
+		display_phone_number: task.display_phone_number,
+		is_default_phone: task.is_default_phone
 	}
 	return serialized_task
 }
 
-onMounted(async () => {
-	await tableStore.fetch(debtsUrl, 0, map_function) // Pass the URL when calling the action
+onMounted(() => {
+	phoneStore.fetch(setupPhoneUrl, 0, map_function) // Pass the URL when calling the action
 })
 
-provide('tableStore', tableStore)
+provide('phoneStore', phoneStore)
 
 onBeforeUnmount(() => {
-	tableStore.$reset()
+	phoneStore.$reset()
 })
 </script>
 
@@ -42,11 +43,19 @@ onBeforeUnmount(() => {
 				<h2 class="text-2xl font-bold tracking-tight">Setup</h2>
 			</div>
 		</div>
-		<hr/>
-
+		<hr />
 
 		<Import />
-		<!-- <DataTable :data="tableStore.tasks" :columns="columns" /> -->
+		<div>
+			<div class="flex items-center justify-between space-y-2 my-2">
+				<div>
+					<h3 class="text-lg font-bold tracking-tight">Phone Number</h3>
+				</div>
+			</div>
+			<div class="border-t-primary border-t-4 border-2 rounded">
+				<DataTable :data="phoneStore.tasks" :columns="columns" class="bg-white p-3" />
+			</div>
+		</div>
 
 		<!-- <Tabs default-value="account" class="w-full">
 			<TabsList>

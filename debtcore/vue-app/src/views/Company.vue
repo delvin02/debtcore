@@ -18,8 +18,8 @@ const map_function = (task: any): Task => {
 	return serialized_task
 }
 
-onMounted(async () => {
-	await tableStore.fetch(companiesUrl, 0, map_function) // Pass the URL when calling the action
+onMounted(() => {
+	tableStore.fetch(companiesUrl, 0, map_function) // Pass the URL when calling the action
 })
 
 provide('tableStore', tableStore)

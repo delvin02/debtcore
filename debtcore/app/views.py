@@ -17,6 +17,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from debtcore.settings import META_APP_SECRET
 import datetime
 import jwt
 import logging
@@ -74,11 +75,10 @@ class WhatsappWebhook(APIView):
 
     def post(self, request):
         received_signature = request.headers.get('X-Hub-Signature-256', '').replace('sha256=', '')
-        app_secret = '8fdb5ab982c637f71d8f49983a4e5a19'  # Your app's secret key
         
         # Compute the HMAC SHA256 signature
         hmac_gen = hmac.new(
-            key=app_secret.encode(),
+            key=META_APP_SECRET.encode(),
             msg=request.body,  # Ensure that the request body is raw
             digestmod=hashlib.sha256
         )

@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/table'
 import { useTableStore } from '@/store/table'
 
-const tableStore = inject('tableStore', useTableStore('debt'))
+const phoneStore = inject('phoneStore', useTableStore('phone'))
 
 interface DataTableProps {
 	columns: ColumnDef<Task, any>[]
@@ -44,8 +44,8 @@ const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const pagination = ref<PaginationState>({
-	pageIndex: tableStore.page_index,
-	pageSize: tableStore.page_size
+	pageIndex: phoneStore.page_index,
+	pageSize: phoneStore.page_size
 })
 const rowSelection = ref()
 
@@ -65,8 +65,8 @@ function paginationUpdater(
 	// Update the ref with the new value
 	targetRef.value = newValue
 
-	tableStore.set_page_index(newValue.pageIndex)
-	tableStore.set_page_size(newValue.pageSize)
+	phoneStore.set_page_index(newValue.pageIndex)
+	phoneStore.set_page_size(newValue.pageSize)
 }
 
 const table = useVueTable({
@@ -108,8 +108,8 @@ const table = useVueTable({
 })
 
 watchEffect(() => {
-	table.setPageIndex(tableStore.page_index)
-	table.setPageSize(tableStore.page_size)
+	table.setPageIndex(phoneStore.page_index)
+	table.setPageSize(phoneStore.page_size)
 })
 </script>
 

@@ -22,7 +22,7 @@ class CustomerView(APIView):
             # Retrieving a single customer
             customer = get_object_or_404(Customer, pk=customer_id)
             if not customer:
-                return JsonResponse({'error': 'Customer not found'}, status=404)
+                return JsonResponse({'message': 'Customer not found'}, status=404)
             serializer = CustomerSerializer(customer)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
@@ -37,7 +37,7 @@ class CustomerView(APIView):
             return JsonResponse({'Result': f"{serializer.data.get('name')} created successfully"}, status=201)
 
         else:
-            errors = {"error": "Customer creation failed.", "details": {}}
+            errors = {"message": "Customer creation failed.", "details": {}}
             for field, messages in serializer.errors.items():
                 # Assuming messages is a list of error strings
                 errors["details"][field] = " ".join(messages)  # Join messages for simplicity
@@ -75,7 +75,7 @@ class CustomerChangeView(APIView):
                 
                 return Response({'Result': 'Customer changed successfully'})
             else:
-                return Response({'error': 'You do not have permission to change.'},
+                return Response({'message': 'You do not have permission to change.'},
                                 status=status.HTTP_403_FORBIDDEN)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

@@ -139,33 +139,28 @@ addIcons(
   FaShareSquare
 )
 
-// const Fa = Object.values({ ...FaIcons });
+axios.defaults.baseURL = 'https://4e4d-211-26-122-216.ngrok-free.app';
+axios.defaults.withCredentials = true;
 
-// axios.interceptors.request.use(config => {
-//   const token = localStorage.getItem('token');
-//   if (token) {
-//     config.headers.Authorization = `Token ${token}`;
-//   }
+// Axios interceptor for Authorization header
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+  return config;
+});
 
-//   return config
-// })
+// Retrieve and set CSRF configuration
+function retrieveCSRFConfig() {
+  const drfCsrfElement = document.getElementById('drf_csrf');
+  return drfCsrfElement ? JSON.parse(drfCsrfElement.textContent || '{}') : {};
+}
 
-// axios.defaults.baseURL = 'http://localhost:8000'
-// axios.defaults.withCredentials = true; 
-
-// function retrieveCSRFConfig() {
-//   const drfCsrfElement = document.getElementById('drf_csrf');
-//   if (drfCsrfElement) {
-//       return JSON.parse(drfCsrfElement.textContent || '{}');
-//   }
-//   return {};
-// }
-
-// // Configure Axios to use CSRF token
-// const csrfConfig = retrieveCSRFConfig();
-// if (csrfConfig.csrfToken && csrfConfig.csrfHeaderName) {
-//   axios.defaults.headers.common[csrfConfig.csrfHeaderName] = csrfConfig.csrfToken;
-// }
+const csrfConfig = retrieveCSRFConfig();
+if (csrfConfig.csrfToken && csrfConfig.csrfHeaderName) {
+  axios.defaults.headers.common[csrfConfig.csrfHeaderName] = csrfConfig.csrfToken;
+}
 
 const app = createApp(App).component('VIcon', OhVueIcon)
 

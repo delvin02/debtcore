@@ -35,11 +35,14 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'type',
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Type"}),
+    accessorKey: 'category',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Category"}),
     cell: ({ row }) => {
+
+      const typeValue: string = row.getValue('category');
+
       const type = types.find( 
-        type => type.value === row.getValue('type'),
+        type => type.value === typeValue.toLowerCase(),
       )
 
       if (!type)
@@ -58,11 +61,12 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Status' }),
 
     cell: ({ row }) => {
-      console.log(row.getValue('status'))
+      const statusValue: string = row.getValue('status');
 
       const status = statuses.find(
-        status => status.value === row.getValue('status')
+        status => status.value === statusValue.toLowerCase()
       )
+
 
 
       if (!status)
@@ -102,28 +106,19 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'last_updated',
+    accessorKey: 'last_updated_date',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Last Updated"}),
     cell: ({ row }) => {
-      const date = row.getValue('last_updated') as string;
-      let formattedDate = '';
-
-      if (date) {
-          const parsedDate = new Date(Date.parse(date));
-          if (!isNaN(parsedDate.getTime())) {
-              formattedDate = parsedDate.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short', 
-                  day: 'numeric' 
-              });
-          } else {
-              formattedDate = 'Not Provided'; 
-          }
-      } else {
-          formattedDate = 'Not provided'; // Handle empty or null dueDate values
-      }
-
-      return h('div', { class: `w-fit ${formattedDate != 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
+      const date = row.getValue('last_updated_date');
+      if (!date || typeof date !== 'string' && typeof date !== 'number') {
+        return h('div', { class: 'w-fit' }, '');
+      }      
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric', month: 'long', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+      };
+      const formattedDate = new Intl.DateTimeFormat('en-US', options).format(new Date(date)); 
+      return h('div', { class: 'w-fit' }, formattedDate); 
     },
     enableSorting: false,
     enableHiding: false,

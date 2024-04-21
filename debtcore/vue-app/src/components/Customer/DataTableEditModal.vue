@@ -77,12 +77,17 @@ const countries: GenericSelectListModel = reactive({
 	data: [{ value: '', label: '' }]
 })
 
+const is_loading = ref(true)
+const is_dialog_open = ref(false)
+const error_message = ref<String | null>(null)
+const { toast } = useToast()
+
 const searchCountryQuery = ref('')
 
 async function fetchCountries(query?: string, currentCountryId?: number) {
 	countries.is_loading = true
 	try {
-		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		var url = `/api/country/list?search=${query}`
 		if (currentCountryId) {
 			url += `&current_country=${currentCountryId}`
 		}
@@ -95,17 +100,17 @@ async function fetchCountries(query?: string, currentCountryId?: number) {
 			}
 		})
 		countries.data = response.data.Result
-	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
+	} catch (error: any) {
+		var message = error.response.data.message || ''
+		toast({
+			title: 'Whoops, something went wrong',
+			description: message,
+			variant: 'destructive'
+		})
 	} finally {
 		countries.is_loading = false
 	}
 }
-
-const is_loading = ref(true)
-const is_dialog_open = ref(false)
-const error_message = ref<String | null>(null)
-const { toast } = useToast()
 
 watch(
 	searchCountryQuery,
@@ -115,7 +120,7 @@ watch(
 )
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/customer/${props.row.id}/`)
+		const response = await axios.get(`/api/customer/${props.row.id}/`)
 
 		Object.assign(form, response.data.Result)
 		if (form.country) {
@@ -156,13 +161,13 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/customer/${props.row.id}/`,
+			`/api/customer/${props.row.id}/`,
 			{
 				...form
 			},
 			{
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				}
 			}
 		)
@@ -173,7 +178,7 @@ async function submit() {
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.' 
+		let errorMessage = 'An unexpected error occurred.'
 		toast({
 			title: 'Whoops, something went wrong',
 			description: errorMessage || '',
@@ -271,7 +276,8 @@ function updateCountryQuery(event: any) {
 							/>
 						</div>
 						<div class="grid grid-cols-4 items-center gap-4">
-							<Label for="country" class="text-right leading-normal"> Country 
+							<Label for="country" class="text-right leading-normal">
+								Country
 								<span
 									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
 									>*</span

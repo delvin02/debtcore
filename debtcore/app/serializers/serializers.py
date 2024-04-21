@@ -6,3 +6,4 @@ from .country_serializer import *
 from .debt_serializer import *
 from .debt_backlog_serializer import *
 from .template_serializer import *
+from .setup_serializer import *

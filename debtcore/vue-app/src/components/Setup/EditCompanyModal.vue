@@ -59,7 +59,6 @@ const form = reactive<CompanyForm>({
 	name: '',
 	country: 0,
 	whatsapp_business_account_id: '',
-	whatsapp_phone_number_id: '',
 	notes: '',
 	is_active: false,
 	is_onboarded: false,
@@ -77,7 +76,7 @@ const searchCountryQuery = ref('')
 async function fetchCountries(query?: string, currentCountryId?: number) {
 	countries.is_loading = true
 	try {
-		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		var url = `/api/country/list?search=${query}`
 		if (currentCountryId) {
 			url += `&current_country=${currentCountryId}`
 		}
@@ -113,7 +112,7 @@ watch(
 
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/company/setup/`)
+		const response = await axios.get(`/api/company/setup/`)
 
 		Object.assign(form, response.data.Result)
 		if (form.country) {
@@ -126,7 +125,6 @@ async function init() {
 			description: 'An unexpected error occurred',
 			variant: 'destructive'
 		})
-
 	} finally {
 		is_loading.value = false
 	}
@@ -134,7 +132,10 @@ async function init() {
 
 function validateForm() {
 	const validations = [
-		{ condition: form.name == null || form.name == '' , message: 'Company name cannot be blank' },
+		{
+			condition: form.name == null || form.name == '',
+			message: 'Company name cannot be blank'
+		},
 		{ condition: form.country?.toString == null, message: 'Country cannot be blank' }
 	]
 
@@ -323,17 +324,6 @@ function updateCountryQuery(event: any) {
 							class="col-span-3"
 						/>
 					</div>
-					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="whatsapp_business_id" class="text-right">
-							Whatsapp Phone Number ID
-						</Label>
-						<Input
-							id="whatsapp_phone_number_id"
-							v-model="form.whatsapp_phone_number_id"
-							placeholder="XXXXXXXXXXXX"
-							class="col-span-3"
-						/>
-					</div>
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="is_active" class="text-right"> Notes </Label>
@@ -363,9 +353,7 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right">
-							Active Date
-						</Label>
+						<Label for="email" class="text-right"> Active Date </Label>
 
 						<div class="col-span-3">
 							<Popover>

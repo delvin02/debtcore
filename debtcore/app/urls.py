@@ -42,7 +42,13 @@ urlpatterns = [
     path('api/status/list', DebtStatusChoicesAPIView.as_view(), name="get_customer_list"),
 
     path('api/template', WhatsappTemplateView.as_view(), name="get_templates"),
-    path('connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth")
+    path('api/connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth"),
+
+    path('api/setup/template', import_template, name="import_template"),
+    path('api/export/reminder-template', export_reminder_template, name="export_reminder_template"),
+    path('api/refresh/company',company_refresh, name="company_refresh"),
+    path('api/setup/phone',phone, name="setup_phone"),
+    path('api/setup/phone/setdefault', set_phone_default, name="setup_phone_default")
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

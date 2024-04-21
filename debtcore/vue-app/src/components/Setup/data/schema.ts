@@ -1,20 +1,25 @@
 import { z } from 'zod'
+import { parseISO } from 'date-fns';
 
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
 export const taskSchema = z.object({
   id: z.number(),
-  invoice: z.string(),
-  customer_name: z.string().min(2).max(50),
-  due_date: z.preprocess((arg) => {
+  verified_name: z.string(),
+  quality_rating: z.string(),
+  platform_type: z.string(),
+  last_onboarded_time: z.preprocess((arg) => {
     if (typeof arg === 'string') {
-      return new Date(arg);
+      try {
+        return parseISO(arg);  // More robust parsing for ISO strings
+      } catch {
+        return new Date(arg);  // Fallback to native Date parsing
+      }
     }
     return arg;
-  }, z.date()),  
-  amount: z.string(),
-  document_url: z.string().url(),
-  status: z.number()
+  }, z.date()),
+   display_phone_number: z.string(),
+   is_default_phone: z.boolean()
 })
 
 export type Task = z.infer<typeof taskSchema>

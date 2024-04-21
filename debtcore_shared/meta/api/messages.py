@@ -1,21 +1,21 @@
-import requests
-import json
+import sys
+import aiohttp
+import asyncio
+from client import WhatsappMetaClient
 
-class WhatsappClient:
-    def __init__(self, base_url, access_token):
-        self.base_url = base_url
-        self.access_token = access_token
-        self.headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.access_token}'}
+class WhatsappMessage():
+    def __init__(self, client: WhatsappMetaClient, whatsapp_business_id):
+        self.client = client
+        self.endpoint = f"{whatsapp_business_id}/message_templates"
 
-    def send_template_message(self, recipient_phone_number, template_name, variables, document_id):
-        url = f"{self.base_url}/messages"
-        payload = self._construct_payload(recipient_phone_number, template_name, variables, document_id)
-        response = requests.post(url, headers=self.headers, data=json.dumps(payload))
-        try:
-            return response.json()
-        except ValueError:
-            return {'error': 'Failed to parse JSON response'}
+    # TODO
+    
 
+
+
+    '''
+        PRIVATE METHODS
+    '''
     def _construct_payload(self, recipient_phone_number, template_name, variables, document_id):
         return {
             "messaging_product": "whatsapp",
@@ -43,3 +43,10 @@ class WhatsappClient:
                 ]
             }
         }
+    
+
+
+
+
+
+

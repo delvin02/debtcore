@@ -56,6 +56,11 @@ const router = createRouter({
       name: 'connections',
       component: () => import("@/views/Connections.vue")
     },
+        {
+      path: '/connections/facebook',
+      name: 'connections_facebook',
+      component: () => import("@/views/ConnectionWhatsapp.vue")
+    },
     {
       path: '/user',
       name: 'name',
