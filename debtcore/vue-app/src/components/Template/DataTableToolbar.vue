@@ -26,7 +26,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 				placeholder="Search name..."
 				:model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
 				class="h-8 w-[150px] lg:w-[250px]"
-				@input="table.getColumn('name')?.setFilterValue($event.target.value)"
+				@input="table.setGlobalFilter($event.target.value)"
 			/>
 			<DataTableFacetedFilter
 				v-if="table.getColumn('status')"

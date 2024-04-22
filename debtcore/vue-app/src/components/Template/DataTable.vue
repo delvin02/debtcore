@@ -3,7 +3,8 @@ import type {
     ColumnDef,
     ColumnFiltersState,
     SortingState,
-    VisibilityState
+    VisibilityState,
+	PaginationState
 } from '@tanstack/vue-table'
 import {
     FlexRender,
@@ -16,7 +17,7 @@ import {
     useVueTable
 } from '@tanstack/vue-table'
 
-import { ref } from 'vue'
+import { ref, inject, watchEffect } from 'vue'
 import type { Task } from './data/schema'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'
@@ -29,6 +30,9 @@ import {
     TableHeader,
     TableRow
 } from '@/components/ui/table'
+import { useTableStore } from '@/store/table'
+
+const phoneStore = inject('phoneStore', useTableStore('phone'))
 
 interface DataTableProps {
     columns: ColumnDef<Task, any>[]
@@ -39,7 +43,31 @@ const props = defineProps<DataTableProps>()
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
+const pagination = ref<PaginationState>({
+	pageIndex: phoneStore.page_index,
+	pageSize: phoneStore.page_size
+})
 const rowSelection = ref({})
+
+function paginationUpdater(
+	updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState),
+	targetRef: any
+) {
+	let newValue: PaginationState
+
+	if (typeof updaterOrValue === 'function') {
+		// Call the function with the current ref value if updaterOrValue is a function
+		newValue = updaterOrValue(targetRef.value)
+	} else {
+		// Directly use updaterOrValue if it's not a function
+		newValue = updaterOrValue
+	}
+	// Update the ref with the new value
+	targetRef.value = newValue
+
+	phoneStore.set_page_index(newValue.pageIndex)
+	phoneStore.set_page_size(newValue.pageSize)
+}
 
 const table = useVueTable({
     get data() {
@@ -50,20 +78,24 @@ const table = useVueTable({
     },
     state: {
         get sorting() {
-            return sorting.value
-        },
-        get columnFilters() {
-            return columnFilters.value
-        },
-        get columnVisibility() {
-            return columnVisibility.value
-        },
-        get rowSelection() {
-            return rowSelection.value
-        }
+			return sorting.value
+		},
+		get columnFilters() {
+			return columnFilters.value
+		},
+		get columnVisibility() {
+			return columnVisibility.value
+		},
+		get rowSelection() {
+			return rowSelection.value
+		},
+		get pagination() {
+			return pagination.value
+		}
     },
     enableRowSelection: true,
     onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+    onPaginationChange: (updaterOrValue) => paginationUpdater(updaterOrValue, pagination),
     onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
     onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
     onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
@@ -73,6 +105,11 @@ const table = useVueTable({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
+})
+
+watchEffect(() => {
+	table.setPageIndex(phoneStore.page_index)
+	table.setPageSize(phoneStore.page_size)
 })
 </script>
 

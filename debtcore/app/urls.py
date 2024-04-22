@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/status/list', DebtStatusChoicesAPIView.as_view(), name="get_customer_list"),
 
     path('api/template', WhatsappTemplateView.as_view(), name="get_templates"),
+    path('api/template/<int:template_id>', WhatsappTemplateView.as_view(), name="get_template"),
     path('api/connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth"),
 
     path('api/setup/template', import_template, name="import_template"),

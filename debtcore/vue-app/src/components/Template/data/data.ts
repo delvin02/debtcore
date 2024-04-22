@@ -87,11 +87,11 @@ export const headers = [
 
 export const languages = [
   {
-    label: 'en',
-    value: 'English'
+    label: 'English',
+    value: 'en'
   },
   {
-    label: 'my',
-    value: 'Bahasa Melayu'
+    label: 'Bahasa Melayu',
+    value: 'ms'
   }
 ]

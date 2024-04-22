@@ -39,30 +39,30 @@ class FacebookOAuthView(APIView):
 
 
     def post(self, request):
-        code = request.data.get('code')
-        if not code:
-          return JsonResponse({'error': 'No code provided'}, status=400)
-        
-        company = request.user.company
-        
-        if not company:
-          return JsonResponse({'error': 'Company missing'}, status=400)
+      code = request.data.get('code')
+      if not code:
+        return JsonResponse({'error': 'No code provided'}, status=400)
+      
+      company = request.user.company
+      
+      if not company:
+        return JsonResponse({'error': 'Company missing'}, status=400)
 
-        params = {
-            'client_id': settings.META_APP_ID,
-            'client_secret': settings.META_APP_SECRET,
-            'redirect_uri': 'https://4e4d-211-26-122-216.ngrok-free.app/connections/facebook',
-            'code': code
-        }
+      params = {
+          'client_id': settings.META_APP_ID,
+          'client_secret': settings.META_APP_SECRET,
+          'redirect_uri': 'https://4e4d-211-26-122-216.ngrok-free.app/connections/facebook',
+          'code': code
+      }
 
-        # Exchange code for token with the provider
-        response = requests.get('https://graph.facebook.com/v17.0/oauth/access_token?', params=params)
-        
-        if response.status_code != 200:
-          return JsonResponse({'error': 'Failed to retrieve access token'}, status=response.status_code)
-        
-        tokens = response.json()
-        company.meta_access_token = tokens['access_token']
-        company.meta_token_created_date = timezone.now()
-        company.save()
-        return JsonResponse({'success': True})
+      # Exchange code for token with the provider
+      response = requests.get('https://graph.facebook.com/v17.0/oauth/access_token?', params=params)
+      
+      if response.status_code != 200:
+        return JsonResponse({'error': 'Failed to retrieve access token'}, status=response.status_code)
+      
+      tokens = response.json()
+      company.meta_access_token = tokens['access_token']
+      company.meta_token_created_date = timezone.now()
+      company.save()
+      return JsonResponse({'success': True})

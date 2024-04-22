@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import type { Column } from '@tanstack/vue-table'
-import type { Component } from 'vue'
 import { computed } from 'vue'
 import type { Task } from './data/schema'
-// import PlusCircledIcon from '~icons/radix-icons/plus-circled'
-// import CheckIcon from '~icons/radix-icons/check'
-
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,7 +13,6 @@ import {
     CommandList,
     CommandSeparator
 } from '@/components/ui/command'
-
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -88,7 +83,6 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
                             :value="option"
                             @select="
                                 (e) => {
-                                    console.log(e.detail.value)
                                     const isSelected = selectedValues.has(option.value)
                                     if (isSelected) {
                                         selectedValues.delete(option.value)

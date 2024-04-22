@@ -3,8 +3,10 @@ import { z } from 'zod'
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
 export const taskSchema = z.object({
-  id: z.string(),
+  id: z.number(),
+  template_id: z.string(),
   name: z.string().min(2).max(50),
+  language: z.string(),
   category: z.string(),
   status: z.string(),
   message_delivered: z.number(),

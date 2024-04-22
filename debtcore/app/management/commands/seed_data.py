@@ -29,7 +29,6 @@ class Command(BaseCommand):
             company = Company.objects.create(
                 name='DebtCore',
                 whatsapp_business_account_id='123456789',
-                whatsapp_phone_number_id='123456789',
                 created_by=None,
                 last_updated_by=None,
                 is_active=True,

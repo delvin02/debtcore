@@ -12,7 +12,9 @@ const templateUrl = 'http://127.0.0.1:8000/api/template'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
+		template_id: task.template_id,
 		name: task.name,
+		language: task.language,
 		category: task.category,
 		status: task.status,
 		message_delivered: task.message_delivered,

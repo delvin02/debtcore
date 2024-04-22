@@ -178,11 +178,11 @@ console.log(variables.value) // You will see each variable with its count of occ
 		<SheetTrigger>
 			<Button variant="secondary" size="sm" class="hidden h-8 ml-2 lg:flex">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
-				<VIcon name="fa-plus" class="size-4" />
+				View
 			</Button>
 		</SheetTrigger>
 		<SheetContent side="right" :class="cn('flex flex-col sm:max-w-full')">
-			<SheetTitle>Add Template</SheetTitle>
+			<SheetTitle>Edit Template</SheetTitle>
 			<Separator class="my-3" />
 			<div class="flex items-stretch h-full">
 				<div class="w-[300px] border-r-2 mr-2">
@@ -255,7 +255,7 @@ console.log(variables.value) // You will see each variable with its count of occ
 						</Popover>
 					</div>
 				</div>
-				<div class="border-r-2 w-[800px] h-[750px] overflow-auto ml-2">
+				<--<div class="border-r-2 w-[800px] h-[750px] overflow-auto ml-2">
 					<SheetHeader>
 						<SheetTitle>Template Design (English)</SheetTitle>
 						<SheetDescription>
@@ -266,7 +266,6 @@ console.log(variables.value) // You will see each variable with its count of occ
 					<div class="grid gap-2 py-2 mt-4">
 						<div class="flex justify-between items-center">
 							<SheetTitle>Header <Badge class="ml-1">Optional</Badge></SheetTitle>
-							<Button type="submit" variant="default" class="mr-2">Submit</Button>
 						</div>
 						<div class="grid grid-cols-4 items-center gap-4 ml-2">
 							<div class="col-span-1">
@@ -352,11 +351,6 @@ console.log(variables.value) // You will see each variable with its count of occ
 								<!-- <p class="text-muted-foreground">Enter the text for your message in the language you've selected.</p> -->
 							</div>
 						</div>
-						<div class="grid grid-cols-4 items-center gap-4">
-							<div class="col-span-4 mr-2">
-								<Input id="name" placeholder="Name" class="ml-1" />
-							</div>
-						</div>
 						<div
 							class="border border-primary/40 mr-2 rounded ml-1"
 							v-if="variables.length > 0"
@@ -378,15 +372,15 @@ console.log(variables.value) // You will see each variable with its count of occ
 						</div>
 					</div>
 
-					<!-- <div class="grid gap-2 py-2 mt-2">
+					<div class="grid gap-2 py-2 mt-2">
                         <SheetTitle class="mt-5">Footer</SheetTitle>
                         <div class="grid grid-cols-4 gap-4">
                             <div class="col-span-4 mr-4 pl-1">
                                 <Input placeholder="Type your footer here." class="p-2" />
                             </div>
                         </div>
-                    </div> -->
-				</div>
+                    </div> 
+				</div>-->
 				<div class="p-3 w-[400px]">
 					<SheetHeader>
 						<SheetTitle>Preview Message</SheetTitle>

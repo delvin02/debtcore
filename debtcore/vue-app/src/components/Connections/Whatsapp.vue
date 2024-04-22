@@ -19,7 +19,7 @@ const whatsappStore = connectionStore('whatsapp')
 const { toast } = useToast()
 
 onMounted(() => {
-	whatsappStore.init('https://4e4d-211-26-122-216.ngrok-free.app/api/connections/facebook')
+	whatsappStore.init('/api/connections/facebook')
 })
 
 const disconnect = () => {

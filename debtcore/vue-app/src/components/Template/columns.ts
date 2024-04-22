@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/vue-table'
 import { h } from 'vue'
 
-import { statuses, types } from './data/data'
+import { languages, statuses, types } from './data/data'
 import type { Task } from './data/schema'
 import DataTableColumnHeader from './DataTableColumnHeader.vue'
 import DataTableRowActions from './DataTableRowActions.vue'
@@ -35,6 +35,25 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
+    accessorKey: 'language',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Language"}),
+    cell: ({ row }) => {
+
+      const languageValue: string = row.getValue('language');
+
+      const language = languages.find( 
+        x => x.value === languageValue.toLowerCase(),
+      )
+
+      if (!language)
+        return null
+
+        return h('div', { class: "flex items-center"}, [
+          h('span', {}, language.label),
+        ])
+    },
+  },
+  {
     accessorKey: 'category',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Category"}),
     cell: ({ row }) => {
@@ -52,22 +71,17 @@ export const columns: ColumnDef<Task>[] = [
           h('span', {}, type.label),
         ])
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
   },
   {
     accessorKey: 'status',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Status' }),
 
     cell: ({ row }) => {
-      const statusValue: string = row.getValue('status');
+      const statusValue: string = row.getValue('status') as string;
 
       const status = statuses.find(
-        status => status.value === statusValue.toLowerCase()
+        status => status.value === statusValue?.toLowerCase()
       )
-
-
 
       if (!status)
         return null
@@ -82,7 +96,12 @@ export const columns: ColumnDef<Task>[] = [
         ])
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const rowValue = row.getValue(id);
+      if (typeof rowValue === 'string') {
+        return value.includes(rowValue.toLowerCase());
+      } else {
+        return value.includes(String(rowValue).toLowerCase());
+      }
     },
   },
   {

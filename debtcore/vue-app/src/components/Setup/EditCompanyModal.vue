@@ -48,7 +48,6 @@ interface CompanyForm {
 	name: string
 	country?: number | null
 	whatsapp_business_account_id: string
-	whatsapp_phone_number_id: string
 	notes: string
 	is_active: boolean
 	is_onboarded: boolean

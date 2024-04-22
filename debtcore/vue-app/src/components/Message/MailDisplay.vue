@@ -193,7 +193,6 @@ onMounted(() => {
                 </DropdownMenuContent>
             </DropdownMenu>
         </div> -->
-        <Separator />
         <div v-if="mail" class="flex flex-1 flex-col leading-[0px] items-stretch" ref="wrapperRef">
             <div class="flex items-start p-4" ref="chatHeaderRef">
                 <div class="flex items-start gap-4 text-sm">

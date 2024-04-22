@@ -43,24 +43,6 @@ def company_refresh(request):
         return JsonResponse({'message': "Missing whatsapp business id."}, status=400)
     client = WhatsappMetaClient(settings.META_SYSTEM_USER_ACCESS_TOKEN)
 
-    # Whatsapp Business Request
-    # request = WhatsAppBusinessRequest(client, company.meta_access_token)
-    # fetch_whatsapp_business_sync = async_to_sync(request.get_whatsapp_business)
-    # whatsapp_business = fetch_whatsapp_business_sync()
-
-    # if not whatsapp_business:
-    #     return JsonResponse({'message': "Company can't be refreshed."}, status=400)
-
-    # whatsapp_business_data = whatsapp_business.get('data')
-    # with transaction.atomic():
-    #     company.meta_user_id = whatsapp_business_data.get('user_id')
-    #     company.meta_is_valid = whatsapp_business_data.get('is_valid')
-
-    #     for granular_scope in whatsapp_business_data.get('granular_scopes'):
-    #         if granular_scope.get('scope') == "whatsapp_business_messaging":
-    #             company.whatsapp_business_account_id = granular_scope.get('target_ids')[0]
-    #     company.save()
-
     # Whatsapp Phone Number
     request_phone = WhatsappBusinessPhoneRequest(client, company.whatsapp_business_account_id)
     fetch_whatsapp_phone_sync = async_to_sync(request_phone.get_whatsapp_phone_profile)
@@ -110,38 +92,29 @@ def import_template(request):
         return JsonResponse({'message': "Templates can't be retrieved."}, status=400)
 
     template_data = templates.get('data')
-    errors = []
 
     with transaction.atomic():
         for template in template_data:
-            template_id = template.get('id')
-            existing_template = WhatsappTemplate.objects.filter(template_id=template_id, company=company).first()
-
-            if existing_template:
-                serializer = WhatsappTemplateSerializer(existing_template, data=template, context={'request': request}, partial=True)
-            else:
-                serializer = WhatsappTemplateSerializer(data=template, context={'request': request})
-
-            if serializer.is_valid():
-                whatsapp_template_data = serializer.validated_data
-                if existing_template:
-                    whatsapp_template = existing_template
-                else:
-                    whatsapp_template = WhatsappTemplate(**whatsapp_template_data)
-                    whatsapp_template.created_by = user
-                    whatsapp_template.created_date = timezone.now()
-
-                whatsapp_template.last_updated_by = user
-                whatsapp_template.last_updated_date = timezone.now()
-                whatsapp_template.company = company
+            # Note: Ensure the default fields do not include template_id since it's the lookup field.
+            defaults = {
+                'name': template.get('name'),
+                'language': template.get('language'),
+                'status': template.get('status'),
+                'category': template.get('category'),
+                'components': template.get('components'),
+                'company': company,
+                'last_updated_by': user,
+                'last_updated_date': timezone.now()
+            }
+            whatsapp_template, created = WhatsappTemplate.objects.update_or_create(
+                template_id=template.get('id'),  # This is the lookup field
+                defaults=defaults
+            )
+            if created:
+                whatsapp_template.created_by = user
+                whatsapp_template.created_date = timezone.now()
                 whatsapp_template.save()
-            else:
-                errors.append(serializer.errors)
-
-        if errors:
-            return JsonResponse({'errors': errors}, status=400)
-        else:
-            return JsonResponse({'message': 'WhatsApp Templates imported successfully.'}, status=200)
+    return JsonResponse({'message': 'WhatsApp Templates imported successfully.'}, status=200)
 
 @api_view(['POST'])
 def export_reminder_template(request):

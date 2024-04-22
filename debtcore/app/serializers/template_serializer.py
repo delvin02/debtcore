@@ -45,6 +45,7 @@ class WhatsappTemplateTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = WhatsappTemplate
         fields = ['id', 
+                  'template_id',
                   'name', 
                   'status',
                   'language',

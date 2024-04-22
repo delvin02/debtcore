@@ -17,16 +17,18 @@ class WhatsappTemplateView(APIView):
     
 
     def get(self, request, *args, **kwargs):
-        whatsapp_template_id = kwargs.get('whatsapp_template_id')
-        if whatsapp_template_id:
+        company: Company = request.user.company
+        id = kwargs.get('template_id')
+        if id:
             # Retrieving a single whatsapp_template
-            whatsapp_template = get_object_or_404(WhatsappTemplate, pk=whatsapp_template_id)
+            whatsapp_template = get_object_or_404(WhatsappTemplate, pk=id, company=company)
             if not whatsapp_template:
                 return JsonResponse({'error': 'WhatsappTemplate not found'}, status=404)
             serializer = WhatsappTemplateSerializer(whatsapp_template)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
-            whatsapp_templates = WhatsappTemplate.objects.all()
+            
+            whatsapp_templates = WhatsappTemplate.objects.filter(company=company)
             serializer = WhatsappTemplateTableSerializer(whatsapp_templates, many=True, context={'request': request})
             return JsonResponse({'Result': serializer.data}, status=200)
     

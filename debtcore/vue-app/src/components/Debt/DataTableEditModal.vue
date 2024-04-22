@@ -185,12 +185,13 @@ async function submit() {
 			}
 		)
 		toggleDialog()
+
 		await tableStore.refresh(tableStore.page_index)
 		toast({
 			title: response.data.Result,
 			variant: 'success'
 		})
-	} catch (error) {
+	} catch (error: any) {
 		let errorMessage = 'An unexpected error occurred.'
 		toast({
 			title: 'Whoops, something went wrong',

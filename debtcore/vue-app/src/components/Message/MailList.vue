@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { inject } from 'vue'
+import Separator from '../ui/separator/Separator.vue'
 
 interface MailListProps {
     items: Mail[]
@@ -61,10 +62,8 @@ function getBadgeVariantFromLabel(label: string) {
                                 {{ formatDistanceToNow(new Date(item.date), { addSuffix: true }) }}
                             </div>
                         </div>
+                        <Separator />
 
-                        <div class="text-xs font-medium">
-                            {{ item.subject }}
-                        </div>
                     </div>
                     <div class="line-clamp-2 text-xs text-muted-foreground">
                         {{ item.text.substring(0, 300) }}
