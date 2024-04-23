@@ -5,9 +5,6 @@ import type { Task } from './data/schema'
 
 import { statuses } from './data/data'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
-import DataTableViewOptions from './DataTableViewOptions.vue'
-import DataTableCreateDebt from './DataTableCreateDebt.vue'
-// import Cross2Icon from '~icons/radix-icons/cross-2'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -27,7 +24,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 				placeholder="Search..."
 				:model-value="(table.getColumn('verified_name')?.getFilterValue() as string) ?? ''"
 				class="h-8 w-[150px] lg:w-[250px]"
-				@input="() => table.setGlobalFilter($event.target.value)"
+				@input="table.setGlobalFilter($event.target.value)"
 			/>
 			<!-- @input="table.getColumn('invoice')?.setFilterValue($event.target.value)" -->
 
@@ -38,6 +35,5 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 				:options="statuses"
 			/> -->
 		</div>
-		<DataTableViewOptions :table="table" />
 	</div>
 </template>

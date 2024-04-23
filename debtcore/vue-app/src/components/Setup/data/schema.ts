@@ -5,6 +5,7 @@ import { parseISO } from 'date-fns';
 // IRL, you will have a schema for your data models.
 export const taskSchema = z.object({
   id: z.number(),
+  phone_number_id: z.string(),
   verified_name: z.string(),
   quality_rating: z.string(),
   platform_type: z.string(),

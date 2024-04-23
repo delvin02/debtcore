@@ -1,5 +1,6 @@
 import os
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from django.http import JsonResponse
 from app.models import WhatsappTemplate, Company, WhatsAppPhoneNumber, User
 from debtcore_shared.meta.client import WhatsappMetaClient
@@ -7,8 +8,11 @@ from debtcore_shared.meta.api.message_template import WhatsAppMessageTemplateReq
 from debtcore_shared.meta.api.whatsapp_business import WhatsAppBusinessRequest
 from debtcore_shared.meta.api.whatsapp_phone import WhatsappBusinessPhoneRequest
 from debtcore_shared.meta.api.resumable_upload import ResumableUploadRequest
+from debtcore_shared.meta.api.whatsapp_profile import WhatsappProfileRequest
+from django.core.files.storage import default_storage
+from debtcore_shared.meta.model.WhatsappProfile import WhatsappProfile
 from django.db import transaction
-from app.serializers.serializers import WhatsappTemplateSerializer, SetupPhoneTableSerializer, SetupWhatsappTemplateSerializer
+from app.serializers.serializers import *
 from asgiref.sync import async_to_sync
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -53,13 +57,31 @@ def company_refresh(request):
     
     with transaction.atomic():
         for phone in whatsapp_business_phone.get('data', []):  # Ensure 'data' key exists
+            phone_number_id = phone.get('id')
+            
             verified_name = phone.get('verified_name')
             display_phone_number = phone.get('display_phone_number')
             quality_rating = phone.get('quality_rating')
             platform_type = phone.get('platform_type')
             last_onboarded_time = phone.get('last_onboarded_time')
-            phone_number_id = phone.get('id')
 
+            # Obtain business profie
+            business_client = WhatsappMetaClient(company.meta_access_token)
+            request_profile = WhatsappProfileRequest(business_client, phone_number_id)
+            fetch_profile_sync = async_to_sync(request_profile.get_profile)
+            whatsapp_profile_response = fetch_profile_sync()
+            whatsapp_profile = whatsapp_profile_response.get('data')[0]
+            
+            image_url = whatsapp_profile.get('profile_picture_url')
+            about = whatsapp_profile.get('about')
+            address = whatsapp_profile.get('address')
+            description = whatsapp_profile.get('description')
+            email = whatsapp_profile.get('email')
+            address = whatsapp_profile.get('address')
+            vertical = whatsapp_profile.get('vertical')
+            websites = whatsapp_profile.get('websites', [])
+            website1 = websites[0] if len(websites) > 0 else None
+            website2 = websites[1] if len(websites) > 1 else None
             # Create or update the WhatsAppPhoneNumber instance
             whatsapp_phone, created = WhatsAppPhoneNumber.objects.update_or_create(
                 display_phone_number=display_phone_number,
@@ -70,7 +92,17 @@ def company_refresh(request):
                     'display_phone_number': display_phone_number,
                     'quality_rating': quality_rating,
                     'platform_type': platform_type,
-                    'last_onboarded_time': last_onboarded_time
+                    'last_onboarded_time': last_onboarded_time,
+                    
+                    'image_url': image_url,
+                    'about': about,
+                    'address': address,
+                    'description': description,
+                    'email': email,
+                    'address': address,
+                    'website1': website1,
+                    'website2': website2,
+                    'vertical': vertical
                 }
             )
 
@@ -145,7 +177,6 @@ def export_reminder_template(request):
     # Open the file and pass it as a file object
     with open(static_file_path, 'rb') as file_obj:
         file_data = file_obj.read()
-        filename = os.path.basename(static_file_path)
 
     request_resumable= ResumableUploadRequest(system_client, settings.META_APP_ID)
     sync_post_create_session = async_to_sync(request_resumable.create_upload_session)
@@ -215,3 +246,106 @@ def set_phone_default(request):
 
     except Exception as e:
         return JsonResponse({'message': str(e)}, status=500)
+
+class WhatsAppProfileAPIView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        company = request.user.company
+
+        if not company:
+            return JsonResponse({'message': "Missing company."}, status=400)
+
+        phone_id = kwargs.get('phone_number_id')
+
+        if not phone_id:
+            return JsonResponse({'message': "Missing phone number ID."}, status=400)
+
+        try:
+            with transaction.atomic():
+                phones = WhatsAppPhoneNumber.objects.filter(company=company)
+                phone = phones.filter(phone_number_id=phone_id).first()
+
+                if not phone:
+                    return JsonResponse({'message': "Phone number not found."}, status=400)
+
+                serializer = WhatsappProfileSerializer(phone)
+                return JsonResponse({'Result': serializer.data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'message': "Some internal error occurred."}, status=500)
+
+    def patch(self, request, *args, **kwargs):
+        company = request.user.company
+
+        if not company:
+            return JsonResponse({'message': "Missing company."}, status=400)
+
+        phone_id = kwargs.get('phone_number_id')
+
+        if not phone_id:
+            return JsonResponse({'message': "Missing phone number ID."}, status=400)
+
+        try:
+            with transaction.atomic():
+                phones = WhatsAppPhoneNumber.objects.filter(company=company)
+                phone = phones.filter(phone_number_id=phone_id).first()
+
+                if not phone:
+                    return JsonResponse({'message': "Phone number not found."}, status=404)
+
+                
+                serializer = WhatsappProfileSerializer(phone, data=request.data, partial=True)
+                if serializer.is_valid():
+                    
+                    new_image = request.FILES.get('new_image')
+                    
+                    if new_image:
+                        # Save the new_image file to a temporary location
+                        temp_file_path = default_storage.save('temp/' + new_image.name, new_image)
+                        temp_file_absolute_path = default_storage.path(temp_file_path)
+
+                        # Get the file size
+                        file_size = os.path.getsize(temp_file_absolute_path)
+
+                        # Open the file and pass it as a file object
+                        with open(temp_file_absolute_path, 'rb') as file_obj:
+                            file_data = file_obj.read()
+
+                        client = WhatsappMetaClient(company.meta_access_token)
+                        request_resumable = ResumableUploadRequest(client, settings.META_APP_ID)
+                        sync_post_create_session = async_to_sync(request_resumable.create_upload_session)
+
+                        # Media response from meta upload
+                        upload_response = sync_post_create_session(file_size)
+                        upload_response_id = upload_response.get('id')
+
+                        sync_post_upload = async_to_sync(request_resumable.upload)
+
+                        upload_success_response = sync_post_upload(upload_response_id, file_data)
+
+                        profile_picture_handle = upload_success_response.get('h')
+
+                        serializer.validated_data['profile_picture_handle'] = profile_picture_handle
+                        # Delete the temporary file
+                        default_storage.delete(temp_file_path)
+                    
+                    
+                    profile_data = WhatsappProfile(serializer.validated_data)
+
+                    client = WhatsappMetaClient(company.meta_access_token)
+                    profile_request = WhatsappProfileRequest(client, phone.phone_number_id)
+                    update_profile_sync = async_to_sync(profile_request.update_profile)
+                    update_profile_sync(profile_data)
+                    
+                    serializer.save()
+                    return JsonResponse({'Result': 'Whatsapp profile updated.'}, status=200)
+                return JsonResponse(serializer.errors, status=400)
+
+        except Exception as e:
+            return JsonResponse({'message': "Some internal error occurred."}, status=500)
+                 
+@api_view(['GET'])
+def get_whatsapp_business_category_list(request, *args, **kwargs):
+    category_choices = [{"key": key, "value": value} for key, value in WhatsAppPhoneNumber.VERTICAL_CHOICES]
+    serializer = WhatsappBusinessCategorySelectListSerializer(category_choices, many=True)
+    return JsonResponse({'Result': serializer.data}, status=200)

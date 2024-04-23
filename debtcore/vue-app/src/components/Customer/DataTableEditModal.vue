@@ -346,7 +346,6 @@ function updateCountryQuery(event: any) {
 											<CommandList v-else>
 												<VIcon
 													name="fa-circle-notch"
-													v-if="true"
 													animation="spin"
 													speed="slow"
 													class="w-fit h-fit mr-2 my-2 mx-auto"

@@ -49,7 +49,8 @@ urlpatterns = [
     path('api/export/reminder-template', export_reminder_template, name="export_reminder_template"),
     path('api/refresh/company',company_refresh, name="company_refresh"),
     path('api/setup/phone',phone, name="setup_phone"),
-    path('api/setup/phone/setdefault', set_phone_default, name="setup_phone_default")
-
+    path('api/setup/phone/setdefault', set_phone_default, name="setup_phone_default"),
+    path('api/setup/whatsapp-profile/<str:phone_number_id>', WhatsAppProfileAPIView.as_view(), name="whatsapp_profile"),
+    path('api/setup/whatsapp_business/category/list', get_whatsapp_business_category_list, name="get_category_list")
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

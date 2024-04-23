@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
 import DataTableSetDefaultPhone from './DataTableSetDefaultPhone.vue'
+import DataTableUpdateWhatsappProfile from './DataTableUpdateWhatsappProfile.vue'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
@@ -16,5 +17,6 @@ const task = computed(() => taskSchema.parse(props.row.original))
 <template>
 	<div class="flex gap-1">
 		<DataTableSetDefaultPhone :row="task" />
+		<DataTableUpdateWhatsappProfile :row="task" />
 	</div>
 </template>

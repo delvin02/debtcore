@@ -15,6 +15,7 @@ const setupPhoneUrl = '/api/setup/phone'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
+		phone_number_id: task.phone_number_id,
 		verified_name: task.verified_name,
 		quality_rating: task.quality_rating,
 		platform_type: task.platform_type,

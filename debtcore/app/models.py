@@ -249,6 +249,7 @@ class WhatsappTemplate(models.Model):
     
     def __str__(self):
         return self.name
+    
 class WhatsAppPhoneNumber(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='whatsapp_phone_numbers')
@@ -260,16 +261,55 @@ class WhatsAppPhoneNumber(models.Model):
     last_onboarded_time = models.DateTimeField()
     is_default_phone = models.BooleanField(default=False)
 
+    # Whatsapp Profile
+    image_url = models.URLField(max_length=1024, blank=True, null=True)
+    about = models.CharField(max_length=139, unique=True, blank=True, null=True)
+    address = models.CharField(max_length=256, unique=True, blank=True, null=True)
+    description = models.TextField(max_length=512, unique=True, blank=True, null=True)
+    email = models.EmailField(max_length=128, unique=True, blank=True, null=True)
+
+    VERTICAL_CHOICES = (
+        ('UNDEFINED', 'Undefined'),
+        ('OTHER', 'Other'),
+        ('AUTO', 'Auto'),
+        ('BEAUTY', 'Beauty'),
+        ('APPAREL', 'Apparel'),
+        ('EDU', 'Education'),
+        ('ENTERTAIN', 'Entertainment'),
+        ('EVENT_PLAN', 'Event Planning'),
+        ('FINANCE', 'Finance'),
+        ('GROCERY', 'Grocery'),
+        ('GOVT', 'Government'),
+        ('HOTEL', 'Hotel'),
+        ('HEALTH', 'Health'),
+        ('NONPROFIT', 'Nonprofit'),
+        ('PROF_SERVICES', 'Professional Services'),
+        ('RETAIL', 'Retail'),
+        ('TRAVEL', 'Travel'),
+        ('RESTAURANT', 'Restaurant'),
+        ('NOT_A_BIZ', 'Not a Business'),
+    )    
+    
+    vertical = models.CharField(max_length=14, choices=VERTICAL_CHOICES, null=True, blank=True)
+    website1 = models.URLField(max_length=256, null=True, blank=True)
+    website2 = models.URLField(max_length=256, null=True, blank=True)
+    
     def __str__(self):
         return self.display_phone_number
     
 
 class WhatsAppUser(models.Model):
+    whatsapp_id = models.IntegerField(primary_key=True, unique=True)
     company = models.ForeignKey(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20)
+    name = models.CharField(max_length=120)
+    
+    def __str__(self):
+        return self.phone_number
+
 
 class Conversation(models.Model):
-    participants = models.ManyToManyField(WhatsAppUser, related_name='conversations')
+    participants = models.ManyToManyField(WhatsAppUser, related_name='conversations_participants')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='conversations')
 
 class WhatsAppMessage(models.Model):
