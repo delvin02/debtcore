@@ -262,3 +262,34 @@ class WhatsAppPhoneNumber(models.Model):
 
     def __str__(self):
         return self.display_phone_number
+    
+
+class WhatsAppUser(models.Model):
+    company = models.ForeignKey(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=20)
+
+class Conversation(models.Model):
+    participants = models.ManyToManyField(WhatsAppUser, related_name='conversations')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='conversations')
+
+class WhatsAppMessage(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='received_messages')
+    message_text = models.TextField()
+    MESSAGE_CHOICES = (
+        ('1', 'Text'),
+        ('2', 'Image'),
+        ('3', 'Video'),
+        ('4', 'Audio'),
+        ('5', 'Document'),
+    )
+    message_type = models.CharField(max_length=10, choices=MESSAGE_CHOICES)
+    media_url = models.URLField(null=True, blank=True)
+    sent_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='messages')
+
+    class Meta:
+        ordering = ['sent_at']

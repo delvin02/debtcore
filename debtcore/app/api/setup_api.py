@@ -107,7 +107,7 @@ def import_template(request):
                 'last_updated_date': timezone.now()
             }
             whatsapp_template, created = WhatsappTemplate.objects.update_or_create(
-                template_id=template.get('id'),  # This is the lookup field
+                template_id=template.get('id'),  
                 defaults=defaults
             )
             if created:
