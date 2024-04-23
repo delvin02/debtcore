@@ -180,19 +180,9 @@ async function submit() {
 		})
 	} catch (error) {
 		let errorMessage = 'An unexpected error occurred.'
-		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				errorMessage = error.response.data.error
-			}
-		}
 		toast({
 			title: 'Whoops, something went wrong',
-			description: errorMessage || '',
+			description: errorMessage,
 			variant: 'destructive'
 		})
 	} finally {

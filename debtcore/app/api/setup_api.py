@@ -294,7 +294,7 @@ class WhatsAppProfileAPIView(APIView):
                     return JsonResponse({'message': "Phone number not found."}, status=404)
 
                 
-                serializer = WhatsappProfileSerializer(phone, data=request.data, partial=True)
+                serializer = WhatsappProfileSerializer(phone, data=request.data, partial=True , context={'request': request})
                 if serializer.is_valid():
                     
                     new_image = request.FILES.get('new_image')
@@ -336,7 +336,14 @@ class WhatsAppProfileAPIView(APIView):
                     profile_request = WhatsappProfileRequest(client, phone.phone_number_id)
                     update_profile_sync = async_to_sync(profile_request.update_profile)
                     update_profile_sync(profile_data)
-                    
+
+                    get_profile_sync = async_to_sync(profile_request.get_profile)
+                    profile_picture = get_profile_sync("profile_picture_url").get('data')[0]
+                    profile_picture_url = profile_picture.get('profile_picture_url')
+
+                    serializer.validated_data['image_url'] = profile_picture_url
+
+
                     serializer.save()
                     return JsonResponse({'Result': 'Whatsapp profile updated.'}, status=200)
                 return JsonResponse(serializer.errors, status=400)

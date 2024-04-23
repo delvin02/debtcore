@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
 	Dialog,
-	DialogScrollContent ,
+	DialogScrollContent,
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
@@ -42,7 +42,6 @@ interface DataTableWhatsappProfile {
 
 const props = defineProps<DataTableWhatsappProfile>()
 
-
 // Form Modal
 interface Profile {
 	phone_number_id: string
@@ -51,9 +50,9 @@ interface Profile {
 	address?: string
 	description?: string
 	email: string
-  vertical: string | number
-	website1: string | null
-	website2: string | null
+	vertical: string | number
+	website1: string
+	website2: string
 
 	new_image?: File | null
 }
@@ -64,9 +63,9 @@ const form = reactive<Profile>({
 	about: '',
 	address: '',
 	description: '',
-  email: '',
-  vertical: '',
-  website1: '',
+	email: '',
+	vertical: '',
+	website1: '',
 	website2: '',
 	new_image: null
 })
@@ -76,7 +75,6 @@ const categories: GenericSelectListModel = reactive({
 	is_open: false,
 	data: [{ value: '', label: '' }]
 })
-
 
 async function fetchCategories() {
 	categories.is_loading = true
@@ -98,11 +96,10 @@ async function fetchCategories() {
 			description: message,
 			variant: 'destructive'
 		})
-		} finally {
+	} finally {
 		categories.is_loading = false
 	}
 }
-
 
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
@@ -114,7 +111,7 @@ async function init() {
 		const response = await axios.get(`/api/setup/whatsapp-profile/${form.phone_number_id}`)
 		Object.assign(form, response.data.Result)
 	} catch (error: any) {
-    var message = error.response.data.message || ''
+		var message = error.response.data.message || ''
 		toast({
 			title: 'Whoops, something went wrong',
 			description: message,
@@ -198,27 +195,29 @@ function handleCategorySelect(category: any) {
 }
 
 const handleFileUpload = (event: Event) => {
-	const target = event.target as HTMLInputElement
-	const files = target.files
-	if (files && files.length > 0) {
-		form.new_image = files[0]
-	} else {
-		form.new_image = null
+	const input = event.target as HTMLInputElement
+	if (input.files?.length) {
+		const file = input.files[0]
+
+		// Check if the file size is under 5MB
+		if (file.size > 5 * 1024 * 1024) {
+			toast({
+				title: 'The file size must be under 5MB',
+				variant: 'destructive'
+			})
+			input.value = ''
+			return
+		}
+
+		form.new_image = file
 	}
 }
-
-
 </script>
 
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="p-2 px-3"
-				@click="toggleProfile"
-			>
+			<Button variant="default" size="sm" class="p-2 px-3" @click="toggleProfile">
 				Profile
 			</Button>
 		</div>
@@ -232,26 +231,33 @@ const handleFileUpload = (event: Event) => {
 				</DialogHeader>
 				<div class="grid gap-4 py-4">
 					<div class="flex justify-center">
-						<img id="picture" :src="previewImageUrl" class="mx-auto size-48 mb-4 h-full" />
-
-					</div>
-					<div class="grid grid-cols-4 items-center gap-4 ">
-						<Label for="profile_picture" class="text-right">
-							Profile Picture
-						</Label>
-						<Input
-							id="profile_picture"
-							type="file"
-							@change="handleFileUpload"
-							class="col-span-3"
+						<img
+							id="picture"
+							:src="previewImageUrl"
+							class="mx-auto size-48 mb-4 h-full"
 						/>
 					</div>
-					<Separator/>
+					<div class="grid grid-cols-4 items-center">
+						<Label for="profile_picture" class="mr-4 text-right">
+							Profile Picture
+						</Label>
+						<div class="col-span-3">
+							<Input
+								id="profile_picture"
+								type="file"
+								@change="handleFileUpload"
+								class="col-span-3"
+							/>
+						</div>
+						<p class="col-start-2 col-span-3 text-sm text-gray-500 dark:text-gray-300">
+							Recommended Type: 640px x 640px <b>JPG/JPEG</b> (MAX. 5MB)
+						</p>
+					</div>
+
+					<Separator />
 
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="about" class="text-right">
-							About
-						</Label>
+						<Label for="about" class="text-right"> About </Label>
 						<Input
 							id="about"
 							v-model="form.about"
@@ -259,10 +265,8 @@ const handleFileUpload = (event: Event) => {
 							class="col-span-3"
 						/>
 					</div>
-          <div class="grid grid-cols-4 items-center gap-4">
-						<Label for="address" class="text-right">
-							Address
-						</Label>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="address" class="text-right"> Address </Label>
 						<Input
 							id="address"
 							v-model="form.address"
@@ -270,10 +274,8 @@ const handleFileUpload = (event: Event) => {
 							class="col-span-3"
 						/>
 					</div>
-          <div class="grid grid-cols-4 items-center gap-4">
-						<Label for="description" class="text-right">
-							Description
-						</Label>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="description" class="text-right"> Description </Label>
 						<Textarea
 							id="description"
 							v-model="form.description"
@@ -281,10 +283,8 @@ const handleFileUpload = (event: Event) => {
 							class="col-span-3"
 						/>
 					</div>
-          <div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right">
-							Email
-						</Label>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="email" class="text-right"> Email </Label>
 						<Input
 							id="email"
 							v-model="form.email"
@@ -293,9 +293,7 @@ const handleFileUpload = (event: Event) => {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="websites" class="text-right">
-							Websites
-						</Label>
+						<Label for="websites" class="text-right"> Websites </Label>
 						<div class="flex gap-2 col-span-3">
 							<Input
 								id="website"
@@ -312,9 +310,7 @@ const handleFileUpload = (event: Event) => {
 						</div>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="customer" class="text-right leading-normal">
-							Category
-						</Label>
+						<Label for="customer" class="text-right leading-normal"> Category </Label>
 						<div class="col-span-3">
 							<Popover v-model:open="categories.is_open">
 								<PopoverTrigger as-child>
@@ -374,13 +370,13 @@ const handleFileUpload = (event: Event) => {
 											</CommandGroup>
 										</CommandList>
 										<CommandList v-else>
-												<VIcon
-													name="fa-circle-notch"
-													animation="spin"
-													speed="slow"
-													class="w-fit h-fit mr-2 my-2 mx-auto"
-												/>
-											</CommandList>
+											<VIcon
+												name="fa-circle-notch"
+												animation="spin"
+												speed="slow"
+												class="w-fit h-fit mr-2 my-2 mx-auto"
+											/>
+										</CommandList>
 									</Command>
 								</PopoverContent>
 							</Popover>
@@ -406,7 +402,7 @@ const handleFileUpload = (event: Event) => {
 						Update</Button
 					>
 				</DialogFooter>
-			</DialogScrollContent >
+			</DialogScrollContent>
 		</Dialog>
 	</div>
 </template>
