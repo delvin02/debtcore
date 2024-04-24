@@ -51,6 +51,6 @@ urlpatterns = [
     path('api/setup/phone',phone, name="setup_phone"),
     path('api/setup/phone/setdefault', set_phone_default, name="setup_phone_default"),
     path('api/setup/whatsapp-profile/<str:phone_number_id>', WhatsAppProfileAPIView.as_view(), name="whatsapp_profile"),
-    path('api/setup/whatsapp_business/category/list', get_whatsapp_business_category_list, name="get_category_list")
-
+    path('api/setup/whatsapp_business/category/list', get_whatsapp_business_category_list, name="get_category_list"),
+    path('api/setup/phone/send-test-message', send_test_message, name="send_test_message")
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -299,11 +299,12 @@ class WhatsAppPhoneNumber(models.Model):
     
 
 class WhatsAppUser(models.Model):
-    whatsapp_id = models.IntegerField(primary_key=True, unique=True)
-    company = models.ForeignKey(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=20)
-    name = models.CharField(max_length=120)
-    
+    id = models.AutoField(primary_key=True, unique=True)
+    whatsapp_phone = models.ForeignKey(WhatsAppPhoneNumber, on_delete=models.CASCADE, related_name="whatsapp_company_phone", blank=True, null=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="whatsapp_company", blank=True, null=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    name = models.CharField(max_length=120, null=True, blank=True)
+    whatsapp_id = models.CharField(max_length=120, null=True, blank=True)
     def __str__(self):
         return self.phone_number
 

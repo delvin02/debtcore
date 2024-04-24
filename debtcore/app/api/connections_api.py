@@ -51,7 +51,7 @@ class FacebookOAuthView(APIView):
       params = {
           'client_id': settings.META_APP_ID,
           'client_secret': settings.META_APP_SECRET,
-          'redirect_uri': 'https://4e4d-211-26-122-216.ngrok-free.app/connections/facebook',
+          'redirect_uri': f'{settings.DOMAIN}/connections/facebook',
           'code': code
       }
 

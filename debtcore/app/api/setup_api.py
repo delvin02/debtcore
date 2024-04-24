@@ -2,13 +2,21 @@ import os
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from app.models import WhatsappTemplate, Company, WhatsAppPhoneNumber, User
+from app.models import WhatsappTemplate, Company, WhatsAppPhoneNumber, User, WhatsAppUser, Conversation, WhatsAppMessage
 from debtcore_shared.meta.client import WhatsappMetaClient
 from debtcore_shared.meta.api.message_template import WhatsAppMessageTemplateRequest
 from debtcore_shared.meta.api.whatsapp_business import WhatsAppBusinessRequest
 from debtcore_shared.meta.api.whatsapp_phone import WhatsappBusinessPhoneRequest
 from debtcore_shared.meta.api.resumable_upload import ResumableUploadRequest
 from debtcore_shared.meta.api.whatsapp_profile import WhatsappProfileRequest
+
+from debtcore_shared.meta.model.MessageObject import TextObject
+from debtcore_shared.meta.model.Message import Message
+from debtcore_shared.meta.model.MessageObject.Language import Language
+from debtcore_shared.meta.model.MessageObject.TemplateObject import TemplateObject
+from debtcore_shared.meta.model.MessageObject.TemplateComponent import TemplateComponent
+from debtcore_shared.meta.api.message import MessageRequest
+
 from django.core.files.storage import default_storage
 from debtcore_shared.meta.model.WhatsappProfile import WhatsappProfile
 from django.db import transaction
@@ -103,6 +111,16 @@ def company_refresh(request):
                     'website1': website1,
                     'website2': website2,
                     'vertical': vertical
+                }
+            )
+            
+            whatsapp_user, created = WhatsAppUser.objects.update_or_create(
+                whatsapp_phone=whatsapp_phone,
+                defaults={
+                    'company': company,
+                    'name': verified_name,
+                    'whatsapp_phone': whatsapp_phone,
+                    'phone_number': display_phone_number
                 }
             )
 
@@ -247,6 +265,88 @@ def set_phone_default(request):
     except Exception as e:
         return JsonResponse({'message': str(e)}, status=500)
 
+@api_view(['POST'])
+def send_test_message(request):
+    company = request.user.company
+    
+    if not company:
+        return JsonResponse({'message': 'Missing company'}, status=400)
+    
+    phone_id = request.data.get('id')
+    
+    sender = WhatsAppPhoneNumber.objects.get(pk=phone_id)
+    if not sender:
+        return JsonResponse({'message': "Phone number not found."}, status=404)
+    
+    to = request.data.get('phone')
+    try:
+        language: Language = Language("en")
+        
+        
+        
+        template_head: TemplateComponent = TemplateComponent(component_type="header")
+
+        # Define the content for the document parameter
+        document_content = {
+            "link": f"{settings.DOMAIN}/static/pdf/bills.pdf"
+        }
+
+        # Add the document parameter to the header component
+        template_head.add_parameter(param_type="document", content=document_content)
+        
+        template_component: TemplateComponent = TemplateComponent(component_type="body")
+        template_component.add_parameter(param_type='text', content='John Doe')
+        template_component.add_parameter(param_type='text', content='001')
+        template_component.add_parameter(param_type='text', content='RM 200')
+        template_component.add_parameter(param_type='text', content='2023-04-20')
+        template_component.add_parameter(param_type='text', content='CIMB BANK')
+        template_component.add_parameter(param_type='text', content='1122 1060')
+        template_component.add_parameter(param_type='text', content=company.name)
+
+
+        template_obj: TemplateObject = TemplateObject(name="payment_reminder", language=language)
+
+        template_obj.add_component(template_head)
+        template_obj.add_component(template_component)
+
+        text_message = Message(message_type='template', to=to, template=template_obj)
+
+        client = WhatsappMetaClient(company.meta_access_token)
+        request_send_message = MessageRequest(client, sender.phone_number_id)
+        sync_send_message = async_to_sync(request_send_message.send_test_message)
+        response = sync_send_message(text_message)
+
+        with transaction.atomic():
+            contact = response.get("contacts")[0]
+            
+            recipient, is_new = WhatsAppUser.objects.get_or_create(
+                phone_number=to,
+                defaults={'name': 'Test', 'company': company, 'whatsapp_id': contact.get('wa_id') }
+            )
+            sender_user, _ = WhatsAppUser.objects.get_or_create(
+                whatsapp_phone=sender,
+                defaults={'name': sender.verified_name, 'company': company, 'whatsapp_phone':sender}
+            )
+
+            conversation, created = Conversation.objects.get_or_create(
+                company=company
+            )
+            conversation.participants.add(sender_user, recipient)
+            conversation.save()
+
+            whatsapp_message = WhatsAppMessage.objects.create(
+                conversation=conversation,
+                sender=sender_user,
+                recipient=recipient,
+                message_text=text_message,
+                company=company,
+                message_type='1' 
+            )
+            
+        return JsonResponse({'message': "Test phone number send successfully."}, status=200)
+    except Exception as e:
+        return JsonResponse({'message': "Some error occurred"}, status=500)
+
 class WhatsAppProfileAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
@@ -294,7 +394,7 @@ class WhatsAppProfileAPIView(APIView):
                     return JsonResponse({'message': "Phone number not found."}, status=404)
 
                 
-                serializer = WhatsappProfileSerializer(phone, data=request.data, partial=True , context={'request': request})
+                serializer = WhatsappProfileSerializer(phone, data=request.data, partial=True)
                 if serializer.is_valid():
                     
                     new_image = request.FILES.get('new_image')
@@ -336,14 +436,11 @@ class WhatsAppProfileAPIView(APIView):
                     profile_request = WhatsappProfileRequest(client, phone.phone_number_id)
                     update_profile_sync = async_to_sync(profile_request.update_profile)
                     update_profile_sync(profile_data)
-
-                    get_profile_sync = async_to_sync(profile_request.get_profile)
-                    profile_picture = get_profile_sync("profile_picture_url").get('data')[0]
-                    profile_picture_url = profile_picture.get('profile_picture_url')
-
-                    serializer.validated_data['image_url'] = profile_picture_url
-
-
+                    
+                    # Update the Image URL into the local database
+                    fetch_profile_sync = async_to_sync(profile_request.get_profile)
+                    serializer.validated_data["image_url"] = fetch_profile_sync("profile_picture_url")
+                    
                     serializer.save()
                     return JsonResponse({'Result': 'Whatsapp profile updated.'}, status=200)
                 return JsonResponse(serializer.errors, status=400)
