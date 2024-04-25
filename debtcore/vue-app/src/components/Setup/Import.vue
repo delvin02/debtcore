@@ -5,6 +5,9 @@ import type { ExportModel } from '@/common/Export.ts'
 import { ref, reactive, inject, watch, computed } from 'vue'
 import axios from 'axios'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useTableStore } from '@/store/table'
+
+const phoneStore = inject('phoneStore', useTableStore('phone'))
 
 const template: ExportModel = reactive({
 	is_loading: false
@@ -25,6 +28,7 @@ async function CompanyRefresh() {
 	try {
 		const response = await axios.post(`/api/refresh/company`)
 
+		await phoneStore.refresh(phoneStore.page_index)
 		toast({
 			title: response.data.message,
 			variant: 'success'

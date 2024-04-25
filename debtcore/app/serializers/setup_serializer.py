@@ -21,6 +21,26 @@ class WhatsappProfileSerializer(serializers.ModelSerializer):
         model = WhatsAppPhoneNumber
         fields = ['image_url', 'about', 'address', 'description', 'email', 'vertical', 'website1', 'website2']
 
+
+    def to_representation(self, instance):
+        """
+        Convert `None` to empty string in the serialized output.
+        """
+        result = super(WhatsappProfileSerializer, self).to_representation(instance)
+
+        # Get the request from the serializer context
+        request = self.context.get('request')
+        
+        # Check if the request is a PATCH request
+        if request and request.method == 'PATCH':
+            # Exclude 'image_url' from serialization
+            self.fields.pop('image_url', None)
+            
+        for key, value in result.items():
+            if value is None:
+                result[key] = ''
+        return result
+    
     def validate_about(self, about):
         if about is not None and (len(about) < 1 or len(about) > 139):
             raise serializers.ValidationError("About text must be between 1 and 139 characters")
@@ -43,10 +63,6 @@ class WhatsappProfileSerializer(serializers.ModelSerializer):
                 data[field] = None
         return super().to_internal_value(data)
     
-    def validate_websites(self, websites):
-        if len(websites) != 2:
-            raise serializers.ValidationError("Exactly two websites required.")
-        return websites
 
     def create(self, instance):
         instance.save()

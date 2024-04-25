@@ -18,15 +18,6 @@ class WhatsappProfileRequest():
 
     async def update_profile(self, profile_data: WhatsappProfile):
         # Serialize the BusinessProfileUpdateRequest data into JSON
-        json_data = json.dumps({
-            "about": profile_data.about,
-            "address": profile_data.address,
-            "description": profile_data.description,
-            "email": profile_data.email,
-            "vertical": profile_data.vertical,
-            "websites": profile_data.websites,
-            "profile_picture_handle": profile_data.profile_picture_handle,
-            "messaging_product": profile_data.messaging_product  # Ensure this field is included
-        })
+        json_data = profile_data.to_json()
         return await self.client.post_async(self.endpoint, data=json_data)
 

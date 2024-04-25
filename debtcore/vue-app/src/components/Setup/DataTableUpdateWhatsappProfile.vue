@@ -109,6 +109,7 @@ const { toast } = useToast()
 async function init() {
 	try {
 		const response = await axios.get(`/api/setup/whatsapp-profile/${form.phone_number_id}`)
+		console.log(response.data.Result)
 		Object.assign(form, response.data.Result)
 	} catch (error: any) {
 		var message = error.response.data.message || ''
@@ -261,7 +262,7 @@ const handleFileUpload = (event: Event) => {
 						<Input
 							id="about"
 							v-model="form.about"
-							placeholder="We supply exceptional concrete for builders."
+							placeholder="Lot 1919, Taman Bandar Puteri, 5000 Selangor."
 							class="col-span-3"
 						/>
 					</div>
@@ -270,7 +271,7 @@ const handleFileUpload = (event: Event) => {
 						<Input
 							id="address"
 							v-model="form.address"
-							placeholder="We supply exceptional concrete for builders."
+							placeholder="Lot 1111, Tmana Mawar Baiduri, 5000 Selangor"
 							class="col-span-3"
 						/>
 					</div>
@@ -288,7 +289,7 @@ const handleFileUpload = (event: Event) => {
 						<Input
 							id="email"
 							v-model="form.email"
-							placeholder="We supply exceptional concrete for builders."
+							placeholder="hello@gmail.com"
 							class="col-span-3"
 						/>
 					</div>

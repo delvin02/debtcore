@@ -335,10 +335,10 @@ def send_test_message(request):
             conversation.save()
 
             whatsapp_message = WhatsAppMessage.objects.create(
+                whatsapp_message_id=response.get("messages")[0].get('id'),
                 conversation=conversation,
                 sender=sender_user,
                 recipient=recipient,
-                message_text=text_message,
                 company=company,
                 message_type='1' 
             )
@@ -394,43 +394,49 @@ class WhatsAppProfileAPIView(APIView):
                     return JsonResponse({'message': "Phone number not found."}, status=404)
 
                 
-                serializer = WhatsappProfileSerializer(phone, data=request.data, partial=True)
+                new_image = request.FILES.get('new_image')
+                profile_picture_handle = None
+
+                if new_image:
+                    # Save the new_image file to a temporary location
+                    temp_file_path = default_storage.save('temp/' + new_image.name, new_image)
+                    temp_file_absolute_path = default_storage.path(temp_file_path)
+
+                    # Get the file size
+                    file_size = os.path.getsize(temp_file_absolute_path)
+
+                    # Open the file and pass it as a file object
+                    with open(temp_file_absolute_path, 'rb') as file_obj:
+                        file_data = file_obj.read()
+
+                    client = WhatsappMetaClient(company.meta_access_token)
+                    request_resumable = ResumableUploadRequest(client, settings.META_APP_ID)
+                    sync_post_create_session = async_to_sync(request_resumable.create_upload_session)
+
+                    # Media response from meta upload
+                    upload_response = sync_post_create_session(file_size)
+                    upload_response_id = upload_response.get('id')
+
+                    sync_post_upload = async_to_sync(request_resumable.upload)
+
+                    upload_success_response = sync_post_upload(upload_response_id, file_data)
+
+                    profile_picture_handle = upload_success_response.get('h')
+
+                    # Delete the temporary file
+                    default_storage.delete(temp_file_path)
+
+                data = request.data.copy()
+                data.pop('image_url')
+
+                serializer = WhatsappProfileSerializer(phone, data=data, partial=True)
                 if serializer.is_valid():
-                    
-                    new_image = request.FILES.get('new_image')
-                    
-                    if new_image:
-                        # Save the new_image file to a temporary location
-                        temp_file_path = default_storage.save('temp/' + new_image.name, new_image)
-                        temp_file_absolute_path = default_storage.path(temp_file_path)
-
-                        # Get the file size
-                        file_size = os.path.getsize(temp_file_absolute_path)
-
-                        # Open the file and pass it as a file object
-                        with open(temp_file_absolute_path, 'rb') as file_obj:
-                            file_data = file_obj.read()
-
-                        client = WhatsappMetaClient(company.meta_access_token)
-                        request_resumable = ResumableUploadRequest(client, settings.META_APP_ID)
-                        sync_post_create_session = async_to_sync(request_resumable.create_upload_session)
-
-                        # Media response from meta upload
-                        upload_response = sync_post_create_session(file_size)
-                        upload_response_id = upload_response.get('id')
-
-                        sync_post_upload = async_to_sync(request_resumable.upload)
-
-                        upload_success_response = sync_post_upload(upload_response_id, file_data)
-
-                        profile_picture_handle = upload_success_response.get('h')
-
-                        serializer.validated_data['profile_picture_handle'] = profile_picture_handle
-                        # Delete the temporary file
-                        default_storage.delete(temp_file_path)
-                    
-                    
+                 
                     profile_data = WhatsappProfile(serializer.validated_data)
+
+                    if profile_picture_handle:
+                        profile_data.set_profile_picture_handle(profile_picture_handle)
+
 
                     client = WhatsappMetaClient(company.meta_access_token)
                     profile_request = WhatsappProfileRequest(client, phone.phone_number_id)
@@ -439,7 +445,7 @@ class WhatsAppProfileAPIView(APIView):
                     
                     # Update the Image URL into the local database
                     fetch_profile_sync = async_to_sync(profile_request.get_profile)
-                    serializer.validated_data["image_url"] = fetch_profile_sync("profile_picture_url")
+                    serializer.validated_data["image_url"] = fetch_profile_sync("profile_picture_url").get('data')[0].get('profile_picture_url')
                     
                     serializer.save()
                     return JsonResponse({'Result': 'Whatsapp profile updated.'}, status=200)

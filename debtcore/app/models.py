@@ -314,10 +314,11 @@ class Conversation(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='conversations')
 
 class WhatsAppMessage(models.Model):
+    whatsapp_message_id = models.CharField(max_length=128)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='received_messages')
-    message_text = models.TextField()
+    message_text = models.TextField(null=True,blank=True)
     MESSAGE_CHOICES = (
         ('1', 'Text'),
         ('2', 'Image'),

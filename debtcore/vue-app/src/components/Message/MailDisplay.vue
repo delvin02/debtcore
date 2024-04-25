@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-    Archive,
-    ArchiveX,
-    Clock,
-    Forward,
-    MoreVertical,
-    Reply,
-    ReplyAll,
-    Trash2
+	Archive,
+	ArchiveX,
+	Clock,
+	Forward,
+	MoreVertical,
+	Reply,
+	ReplyAll,
+	Trash2
 } from 'lucide-vue-next'
 import { computed, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import addDays from 'date-fns/addDays'
@@ -17,10 +17,10 @@ import nextSaturday from 'date-fns/nextSaturday'
 import type { Mail } from './data/mails'
 import { Calendar } from '@/components/ui/calendar'
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -33,16 +33,16 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface MailDisplayProps {
-    mail: Mail | undefined
+	mail: Mail | undefined
 }
 
 const props = defineProps<MailDisplayProps>()
 
 const mailFallbackName = computed(() => {
-    return props.mail?.name
-        .split(' ')
-        .map((chunk) => chunk[0])
-        .join('')
+	return props.mail?.name
+		.split(' ')
+		.map((chunk) => chunk[0])
+		.join('')
 })
 
 const today = new Date()
@@ -54,23 +54,23 @@ const sendMessageRef = ref<HTMLDivElement | null>(null)
 const wrapperHeight = ref<string>('0px')
 
 const fixMessageLayout = () => {
-    nextTick(() => {
-        const headerHeight: number = chatHeaderRef.value?.offsetHeight ?? 0
-        const footerHeight: number = sendMessageRef.value?.offsetHeight ?? 0
-        const window: number = wrapperRef.value?.offsetHeight ?? 0
+	nextTick(() => {
+		const headerHeight: number = chatHeaderRef.value?.offsetHeight ?? 0
+		const footerHeight: number = sendMessageRef.value?.offsetHeight ?? 0
+		const window: number = wrapperRef.value?.offsetHeight ?? 0
 
-        wrapperHeight.value = `${window - (headerHeight + footerHeight + 30)}px`
-    })
+		wrapperHeight.value = `${window - (headerHeight + footerHeight + 30)}px`
+	})
 }
 
 onMounted(() => {
-    fixMessageLayout()
+	fixMessageLayout()
 })
 </script>
 
 <template>
-    <div class="flex h-full flex-col">
-        <!-- <div class="flex items-center p-2">
+	<div class="flex h-full flex-col">
+		<!-- <div class="flex items-center p-2">
             <div class="flex items-center gap-2">
                 <Tooltip>
                     <TooltipTrigger as-child>
@@ -193,90 +193,90 @@ onMounted(() => {
                 </DropdownMenuContent>
             </DropdownMenu>
         </div> -->
-        <div v-if="mail" class="flex flex-1 flex-col leading-[0px] items-stretch" ref="wrapperRef">
-            <div class="flex items-start p-4" ref="chatHeaderRef">
-                <div class="flex items-start gap-4 text-sm">
-                    <Avatar>
-                        <AvatarFallback>
-                            {{ mailFallbackName }}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div class="grid gap-1">
-                        <div class="font-semibold">
-                            {{ mail.name }}
-                        </div>
-                        <div class="line-clamp-1 text-xs">
-                            {{ mail.subject }}
-                        </div>
-                    </div>
-                </div>
-                <div v-if="mail.date" class="ml-auto text-xs text-muted-foreground">
-                    {{ format(new Date(mail.date), 'PPpp') }}
-                </div>
-            </div>
-            <Separator />
-            <ScrollArea :style="{ height: wrapperHeight }">
-                <div class="flex md:w-2/3 lg:w-1/3 w-full ml-auto">
-                    <div class="flex flex-row-reverse">
-                        <Avatar class="flex mt-auto mr-2">
-                            <AvatarFallback>
-                                {{ mailFallbackName }}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div
-                            class="flex-1 whitespace-pre-wrap p-4 text-sm bg-secondary rounded-lg m-3 mb-0"
-                        >
-                            {{ mail.text }}
-                        </div>
-                    </div>
-                </div>
-                <div class="flex md:w-2/3 lg:w-1/3 w-full">
-                    <div class="flex">
-                        <Avatar class="flex mt-auto ml-2">
-                            <AvatarFallback>
-                                {{ mailFallbackName }}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div
-                            class="flex-1 whitespace-pre-wrap p-4 text-sm bg-secondary rounded-lg m-3 mb-0"
-                        >
-                            Thanks!
-                        </div>
-                    </div>
-                </div>
-                <div class="flex md:w-2/3 lg:w-1/3 w-full">
-                    <div class="flex">
-                        <Avatar class="flex mt-auto ml-2">
-                            <AvatarFallback>
-                                {{ mailFallbackName }}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div
-                            class="flex-1 whitespace-pre-wrap p-4 text-sm bg-secondary rounded-lg m-3 mb-0"
-                        >
-                            {{ mail.text }}
-                        </div>
-                    </div>
-                </div>
-            </ScrollArea>
-            <Separator class="my-2" />
-            <div class="flex-none box-border relative min-h-[160px] z-20" ref="sendMessageRef">
-                <form class="p-4">
-                    <div class="grid gap-4">
-                        <Textarea class="p-4" :placeholder="`Reply ${mail.name}...`" />
-                        <div class="flex items-center">
-                            <Label
-                                html-for="mute"
-                                class="flex items-center gap-2 text-xs font-normal"
-                            >
-                                <Switch id="mute" aria-label="Mute thread" /> Mute this thread
-                            </Label>
-                            <Button type="button" size="sm" class="ml-auto"> Send </Button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div v-else class="p-8 text-center text-muted-foreground">No message selected</div>
-    </div>
+		<div v-if="mail" class="flex flex-1 flex-col leading-[0px] items-stretch" ref="wrapperRef">
+			<div class="flex items-start p-4" ref="chatHeaderRef">
+				<div class="flex items-start gap-4 text-sm">
+					<Avatar>
+						<AvatarFallback>
+							{{ mailFallbackName }}
+						</AvatarFallback>
+					</Avatar>
+					<div class="grid gap-1">
+						<div class="font-semibold">
+							{{ mail.name }}
+						</div>
+						<div class="line-clamp-1 text-xs">
+							{{ mail.subject }}
+						</div>
+					</div>
+				</div>
+				<div v-if="mail.date" class="ml-auto text-xs text-muted-foreground">
+					{{ format(new Date(mail.date), 'PPpp') }}
+				</div>
+			</div>
+			<Separator />
+			<ScrollArea :style="{ height: wrapperHeight }">
+				<div class="flex md:w-2/3 lg:w-1/3 w-full ml-auto">
+					<div class="flex flex-row-reverse">
+						<Avatar class="flex mt-auto mr-2">
+							<AvatarFallback>
+								{{ mailFallbackName }}
+							</AvatarFallback>
+						</Avatar>
+						<div
+							class="flex-1 whitespace-pre-wrap p-4 text-sm bg-secondary rounded-lg m-3 mb-0"
+						>
+							{{ mail.text }}
+						</div>
+					</div>
+				</div>
+				<div class="flex md:w-2/3 lg:w-1/3 w-full">
+					<div class="flex">
+						<Avatar class="flex mt-auto ml-2">
+							<AvatarFallback>
+								{{ mailFallbackName }}
+							</AvatarFallback>
+						</Avatar>
+						<div
+							class="flex-1 whitespace-pre-wrap p-4 text-sm bg-secondary rounded-lg m-3 mb-0"
+						>
+							Thanks!
+						</div>
+					</div>
+				</div>
+				<div class="flex md:w-2/3 lg:w-1/3 w-full">
+					<div class="flex">
+						<Avatar class="flex mt-auto ml-2">
+							<AvatarFallback>
+								{{ mailFallbackName }}
+							</AvatarFallback>
+						</Avatar>
+						<div
+							class="flex-1 whitespace-pre-wrap p-4 text-sm bg-secondary rounded-lg m-3 mb-0"
+						>
+							{{ mail.text }}
+						</div>
+					</div>
+				</div>
+			</ScrollArea>
+			<Separator class="my-2" />
+			<div class="flex-none box-border relative min-h-[160px] z-20" ref="sendMessageRef">
+				<form class="p-4">
+					<div class="grid gap-4">
+						<Textarea class="p-4" :placeholder="`Reply ${mail.name}...`" />
+						<div class="flex items-center">
+							<Label
+								html-for="mute"
+								class="flex items-center gap-2 text-xs font-normal"
+							>
+								<Switch id="mute" aria-label="Mute thread" /> Mute this thread
+							</Label>
+							<Button type="button" size="sm" class="ml-auto"> Send </Button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div v-else class="p-8 text-center text-muted-foreground">No message selected</div>
+	</div>
 </template>

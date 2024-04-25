@@ -36,7 +36,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<Card class="shadow-none">
+	<Card class="shadow-none" v-if="!whatsappStore.is_loading">
 		<div class="flex border-t-4 border-green-600/80 rounded">
 			<CardHeader>
 				<CardTitle><VIcon name="fa-whatsapp" class="size-24 fill-green-500" /></CardTitle>
@@ -92,5 +92,8 @@ onBeforeUnmount(() => {
 			>
 			<Button variant="destructive" @click="() => disconnect()" v-else> Disconnect</Button>
 		</CardFooter>
+	</Card>
+	<Card v-else>
+		<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-fit h-fit mr-2" />
 	</Card>
 </template>

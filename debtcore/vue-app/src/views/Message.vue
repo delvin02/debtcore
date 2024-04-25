@@ -4,7 +4,5 @@ import { accounts, mails } from '@/components/Message/data/mails'
 </script>
 
 <template>
-    <div class="flex-1">
-        <Message :accounts="accounts" :mails="mails" />
-    </div>
+	<Message :accounts="accounts" :mails="mails" />
 </template>

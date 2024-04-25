@@ -68,12 +68,13 @@ onBeforeMount(async () => {
 				<ResizablePanel id="resize-panel-2" :min-size="30">
 					<Header ref="mainHeaderRef" />
 					<ScrollArea
+						v-if="route.name !== 'message'"
 						:style="{ height: wrapperHeight }"
-						:height="wrapperHeight"
 						class="flex justify-center my-auto"
 					>
 						<router-view />
 					</ScrollArea>
+					<router-view v-else :style="{ height: wrapperHeight }" />
 				</ResizablePanel>
 			</ResizablePanelGroup>
 		</TooltipProvider>
