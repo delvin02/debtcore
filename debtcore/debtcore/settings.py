@@ -16,6 +16,7 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import sys
 
+
 load_dotenv() 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,9 +131,6 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -140,8 +138,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',    
-    'corsheaders'
-
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -182,8 +183,12 @@ WSGI_APPLICATION = 'debtcore.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'debtcore',
+        'USER': 'lucid',
+        'PASSWORD': 'password',
+        'HOST': 'host.docker.internal',  # Or another host if not local
+        'PORT': '3307',  # Default MySQL port
     }
 }
 
@@ -248,3 +253,8 @@ META_AUTHENTICATE_URL = os.getenv("META_AUTHENTICATE_URL")
 META_SYSTEM_USER_ACCESS_TOKEN = os.getenv("META_SYSTEM_USER_ACCESS_TOKEN")
 
 DOMAIN = os.getenv("DOMAIN")
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'

@@ -47,7 +47,7 @@ class Company(models.Model):
     postcode = models.CharField(max_length=255, null=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="country_address")
 
-    meta_access_token = models.CharField(max_length=255, help_text="Meta access token", blank=True, null=True)
+    meta_access_token = models.TextField(help_text="Meta access token", blank=True, null=True)
     meta_token_created_date = models.DateTimeField(blank=True, null=True)
     meta_user_id = models.CharField(max_length=255, blank=True, null=True)
     meta_is_valid = models.BooleanField(default=False)
@@ -265,7 +265,7 @@ class WhatsAppPhoneNumber(models.Model):
     image_url = models.URLField(max_length=1024, blank=True, null=True)
     about = models.CharField(max_length=139, unique=True, blank=True, null=True)
     address = models.CharField(max_length=256, unique=True, blank=True, null=True)
-    description = models.TextField(max_length=512, unique=True, blank=True, null=True)
+    description = models.TextField(max_length=512, blank=True, null=True)
     email = models.EmailField(max_length=128, unique=True, blank=True, null=True)
 
     VERTICAL_CHOICES = (
@@ -314,11 +314,11 @@ class Conversation(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='conversations')
 
 class WhatsAppMessage(models.Model):
-    whatsapp_message_id = models.CharField(max_length=128)
+    whatsapp_message_id = models.CharField(primary_key=True, max_length=128)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='received_messages')
-    message_text = models.TextField(null=True,blank=True)
+    message_text = models.TextField(max_length=1024, null=True,blank=True)
     MESSAGE_CHOICES = (
         ('1', 'Text'),
         ('2', 'Image'),
@@ -335,3 +335,22 @@ class WhatsAppMessage(models.Model):
 
     class Meta:
         ordering = ['sent_at']
+        
+class WebHook(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    hook_type = models.IntegerField()
+    created_date = models.DateTimeField(default=timezone.now)
+    payload = models.TextField(max_length=2500)
+    status_code = models.IntegerField()
+
+class Session(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    webhook = models.ForeignKey(WebHook, on_delete=models.CASCADE, related_name='session_webhook')
+    created_date = models.DateTimeField(default=timezone.now)
+    complete_date = models.DateTimeField(default=models.SET_NULL, null=True, blank=True)
+    transaction_status = models.IntegerField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='session_company')
+    event_type = models.IntegerField()
+    
+
+    

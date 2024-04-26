@@ -18,6 +18,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from debtcore.settings import META_APP_SECRET
+from debtcore_shared.common.enum import *
 import datetime
 import jwt
 import logging
@@ -26,6 +27,9 @@ from app.serializers.serializers import *
 from app.forms import SignupForm
 
 # Create your views here.
+
+logger = logging.getLogger(__name__)
+
 
 class HomeView(TemplateView):
     template_name = "webapp/home.html"
@@ -88,11 +92,17 @@ class WhatsappWebhook(APIView):
         if not hmac.compare_digest(calculated_signature, received_signature):
             return HttpResponse('Invalid signature', status=403)
 
-        # Handle the validated incoming data
-        # Parse the request body as JSON, process data, etc.
-        data = request.body  # You would parse and use the message data appropriately
-
-        # Implement your logic here
+        try:
+            
+            webhook = WebHook.objects.create(
+                payload=request.body.decode('utf-8'),
+                status_code=HookStatus.QUEUED.value,
+                hook_type=HookType.META_WHATSAPP.value
+            )
+        except Exception as e:
+            logger.error('Failed to process webhook: %s', str(e), exc_info=True)
+            return HttpResponse('Internal Server Error', status=500)
+        
 
         return JsonResponse({'status': 'received'}, status=200)
             
