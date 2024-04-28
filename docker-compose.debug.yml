@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  backend:
+    image: backend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python python -Xfrozen_modules=off -m /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 debtcore/manage.py runserver 0.0.0.0:8000 --nothreading --noreload"]
+    ports:
+      - 8000:8000
+      - 5678:5678
+
+  db:
+    image: mysql:8.0.26
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'debtcore'
+      MYSQL_USER: 'lucid'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    env_file:
+      - debtcore/.env
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - '33066:3306'
+  
+  frontend:
+    build: ./debtcore/vue-app
+    ports:
+      - "5174:5174"
+    depends_on:
+      - backend
+    environment:
+      - BROWSER=none
+
+
+volumes:
+  dbdata:
+

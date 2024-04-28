@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "sleep 10 && python -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:5678 --wait-for-client debtcore/manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+      - "5678:5678"  
+
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - DEBUG=1
+
+  db:
+    image: mysql:8.0.26
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'debtcore'
+      MYSQL_USER: 'lucid'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    env_file:
+      - .env
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - '33066:3306'
+  
+  frontend:
+    build: 
+      context: ./debtcore/vue-app
+      dockerfile: Dockerfile
+    command: sh -c "npm run dev"
+    ports:
+      - "5174:5174"
+
+    volumes:
+      - ./debtcore/vue-app:/app
+      - /app/node_modules
+    environment:
+      - BROWSER=none
+      - VITE_BACKEND_URL='https://3c0f-211-26-122-216.ngrok-free.app'
+
+    env_file:
+      - .env
+      
+    depends_on:
+      - backend
+
+
+volumes:
+  dbdata:

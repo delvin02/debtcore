@@ -87,6 +87,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "https://4e4d-211-26-122-216.ngrok-free.app",
+    "https://3de5-211-26-122-216.ngrok-free.app",
     os.getenv("DOMAIN")
 ]
 CORS_ORIGIN_ALLOW_ALL = True
@@ -187,8 +188,8 @@ DATABASES = {
         'NAME': 'debtcore',
         'USER': 'lucid',
         'PASSWORD': 'password',
-        'HOST': 'host.docker.internal',  # Or another host if not local
-        'PORT': '3307',  # Default MySQL port
+        'HOST': 'db',  
+        'PORT': '3306',  
     }
 }
 

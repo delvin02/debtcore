@@ -33,7 +33,8 @@ class Command(BaseCommand):
                 last_updated_by=None,
                 is_active=True,
                 is_onboarded=True,
-                country=country
+                country=country,
+                meta_business_id="305227442669438"
             )
             
             self.stdout.write(f'Created company: {company.name}')

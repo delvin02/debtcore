@@ -7,9 +7,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "debtcore.settings")
 app = Celery('debtcore')
 app.config_from_object('django.conf:settings', namespace="CELERY")
 
-# app.conf.beat_schedule = {
-#     'process-unprocessed-webhooks-every-minute': {
-#         'task': 'app.tasks.webhook_process.process_unprocessed_webhooks',
-#         'schedule': crontab(minute='*'),  # Adjust timing as necessary
-#     },
-# }
+app.conf.beat_schedule = {
+    'process-unprocessed-webhooks-every-minute': {
+        'task': 'app.tasks.webhook_process.process_unprocessed_webhooks',
+        'schedule': crontab(minute='*'),  # Adjust timing as necessary
+    },
+}
