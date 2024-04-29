@@ -3,7 +3,7 @@
   "configurations": [
     {
         "name": "Run: Remote Attach",
-        "type": "python",
+        "type": "debugpy",
         "request": "attach",
         "connect": {
             "host": "localhost",
@@ -15,6 +15,21 @@
                 "remoteRoot": "."
             }
         ]
+    },
+    {
+      "name": "Celery: Remote Attach",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 6000
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "."
+        }
+      ]
     }
   ]
 }

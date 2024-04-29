@@ -1,3 +1,3 @@
-def process_webhook (webhook):
+def process_webhook(webhook):
   print(webhook)
   pass

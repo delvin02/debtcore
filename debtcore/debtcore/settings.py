@@ -62,25 +62,47 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
         },
-        "file": {
+        "django_file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / "error/django-errors.log"
-        }
+            "filename": str(BASE_DIR / "error/django-errors.log"),
+            "formatter": "default",
+        },
+        "celery_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/celery.log"),
+            "formatter": "detailed",
+        },
+    },
+    "formatters": {
+        "default": {
+            "format": "[%(asctime)s: %(levelname)s/%(name)s] === %(message)s\n",
+        },
+        'detailed': {
+            'format': '[%(asctime)s: %(levelname)s/%(name)s] === %(message)s',
+        },
+        'task_completed': {
+            'format': '[%(asctime)s: %(levelname)s/%(name)s] %(message)s\n',  # Task completion messages
+        },
     },
     "root": {
-        "handlers": ["console"],
+        "handlers": ["console", "celery_file"],  # Note: Adjust if you want all root logs to go to the Celery file
         "level": "WARNING",
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
+            "handlers": ["console", "django_file"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "celery": {
+            "handlers": ["celery_file"],
+            "level": "INFO",
             "propagate": False,
         },
     },
 }
-
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
@@ -255,7 +277,7 @@ META_SYSTEM_USER_ACCESS_TOKEN = os.getenv("META_SYSTEM_USER_ACCESS_TOKEN")
 
 DOMAIN = os.getenv("DOMAIN")
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND",'redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
