@@ -30,7 +30,9 @@ services:
       - redis
     environment:
       - DEBUG=1
-    command: python -m debugpy --listen 0.0.0.0:6000 --wait-for-client -m celery -A debtcore.celery worker  -l info
+      - PYTHONPATH=/app/debtcore:$PYTHONPATH
+      - DJANGO_SETTINGS_MODULE=debtcore.settings
+    command: python -m debugpy --listen 0.0.0.0:6000 --wait-for-client -m celery -A debtcore.celery worker -l info
     ports:
       - 6000:6000
 
