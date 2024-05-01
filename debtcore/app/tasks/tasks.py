@@ -12,11 +12,12 @@ def test_celery_log():
     logger.error("ERROR!")
     logger.info("NICE!")
     logger.debug('DEBUG!')
+    logger.warning('WARNING!')
 
 
 @shared_task
 def add(x, y):
-    return x + y
+    return x + y + 5
 
 @shared_task
 def process_unprocessed_webhook():
@@ -24,8 +25,8 @@ def process_unprocessed_webhook():
     unprocessed_webhooks = WebHook.objects.filter(status_code=HookStatus.QUEUED.value)
     for webhook in unprocessed_webhooks:
         try:
-            return webhook.id
-            print('hello')
+            
+
             # process_webhook(webhook)
             # webhook.status_code = HookStatus.PROCESSED.value
             # webhook.save()

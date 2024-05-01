@@ -14,7 +14,9 @@
                 "localRoot": "${workspaceFolder}",
                 "remoteRoot": "."
             }
-        ]
+        ],
+        "justMyCode": true,
+        "django": true
     },
     {
       "name": "Celery: Remote Attach",
@@ -27,9 +29,10 @@
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}",
-          "remoteRoot": "."
+          "remoteRoot": "/app"
         }
-      ]
+      ],
+      "justMyCode": false
     }
   ]
 }
