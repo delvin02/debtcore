@@ -28,6 +28,7 @@ services:
     depends_on:
       - backend
       - redis
+      - db
     environment:
       - DEBUG=1
       - PYTHONPATH=/app/debtcore:$PYTHONPATH
@@ -36,10 +37,27 @@ services:
     ports:
       - 6000:6000
 
+  celerybeat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    depends_on:
+      - backend
+      - redis
+      - db
+    environment:
+      - DEBUG=1
+      - PYTHONPATH=/app/debtcore:$PYTHONPATH
+      - DJANGO_SETTINGS_MODULE=debtcore.settings
+    command: celery -A debtcore.celery beat -l info 
+
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+    command: redis-server --bind 0.0.0.0
 
   db:
     image: mysql:8.0.26

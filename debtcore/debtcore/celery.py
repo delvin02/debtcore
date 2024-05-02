@@ -3,8 +3,10 @@ import os
 from celery import Celery
 from pathlib import Path
 from django.conf import settings
+from celery.schedules import crontab
 
-# from celery.schedules import crontab
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'debtcore.settings')
+
 
 app = Celery('debtcore')
 
@@ -20,9 +22,12 @@ app.conf.update(
     broker_connection_retry_on_startup=True,
 )
 
-# app.conf.beat_schedule = {
-#     'process-unprocessed-webhooks-every-minute': {
-#         'task': 'app.tasks.webhook_process.process_unprocessed_webhooks',
-#         'schedule': crontab(minute='*'),  # Adjust timing as necessary
-#     },
-# }
+app.conf.beat_schedule = {
+    'process-webhook': {
+        'task': 'app.tasks.tasks.process_webhook',
+        'schedule': crontab(minute='*'),
+    }
+}
+
+
+app.conf.timezone = 'Australia/Adelaide'
