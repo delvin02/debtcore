@@ -74,6 +74,12 @@ LOGGING = {
             "filename": str(BASE_DIR / "logs/celery.log"),
             "formatter": "detailed",
         },
+        "whatsapp_message_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/whatsapp_message.log"),
+            "formatter": "detailed",
+        },
     },
     "formatters": {
         "default": {

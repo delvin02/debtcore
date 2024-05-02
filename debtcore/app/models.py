@@ -347,10 +347,11 @@ class Session(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     webhook = models.ForeignKey(WebHook, on_delete=models.CASCADE, related_name='session_webhook')
     created_date = models.DateTimeField(default=timezone.now)
-    complete_date = models.DateTimeField(default=models.SET_NULL, null=True, blank=True)
+    complete_date = models.DateTimeField(null=True, blank=True)
     transaction_status = models.IntegerField()
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='session_company')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, related_name='session_company')
     event_type = models.IntegerField()
+    payload = models.JSONField()
     
 
     

@@ -20,14 +20,18 @@ app.conf.update(
     worker_redirect_stdouts_level='INFO',
     broker_connection_retry=True,
     broker_connection_retry_on_startup=True,
+    timezone = 'Australia/Adelaide'
 )
 
 app.conf.beat_schedule = {
-    'process-webhook': {
-        'task': 'app.tasks.tasks.process_webhook',
+    # 'process_webhook': {
+    #     'task': 'tasks.process_webhook',
+    #     'schedule': crontab(minute='*'),
+    # },
+    'process_whatsapp_message': {
+        'task': 'tasks.process_whatsapp_messages.main',
         'schedule': crontab(minute='*'),
     }
 }
 
 
-app.conf.timezone = 'Australia/Adelaide'
