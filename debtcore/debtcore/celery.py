@@ -4,6 +4,7 @@ from celery import Celery
 from pathlib import Path
 from django.conf import settings
 from celery.schedules import crontab
+from celery.signals import setup_logging
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'debtcore.settings')
 
@@ -11,6 +12,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'debtcore.settings')
 app = Celery('debtcore')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
+
+
+@setup_logging.connect()
+def config_loggers(*args, **kwargs):
+    from logging.config import dictConfig
+    dictConfig(app.config['LOGGING_CONFIG'])
+    
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 app.conf.update(

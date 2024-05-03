@@ -68,16 +68,16 @@ LOGGING = {
             "filename": str(BASE_DIR / "error/django-errors.log"),
             "formatter": "default",
         },
-        "celery_file": {
+        "webhook_processor_handler": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": str(BASE_DIR / "logs/celery.log"),
+            "filename": str(BASE_DIR / "logs/webhook-processor.log"),
             "formatter": "detailed",
         },
-        "whatsapp_message_file": {
+        "whatsapp_message_handler": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": str(BASE_DIR / "logs/whatsapp_message.log"),
+            "filename": str(BASE_DIR / "logs/whatsapp-message.log"),
             "formatter": "detailed",
         },
     },
@@ -102,11 +102,20 @@ LOGGING = {
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
             "propagate": False,
         },
-        "celery": {
-            "handlers": ["celery_file"],
+        "webhook_processor_logger": {
+            "handlers": ["console","webhook_processor_handler"],
             "level": "INFO",
+            'maxBytes': 1024*1024*10, 
+            'backupCount': 5,
             "propagate": False,
         },
+        "whatsapp_message_logger": {
+            "handlers": ["console", "whatsapp_message_handler"],
+            "level": "INFO",
+            'maxBytes': 1024*1024*10,  
+            'backupCount': 5,
+            "propagate": False,
+        }
     },
 }
 

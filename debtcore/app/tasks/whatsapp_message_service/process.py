@@ -6,15 +6,14 @@ import logging
 from debtcore_shared.common.enum import StatusCode
 
 
-logger = logging.getLogger("whatsapp_message")
+logger = logging.getLogger("django")
 
 
 class WhatsAppMessageProcessor(ServiceProcessorBase):
 
     def process(self, session):
         """Process the session specifically for WhatsApp messages."""
-        print(f"Processing session: {session.id}")
-        logger.info(f"Processing session: {session.id}")
+        logger.info(f"Starting processing for session: {session.id}")
         
         serialized_payload = json.loads(session.payload)
         
@@ -35,17 +34,14 @@ class WhatsAppMessageProcessor(ServiceProcessorBase):
                     try:
                         
                         # get company phone number
-                        db_whatsapp = WhatsAppPhoneNumber.objects.get(display_phone_number = metadata.display_phone_number, phone_number_id= metadata.phone_number_id)
-                        
+                        db_whatsapp = WhatsAppPhoneNumber.objects.get(
+                                    display_phone_number=metadata.get('display_phone_number', None),
+                                    phone_number_id=metadata.get('phone_number_id', None)
+                                )                        
                     except ObjectDoesNotExist:
                         # No object found, set status code and save session
                         session.status_code = StatusCode.WHATSAPP_MESSAGE_SENDER_NOT_FOUND.value
-                        session.save()
                         return
-                        
-                    logger.info(f"Messaging Product: {messaging_product}")
-                    logger.info(f"Display Phone Number: {metadata.get('display_phone_number')}")
-                    logger.info(f"Phone Number ID: {metadata.get('phone_number_id')}")
 
                     for contact in contacts:
                         logger.info(f"Processing contact data: {contact}")

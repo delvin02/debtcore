@@ -350,6 +350,7 @@ class Session(models.Model):
     complete_date = models.DateTimeField(null=True, blank=True)
     transaction_status = models.IntegerField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, related_name='session_company')
+    status_code = models.IntegerField(default=0)
     event_type = models.IntegerField()
     payload = models.JSONField()
     

@@ -7,6 +7,7 @@ class HookStatus(Enum):
   QUEUED = 0
   PROCESSED = 1
   SKIPPED = 2
+  FAILED = 3
   
 class TransactionStatus(Enum):
   QUEUED = 0
@@ -17,8 +18,14 @@ class TransactionStatus(Enum):
   FAILED_MAPPING = 5
   
 class StatusCode(Enum):
-  SUCCESS = 0
-  INFO = 1
+  WAITING_TO_BE_PROCESSED = 0
+  COMPANY_DISABLED = 1
+  
+  # Whatsapp Message (100-199)
+  WHATSAPP_MESSAGE_SUCESS = 100
+  WHATSAPP_MESSAGE_FAILED = 101
+  WHATSAPP_MESSAGE_MISSING_SENDER_PHONE_NUMBER = 110
+  WHATSAPP_MESSAGE_SENDER_NOT_FOUND = 111
   
 class EventType(Enum):
   INVALID = 0

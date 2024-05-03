@@ -6,7 +6,7 @@ from django.db import transaction
 from debtcore.celery import app
 import logging
 
-logger = logging.getLogger("celery")
+logger = logging.getLogger("webhook_processor_logger")
 
 @app.task(bind=True, name='tasks.process_webhook')
 def process_webhook(self):
@@ -22,7 +22,7 @@ def process_webhook(self):
             with transaction.atomic():
                 session = Session(
                     transaction_status=TransactionStatus.QUEUED.value,
-                    event_type=EventType.INVALID.value,
+                    status_code=StatusCode.WAITING_TO_BE_PROCESSED.value,
                     webhook=webhook,
                     payload=webhook.payload
                 )
@@ -31,7 +31,7 @@ def process_webhook(self):
                     case "whatsapp_business_account":
                         session.event_type = EventType.WHATSAPP_MESSAGE.value
                     case _:
-                        logger.warning(f'Unhandled webhook type: {field}')
+                        session.event_type=EventType.INVALID.value,
 
                 session.save()
             logger.info(f'Processed webhook {webhook.id}')

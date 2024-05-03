@@ -15,7 +15,7 @@ class ServiceProcessorBase(Task, ABC):
       
     def run(self, *args, **kwargs):
       
-        sessions = Session.objects.filter(event_type=self.event_type)
+        sessions = Session.objects.filter(event_type=self.event_type, transaction_status=TransactionStatus.QUEUED.value)
         
         for session in sessions:
           
@@ -23,7 +23,8 @@ class ServiceProcessorBase(Task, ABC):
             self.process(session)
           except Exception as e:
             self.logger.error(f"Error processing session {session.id}: {e}", exc_info=True)
-            
+          finally:
+            session.save()
         
 
     @abstractmethod
