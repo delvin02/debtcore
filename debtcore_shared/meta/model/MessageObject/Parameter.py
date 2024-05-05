@@ -25,7 +25,7 @@ class Parameter:
         # Validate text based on component type context passed during instantiation
         # This part needs to be adapted based on where and how it's used.
         max_length = 32768  # Default max, assuming 'body' with no other components
-        if self.type == 'header':
+        if self.type == 'header' or self.type == 'footer':
             max_length = 60
         elif self.type == 'body':
             max_length = 1024  # This would vary based on other contextual info

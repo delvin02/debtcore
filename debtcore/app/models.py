@@ -250,12 +250,14 @@ class WhatsappTemplate(models.Model):
     def __str__(self):
         return self.name
     
-class WhatsAppPhoneNumber(models.Model):
+
+class WhatsAppCompanyProfile(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='whatsapp_phone_numbers')
-    phone_number_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
-    verified_name = models.CharField(max_length=255)
-    display_phone_number = models.CharField(max_length=20, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='whatsapp_phone_numbers_company')
+    whatsapp_id = models.CharField(max_length=255, unique=True)
+    # verified_name = models.CharField(max_length=255)
+    # display_phone_number = models.CharField(max_length=20, unique=True)
+
     quality_rating = models.CharField(max_length=50)
     platform_type = models.CharField(max_length=100)
     last_onboarded_time = models.DateTimeField()
@@ -263,10 +265,10 @@ class WhatsAppPhoneNumber(models.Model):
 
     # Whatsapp Profile
     image_url = models.URLField(max_length=1024, blank=True, null=True)
-    about = models.CharField(max_length=139, unique=True, blank=True, null=True)
-    address = models.CharField(max_length=256, unique=True, blank=True, null=True)
+    about = models.CharField(max_length=13, blank=True, null=True)
+    address = models.CharField(max_length=256, blank=True, null=True)
     description = models.TextField(max_length=512, blank=True, null=True)
-    email = models.EmailField(max_length=128, unique=True, blank=True, null=True)
+    email = models.EmailField(max_length=128, blank=True, null=True)
 
     VERTICAL_CHOICES = (
         ('UNDEFINED', 'Undefined'),
@@ -296,19 +298,26 @@ class WhatsAppPhoneNumber(models.Model):
     
     def __str__(self):
         return self.display_phone_number
-    
 
 class WhatsAppUser(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    whatsapp_phone = models.ForeignKey(WhatsAppPhoneNumber, on_delete=models.CASCADE, related_name="whatsapp_company_phone", blank=True, null=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="whatsapp_company", blank=True, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     name = models.CharField(max_length=120, null=True, blank=True)
     whatsapp_id = models.CharField(max_length=120, null=True, blank=True)
+
+    company_profile = models.OneToOneField(
+        WhatsAppCompanyProfile,
+        on_delete=models.SET_NULL,  
+        related_name='whatsapp_profile_company', 
+        blank=True, 
+        null=True
+    )
+
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='whatsapp_users_company', null=True, blank=True)
+
     def __str__(self):
         return self.phone_number
-
-
+    
 class Conversation(models.Model):
     participants = models.ManyToManyField(WhatsAppUser, related_name='conversations_participants')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='conversations')
@@ -318,13 +327,16 @@ class WhatsAppMessage(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(WhatsAppUser, on_delete=models.CASCADE, related_name='received_messages')
-    message_text = models.TextField(max_length=1024, null=True,blank=True)
+    header = models.CharField(max_length=60, null=True, blank=True)
+    message_text = models.TextField()
+    footer = models.CharField(max_length=60, null=True, blank=True)
     MESSAGE_CHOICES = (
         ('1', 'Text'),
         ('2', 'Image'),
         ('3', 'Video'),
         ('4', 'Audio'),
         ('5', 'Document'),
+        ('6', 'Template')
     )
     message_type = models.CharField(max_length=10, choices=MESSAGE_CHOICES)
     media_url = models.URLField(null=True, blank=True)
@@ -332,7 +344,17 @@ class WhatsAppMessage(models.Model):
     read_at = models.DateTimeField(null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='messages')
+    
 
+    @staticmethod
+    def get_key_for_template():
+        '''
+            Get the key for template message type
+        '''
+        for key, value in WhatsAppMessage.MESSAGE_CHOICES:
+            if value == 'Template':
+                return key
+        return None 
     class Meta:
         ordering = ['sent_at']
         
@@ -353,6 +375,7 @@ class Session(models.Model):
     status_code = models.IntegerField(default=0)
     event_type = models.IntegerField()
     payload = models.JSONField()
+    whatsapp_message_id = models.CharField(max_length=255, null=True, blank=True)
     
 
     

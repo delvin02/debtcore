@@ -2,7 +2,7 @@ import os
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from app.models import WhatsappTemplate, Company, WhatsAppPhoneNumber, User, WhatsAppUser, Conversation, WhatsAppMessage
+from app.models import WhatsappTemplate, Company, WhatsAppCompanyProfile, User, WhatsAppUser, Conversation, WhatsAppMessage
 from debtcore_shared.meta.client import WhatsappMetaClient
 from debtcore_shared.meta.api.message_template import WhatsAppMessageTemplateRequest
 from debtcore_shared.meta.api.whatsapp_business import WhatsAppBusinessRequest
@@ -17,6 +17,7 @@ from debtcore_shared.meta.model.MessageObject.TemplateObject import TemplateObje
 from debtcore_shared.meta.model.MessageObject.TemplateComponent import TemplateComponent
 from debtcore_shared.meta.api.message import MessageRequest
 
+from app.common.whatsapp import format_phone_number
 from django.core.files.storage import default_storage
 from debtcore_shared.meta.model.WhatsappProfile import WhatsappProfile
 from django.db import transaction
@@ -26,20 +27,22 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.contrib.staticfiles import finders
+from app.common.whatsapp import parse_whatsapp_body_template, extract_body_from_whatsapp_template
+
 
 @api_view(['GET'])
 def phone(request):
-    company: Company = request.user.company
+    company = request.user.company
 
     if not company:
         return JsonResponse({'message': "Missing company."}, status=400)
 
-    phones = WhatsAppPhoneNumber.objects.filter(company=company)
+    whatsapp_users = company.whatsapp_users_company.all()
 
-    if not phones:
-        return JsonResponse({'message': "Missing phone."}, status=400)
+    if not whatsapp_users:
+        return JsonResponse({'message': 'No WhatsApp users found for this company.'}, status=404)
     
-    serializer = SetupPhoneTableSerializer(phones, many=True)
+    serializer = SetupWhatsappCompanyUserTableSerializer(whatsapp_users, many=True)
     return JsonResponse({'Result': serializer.data}, status=200)
 
 @api_view(['POST'])
@@ -61,66 +64,45 @@ def company_refresh(request):
     whatsapp_business_phone = fetch_whatsapp_phone_sync()
 
     if not whatsapp_business_phone:
-        return JsonResponse({'message': "No whatsapp phone connected to this business"}, status=400)
+        return JsonResponse({'message': "No WhatsApp phone connected to this business"}, status=400)
     
     with transaction.atomic():
-        for phone in whatsapp_business_phone.get('data', []):  # Ensure 'data' key exists
-            phone_number_id = phone.get('id')
-            
+        for phone in whatsapp_business_phone.get('data', []):
+            whatsapp_id = phone.get('id')
             verified_name = phone.get('verified_name')
             display_phone_number = phone.get('display_phone_number')
-            quality_rating = phone.get('quality_rating')
-            platform_type = phone.get('platform_type')
-            last_onboarded_time = phone.get('last_onboarded_time')
-
-            # Obtain business profie
             business_client = WhatsappMetaClient(company.meta_access_token)
-            request_profile = WhatsappProfileRequest(business_client, phone_number_id)
+            request_profile = WhatsappProfileRequest(business_client, phone.get('id'))
             fetch_profile_sync = async_to_sync(request_profile.get_profile)
-            whatsapp_profile_response = fetch_profile_sync()
-            whatsapp_profile = whatsapp_profile_response.get('data')[0]
-            
-            image_url = whatsapp_profile.get('profile_picture_url')
-            about = whatsapp_profile.get('about')
-            address = whatsapp_profile.get('address')
-            description = whatsapp_profile.get('description')
-            email = whatsapp_profile.get('email')
-            address = whatsapp_profile.get('address')
-            vertical = whatsapp_profile.get('vertical')
+            whatsapp_profile = fetch_profile_sync().get('data')[0]
+
             websites = whatsapp_profile.get('websites', [])
-            website1 = websites[0] if len(websites) > 0 else None
-            website2 = websites[1] if len(websites) > 1 else None
-            # Create or update the WhatsAppPhoneNumber instance
-            whatsapp_phone, created = WhatsAppPhoneNumber.objects.update_or_create(
-                display_phone_number=display_phone_number,
+            whatsapp_phone, _ = WhatsAppCompanyProfile.objects.update_or_create(
+                whatsapp_id=whatsapp_id,
                 defaults={
                     'company': company,
-                    'phone_number_id': phone_number_id,
-                    'verified_name': verified_name,
-                    'display_phone_number': display_phone_number,
-                    'quality_rating': quality_rating,
-                    'platform_type': platform_type,
-                    'last_onboarded_time': last_onboarded_time,
-                    
-                    'image_url': image_url,
-                    'about': about,
-                    'address': address,
-                    'description': description,
-                    'email': email,
-                    'address': address,
-                    'website1': website1,
-                    'website2': website2,
-                    'vertical': vertical
+                    'quality_rating': phone.get('quality_rating'),
+                    'platform_type': phone.get('platform_type'),
+                    'last_onboarded_time': phone.get('last_onboarded_time'),
+                    'image_url': whatsapp_profile.get('profile_picture_url'),
+                    'about': whatsapp_profile.get('about'),
+                    'address': whatsapp_profile.get('address'),
+                    'description': whatsapp_profile.get('description'),
+                    'email': whatsapp_profile.get('email'),
+                    'website1': websites[0] if len(websites) > 0 else None,
+                    'website2': websites[1] if len(websites) > 1 else None,
+                    'vertical': whatsapp_profile.get('vertical')
                 }
             )
-            
-            whatsapp_user, created = WhatsAppUser.objects.update_or_create(
-                whatsapp_phone=whatsapp_phone,
+
+            WhatsAppUser.objects.update_or_create(
+                whatsapp_id=whatsapp_id,
                 defaults={
-                    'company': company,
                     'name': verified_name,
-                    'whatsapp_phone': whatsapp_phone,
-                    'phone_number': display_phone_number
+                    'whatsapp_id': whatsapp_id,
+                    'company_profile': whatsapp_phone,
+                    'phone_number': format_phone_number(display_phone_number),
+                    'company': company
                 }
             )
 
@@ -246,19 +228,18 @@ def set_phone_default(request):
         return JsonResponse({'message': "Missing company."}, status=400)
 
     
-    phone_id = request.data.get('id')
+    whatsapp_user_id = request.data.get('id')
     try:
-        with transaction.atomic():
-            phones = WhatsAppPhoneNumber.objects.filter(company=company)
+        profiles = WhatsAppCompanyProfile.objects.filter(company=company)
+        profiles.update(is_default_phone=False)
 
-            phones.update(is_default_phone=False)
+        selected_profile = WhatsAppUser.objects.get(pk=whatsapp_user_id).company_profile
+        if not selected_profile:
+            return JsonResponse({'message': "Phone number not found."}, status=404)
 
-            phone = phones.filter(id=phone_id).first()
-            if not phone:
-                return JsonResponse({'message': "Phone number not found."}, status=404)
-
-            phone.is_default_phone = True
-            phone.save()
+        # Set the selected profile as default
+        selected_profile.is_default_phone = True
+        selected_profile.save()
 
         return JsonResponse({'message': "Phone number set as default successfully."}, status=200)
 
@@ -274,15 +255,18 @@ def send_test_message(request):
     
     phone_id = request.data.get('id')
     
-    sender = WhatsAppPhoneNumber.objects.get(pk=phone_id)
+    sender = WhatsAppUser.objects.get(pk=phone_id)
     if not sender:
         return JsonResponse({'message': "Phone number not found."}, status=404)
     
+    whatsapp_template = WhatsappTemplate.objects.get(name='payment_reminder',company=company)
+
+    if not whatsapp_template:
+        return JsonResponse({'message': "Default template 'payment_reminder' not found."}, status=404)
+
     to = request.data.get('phone')
     try:
         language: Language = Language("en")
-        
-        
         
         template_head: TemplateComponent = TemplateComponent(component_type="header")
 
@@ -304,43 +288,64 @@ def send_test_message(request):
         template_component.add_parameter(param_type='text', content=company.name)
 
 
-        template_obj: TemplateObject = TemplateObject(name="payment_reminder", language=language)
+        template_obj: TemplateObject = TemplateObject(name=whatsapp_template.name, language=language)
 
         template_obj.add_component(template_head)
         template_obj.add_component(template_component)
 
         text_message = Message(message_type='template', to=to, template=template_obj)
 
+        # Get default company phone number
+        whatsapp_company_profile = company.whatsapp_phone_numbers_company.get(is_default_phone=True)
+
+        if not whatsapp_company_profile:
+            return JsonResponse({'message': "No default phone found."}, status=404)
+
         client = WhatsappMetaClient(company.meta_access_token)
-        request_send_message = MessageRequest(client, sender.phone_number_id)
+        request_send_message = MessageRequest(client, whatsapp_company_profile.whatsapp_id)
         sync_send_message = async_to_sync(request_send_message.send_test_message)
-        response = sync_send_message(text_message)
+        # response = sync_send_message(text_message)
+        response={'messaging_product': 'whatsapp', 'contacts': [{'input': '61478643029', 'wa_id': '61478643029'}], 'messages': [{'id': 'wamid.HBgLNjE0Nzg2NDMwMjkVAgARGBJBREYwNjRGMkE2NDMwMEUTTTT', 'message_status': 'accepted'}]}
 
         with transaction.atomic():
             contact = response.get("contacts")[0]
             
-            recipient, is_new = WhatsAppUser.objects.get_or_create(
+            recipient, _ = WhatsAppUser.objects.get_or_create(
                 phone_number=to,
-                defaults={'name': 'Test', 'company': company, 'whatsapp_id': contact.get('wa_id') }
-            )
-            sender_user, _ = WhatsAppUser.objects.get_or_create(
-                whatsapp_phone=sender,
-                defaults={'name': sender.verified_name, 'company': company, 'whatsapp_phone':sender}
+                defaults={'whatsapp_id': contact.get('wa_id') }
             )
 
             conversation, created = Conversation.objects.get_or_create(
                 company=company
             )
-            conversation.participants.add(sender_user, recipient)
-            conversation.save()
+
+            if created:
+                # If the conversation is newly created, add the initial participant
+                conversation.participants.add(recipient)
+            else:
+                # If the conversation already existed, you may want to add new participants
+                # or handle them differently based on your business logic
+                if not conversation.participants.filter(id=recipient.id).exists():
+                    conversation.participants.add(recipient)
+
+
+            body = extract_body_from_whatsapp_template(whatsapp_template)
+
+            # Parse body template message to something readable
+            parameters = template_component.get_parameters()
+            body_text = parse_whatsapp_body_template(body=body, parameters=parameters)
+
 
             whatsapp_message = WhatsAppMessage.objects.create(
                 whatsapp_message_id=response.get("messages")[0].get('id'),
                 conversation=conversation,
-                sender=sender_user,
+                sender=sender,
                 recipient=recipient,
                 company=company,
-                message_type='1' 
+                message_type=WhatsAppMessage.get_key_for_template(),
+                media_url=document_content.get('link'),
+                message_text=body_text,
+                footer='Powered By DebtCore'
             )
             
         return JsonResponse({'message': "Test phone number send successfully."}, status=200)
@@ -355,20 +360,19 @@ class WhatsAppProfileAPIView(APIView):
         if not company:
             return JsonResponse({'message': "Missing company."}, status=400)
 
-        phone_id = kwargs.get('phone_number_id')
+        whatsapp_id = kwargs.get('phone_number_id')
 
-        if not phone_id:
+        if not whatsapp_id:
             return JsonResponse({'message': "Missing phone number ID."}, status=400)
 
         try:
             with transaction.atomic():
-                phones = WhatsAppPhoneNumber.objects.filter(company=company)
-                phone = phones.filter(phone_number_id=phone_id).first()
+                profile = WhatsAppCompanyProfile.objects.get(whatsapp_id=whatsapp_id)
 
-                if not phone:
+                if not profile:
                     return JsonResponse({'message': "Phone number not found."}, status=400)
 
-                serializer = WhatsappProfileSerializer(phone)
+                serializer = WhatsappProfileSerializer(profile)
                 return JsonResponse({'Result': serializer.data}, status=200)
 
         except Exception as e:
@@ -380,17 +384,16 @@ class WhatsAppProfileAPIView(APIView):
         if not company:
             return JsonResponse({'message': "Missing company."}, status=400)
 
-        phone_id = kwargs.get('phone_number_id')
+        whatsapp_id = kwargs.get('phone_number_id')
 
-        if not phone_id:
+        if not whatsapp_id:
             return JsonResponse({'message': "Missing phone number ID."}, status=400)
 
         try:
             with transaction.atomic():
-                phones = WhatsAppPhoneNumber.objects.filter(company=company)
-                phone = phones.filter(phone_number_id=phone_id).first()
+                profile = WhatsAppCompanyProfile.objects.get(whatsapp_id=whatsapp_id)
 
-                if not phone:
+                if not profile:
                     return JsonResponse({'message': "Phone number not found."}, status=404)
 
                 
@@ -429,7 +432,7 @@ class WhatsAppProfileAPIView(APIView):
                 data = request.data.copy()
                 data.pop('image_url')
 
-                serializer = WhatsappProfileSerializer(phone, data=data, partial=True)
+                serializer = WhatsappProfileSerializer(profile, data=data, partial=True)
                 if serializer.is_valid():
                  
                     profile_data = WhatsappProfile(serializer.validated_data)
@@ -439,7 +442,7 @@ class WhatsAppProfileAPIView(APIView):
 
 
                     client = WhatsappMetaClient(company.meta_access_token)
-                    profile_request = WhatsappProfileRequest(client, phone.phone_number_id)
+                    profile_request = WhatsappProfileRequest(client, profile.whatsapp_id)
                     update_profile_sync = async_to_sync(profile_request.update_profile)
                     update_profile_sync(profile_data)
                     
@@ -456,6 +459,6 @@ class WhatsAppProfileAPIView(APIView):
                  
 @api_view(['GET'])
 def get_whatsapp_business_category_list(request, *args, **kwargs):
-    category_choices = [{"key": key, "value": value} for key, value in WhatsAppPhoneNumber.VERTICAL_CHOICES]
+    category_choices = [{"key": key, "value": value} for key, value in WhatsAppCompanyProfile.VERTICAL_CHOICES]
     serializer = WhatsappBusinessCategorySelectListSerializer(category_choices, many=True)
     return JsonResponse({'Result': serializer.data}, status=200)

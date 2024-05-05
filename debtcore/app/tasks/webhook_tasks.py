@@ -38,4 +38,6 @@ def process_webhook(self):
         except Exception as e:
             logger.error(f'Error processing webhook {webhook.id}: {e}')
             webhook.status_code = HookStatus.FAILED.value
+        finally:
+            webhook.status_code = HookStatus.PROCESSED.value
             webhook.save()

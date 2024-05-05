@@ -1,13 +1,15 @@
 from rest_framework import serializers
-from app.models import WhatsAppPhoneNumber, WhatsappTemplate  
+from app.models import WhatsAppUser, WhatsappTemplate, WhatsAppCompanyProfile  
 from django.utils import timezone
+from app.serializers.whatsapp_profile_serializer import WhatsAppCompanyProfileSerializer
 
-class SetupPhoneTableSerializer(serializers.ModelSerializer):
+class SetupWhatsappCompanyUserTableSerializer(serializers.ModelSerializer):
+    company_profile_details = WhatsAppCompanyProfileSerializer(source='company_profile', read_only=True)
 
     class Meta:
-        model = WhatsAppPhoneNumber
-        fields = ['id', 'verified_name', 'quality_rating', 'platform_type', 'phone_number_id', 'last_onboarded_time', 'company', 
-                  'display_phone_number', 'is_default_phone']
+        model = WhatsAppUser
+        fields = ['id', 'phone_number', 'name', 'whatsapp_id', 'company_profile', 'company_profile_details']
+
 
 class SetupWhatsappTemplateSerializer(serializers.ModelSerializer):
 
@@ -18,7 +20,7 @@ class SetupWhatsappTemplateSerializer(serializers.ModelSerializer):
 class WhatsappProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = WhatsAppPhoneNumber
+        model = WhatsAppCompanyProfile
         fields = ['image_url', 'about', 'address', 'description', 'email', 'vertical', 'website1', 'website2']
 
 
@@ -81,7 +83,7 @@ class WhatsappBusinessCategorySelectListSerializer(serializers.Serializer):
     label = serializers.SerializerMethodField(source='value')
 
     class Meta:
-        model = WhatsAppPhoneNumber
+        model = WhatsAppCompanyProfile
         fields = ['id', 'value', 'label']
 
     def get_id (self, obj):

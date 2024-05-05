@@ -17,12 +17,13 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 @setup_logging.connect()
 def config_loggers(*args, **kwargs):
     from logging.config import dictConfig
-    dictConfig(app.config['LOGGING_CONFIG'])
+    from django.conf import settings
+    dictConfig(settings.LOGGING)
     
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 app.conf.update(
-    worker_hijack_root_logger=False,
+    CELERY_WORKER_HIJACK_ROOT_LOGGER=True,
     worker_log_format='[%(asctime)s: %(levelname)s/%(processName)s] %(message)s',
     worker_task_log_format='[%(asctime)s: %(levelname)s/%(processName)s] [%(task_name)s(%(task_id)s)] %(message)s\n',
     worker_redirect_stdouts_level='INFO',

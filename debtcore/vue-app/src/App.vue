@@ -19,7 +19,7 @@ const auth = useAuthStore()
 const hideSidebar = computed(() => route.meta.hideNavigation)
 
 const mainHeaderRef = ref<ComponentMethods | null>(null)
-const wrapperHeight = ref<string>('0px')
+const wrapperHeight = ref<number>(0)
 
 // Function to adjust layout
 const fixLayout = () => {
@@ -27,7 +27,7 @@ const fixLayout = () => {
 		const headerHeight: number = mainHeaderRef.value?.getHeaderHeight() ?? 0
 		const windowHeight = window.innerHeight
 
-		wrapperHeight.value = `${windowHeight - headerHeight}px`
+		wrapperHeight.value = windowHeight - headerHeight
 	})
 }
 
@@ -68,13 +68,13 @@ onBeforeMount(async () => {
 				<ResizablePanel id="resize-panel-2" :min-size="30">
 					<Header ref="mainHeaderRef" />
 					<ScrollArea
-						v-if="route.name !== 'message'"
-						:style="{ height: wrapperHeight }"
+						v-if="route.name !== 'conversation'"
+						:style="{ height: wrapperHeight + 'px' }"
 						class="flex justify-center my-auto"
 					>
 						<router-view />
 					</ScrollArea>
-					<router-view v-else :style="{ height: wrapperHeight }" />
+					<router-view v-else :style="{ height: wrapperHeight + 'px' }" />
 				</ResizablePanel>
 			</ResizablePanelGroup>
 		</TooltipProvider>

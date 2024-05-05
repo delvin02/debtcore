@@ -10,12 +10,14 @@ export const useTableStore = (key: string) => {
       page_index: 0,
       page_size: 10,
       fetch_url: '',
+      map_function: undefined as ((dataItem: any) => any) | undefined,
     }),
     actions: {
       async fetch(url: string, pageIndex?: number, mapFunction?: (dataItem: any) => any) {
         this.tasks = [];
         this.is_loading = true;
         this.fetch_url = url;
+        this.map_function = mapFunction; 
         try {
           const response = await axios.get(url, {
             withCredentials: true,
@@ -26,6 +28,7 @@ export const useTableStore = (key: string) => {
             },
           });
           const isMapFunctionValid = typeof mapFunction === 'function';
+          
           this.tasks = response.data.Result.map((task: any) =>
             isMapFunctionValid ? mapFunction(task) : task
           );
@@ -38,7 +41,7 @@ export const useTableStore = (key: string) => {
       },
       async refresh(pageIndex?: number) {
         if (this.fetch_url) {
-          await this.fetch(this.fetch_url, pageIndex);
+          await this.fetch(this.fetch_url, pageIndex, this.map_function);
         }
       },
       set_page_index(index: number) {

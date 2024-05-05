@@ -15,13 +15,13 @@ const setupPhoneUrl = '/api/setup/phone'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
-		phone_number_id: task.phone_number_id,
-		verified_name: task.verified_name,
-		quality_rating: task.quality_rating,
-		platform_type: task.platform_type,
-		last_onboarded_time: task.last_onboarded_time,
-		display_phone_number: task.display_phone_number,
-		is_default_phone: task.is_default_phone
+		phone_number_id: task.whatsapp_id,
+		display_phone_number: task.phone_number,
+		verified_name: task.name,
+		quality_rating: task.company_profile_details.quality_rating,
+		platform_type: task.company_profile_details.platform_type,
+		last_onboarded_time: task.company_profile_details.last_onboarded_time,
+		is_default_phone: task.company_profile_details.is_default_phone
 	}
 	return serialized_task
 }
@@ -53,8 +53,8 @@ onBeforeUnmount(() => {
 					<h3 class="text-lg font-bold tracking-tight">Phone Number</h3>
 				</div>
 			</div>
-			<div class="border-t-primary border-t-4 border-2 rounded">
-				<DataTable :data="phoneStore.tasks" :columns="columns" class="bg-white p-3" />
+			<div class="border-t-primary border-t-4 rounded">
+				<DataTable :data="phoneStore.tasks" :columns="columns" class="p-3" />
 			</div>
 		</div>
 

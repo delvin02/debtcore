@@ -1,6 +1,12 @@
 from rest_framework import serializers
-from app.models import Company
+from app.models import Company, WhatsAppCompanyProfile
 from django.core.files.images import get_image_dimensions
+
+
+class WhatsAppCompanyProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WhatsAppCompanyProfile
+        fields = '__all__'
 
 class ProfilePhotoSerializer(serializers.ModelSerializer):
     class Meta:

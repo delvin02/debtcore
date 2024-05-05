@@ -6,7 +6,7 @@ import type { Task } from '@/components/Setup/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useTableStore } from '@/store/table'
 
-const phoneStore = inject('tableStore', useTableStore('phone'))
+const phoneStore = inject('phoneStore', useTableStore('phone'))
 
 interface DataTableSetDefaultPhone {
 	row: Task

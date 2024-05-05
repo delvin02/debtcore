@@ -51,7 +51,7 @@ import {
   FaCogs,
   FaRegularCalendarAlt,
   FaSync,
-  FaShareSquare 
+  FaShareSquare
 } from 'oh-vue-icons/icons/fa/index.js'
 
 import { 
@@ -141,7 +141,7 @@ addIcons(
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL
 
-const baseURL = 'https://4a5e-27-33-84-90.ngrok-free.app';
+const baseURL = 'https://3c0f-211-26-122-216.ngrok-free.app';
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 

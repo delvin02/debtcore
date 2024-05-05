@@ -14,7 +14,7 @@ import {
 	DialogFooter
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-const phoneStore = inject('tableStore', useTableStore('phone'))
+const phoneStore = inject('phoneStore', useTableStore('phone'))
 
 interface DataTableSetDefaultPhone {
 	row: Task
@@ -63,7 +63,6 @@ const submit = async () => {
 
 function toggle() {
 	is_dialog_open.value = !is_dialog_open.value
-
 }
 </script>
 
@@ -85,9 +84,7 @@ function toggle() {
 			<DialogScrollContent :isSideBar="false" class="sm:max-w-[700px]">
 				<DialogHeader>
 					<DialogTitle>Send Test Message</DialogTitle>
-					<DialogDescription>
-						Insert the phone number, click send.
-					</DialogDescription>
+					<DialogDescription> Insert the phone number, click send. </DialogDescription>
 				</DialogHeader>
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">

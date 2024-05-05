@@ -42,9 +42,9 @@ const router = createRouter({
       component: () => import("@/views/Template.vue")
     },
     {
-      path: '/message',
-      name: 'message',
-      component: () => import("@/views/Message.vue"),
+      path: '/conversation',
+      name: 'conversation',
+      component: () => import("@/views/Conversation.vue"),
     },
     {
       path: '/debt',

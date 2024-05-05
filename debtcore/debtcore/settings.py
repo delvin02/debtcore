@@ -63,7 +63,7 @@ LOGGING = {
             "class": "logging.StreamHandler",
         },
         "django_file": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "filename": str(BASE_DIR / "error/django-errors.log"),
             "formatter": "default",
@@ -89,11 +89,11 @@ LOGGING = {
             'format': '[%(asctime)s: %(levelname)s/%(name)s] === %(message)s',
         },
         'task_completed': {
-            'format': '[%(asctime)s: %(levelname)s/%(name)s] %(message)s\n',  # Task completion messages
+            'format': '[%(asctime)s: %(levelname)s/%(name)s] %(message)s\n', 
         },
     },
     "root": {
-        "handlers": ["console", "celery_file"],  # Note: Adjust if you want all root logs to go to the Celery file
+        "handlers": ["console", "django_file"],  
         "level": "WARNING",
     },
     "loggers": {
@@ -124,7 +124,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "https://4e4d-211-26-122-216.ngrok-free.app",
-    "https://3de5-211-26-122-216.ngrok-free.app",
+    "https://3c0f-211-26-122-216.ngrok-free.app",
     os.getenv("DOMAIN")
 ]
 CORS_ORIGIN_ALLOW_ALL = True

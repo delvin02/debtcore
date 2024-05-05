@@ -18,6 +18,9 @@ class TemplateComponent:
             raise ValueError("Content must be a dictionary for parameter types other than 'text'.")
       self.parameters.append(Parameter(param_type, content))
 
+    def get_parameters(self):
+        return [param.content for param in self.parameters]
+    
     def to_dict(self):
         return {
             'type': self.type,

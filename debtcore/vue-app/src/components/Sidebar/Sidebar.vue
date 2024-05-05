@@ -39,9 +39,9 @@ const links1: LinkProp[] = [
 		to: '/debt'
 	},
 	{
-		title: 'Message',
+		title: 'Conversation',
 		icon: 'fa-whatsapp',
-		to: '/message'
+		to: '/conversation'
 	},
 	{
 		title: 'Template',

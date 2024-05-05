@@ -45,6 +45,10 @@ urlpatterns = [
     path('api/template/<int:template_id>', WhatsappTemplateView.as_view(), name="get_template"),
     path('api/connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth"),
 
+    # Conversation
+    path('api/conversations', ConversationView.as_view, name="conversations"),
+
+    # Setup
     path('api/setup/template', import_template, name="import_template"),
     path('api/export/reminder-template', export_reminder_template, name="export_reminder_template"),
     path('api/refresh/company',company_refresh, name="company_refresh"),
