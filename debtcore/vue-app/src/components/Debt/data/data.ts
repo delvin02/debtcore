@@ -40,18 +40,18 @@ export const statuses = [
     label: 'Claiming',
     icon: 'fa-circle'
   },
+  // {
+  //   value: '4',
+  //   label: 'Verifying Payment',
+  //   icon: 'bi-arrow-up-square-fill'
+  // },
   {
     value: '4',
-    label: 'Verifying Payment',
-    icon: 'bi-arrow-up-square-fill'
-  },
-  {
-    value: '5',
     label: 'Done',
     icon: 'fa-check-circle'
   },
   {
-    value: '6',
+    value: '5',
     label: 'Canceled',
     icon: 'fa-times-circle'
   },

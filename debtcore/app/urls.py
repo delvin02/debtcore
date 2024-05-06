@@ -39,7 +39,8 @@ urlpatterns = [
     path('api/debt/<int:debt_id>/', DebtView.as_view(), name="get_company"),  
     path('api/debt/<int:debt_id>/document/', DebtDocumentView.as_view(), name='debt-document'),
     path('api/debt/<int:debt_id>/backlog/', DebtBacklogView.as_view(), name='debt-backlog'),
-    path('api/status/list', DebtStatusChoicesAPIView.as_view(), name="get_customer_list"),
+    path('api/debt/status/create/list', DebtStatusCreateChoicesAPIView.as_view(), name="create_debt_status"),
+    path('api/debt/status/edit/list', DebtStatusEditChoicesAPIView.as_view(), name="edit_debt_status"),
 
     path('api/template', WhatsappTemplateView.as_view(), name="get_templates"),
     path('api/template/<int:template_id>', WhatsappTemplateView.as_view(), name="get_template"),

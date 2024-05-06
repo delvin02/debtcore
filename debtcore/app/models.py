@@ -150,67 +150,6 @@ class Customer(models.Model):
     )   
     last_updated_date = models.DateTimeField(blank=True, null=True)
 
-class Debt(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    company = models.ForeignKey(Company, related_name="company_debt", on_delete=models.CASCADE)
-
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_debt")
-    invoice = models.CharField(max_length=255, null=False)
-    due_date = models.DateField(null=False)
-    amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
-
-    STATUS_CHOICES = (
-        (1, 'Draft'),
-        (2, 'In Progress'),
-        (3, 'Claiming'),
-        (4, 'Verifying Payment'),
-        (5, 'Done'),
-        (6, 'Canceled')
-    )
-
-    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')
-
-    # Document
-    document = models.FileField(upload_to=debt_document_path, validators=[validate_file_extension])
-    
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="created_debts",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        default=None
-    )
-    created_date = models.DateTimeField(default=timezone.now)
-
-    last_updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="updated_debts",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        default=None
-    )   
-    last_updated_date = models.DateTimeField(blank=True, null=True)
-
-class DebtBacklog(models.Model):
-    id = models.AutoField(primary_key=True, unique=True)
-    debt = models.ForeignKey(Debt, related_name="debt_backlog", on_delete=models.CASCADE)
-    message = models.TextField(null=False)
-
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="created_debt_backlog",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        default=None
-    )
-    created_date = models.DateTimeField(default=timezone.now)
-    is_system_generated = models.BooleanField(default=False)
-    
-
-
 class WhatsappTemplate(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=255)
@@ -249,6 +188,85 @@ class WhatsappTemplate(models.Model):
     
     def __str__(self):
         return self.name
+    
+
+class Debt(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    company = models.ForeignKey(Company, related_name="company_debt", on_delete=models.CASCADE)
+
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_debt")
+    invoice = models.CharField(max_length=255, null=False)
+    invoice_date = models.DateField(null=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
+    STATUS_CHOICES = (
+        (1, 'Draft'),
+        (2, 'In Progress'),
+        (3, 'Claiming'),
+        (4, 'Done'),
+        (5, 'Canceled')
+    )
+
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')
+    term = models.IntegerField(null=True, blank=True)
+    
+    # Document
+    document = models.FileField(upload_to=debt_document_path, validators=[validate_file_extension])
+    
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_debts",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
+    created_date = models.DateTimeField(default=timezone.now)
+
+    last_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="updated_debts",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )   
+    last_updated_date = models.DateTimeField(blank=True, null=True)
+    
+    @staticmethod
+    def get_key_for_status(value: str) -> int:
+        '''
+            Get the key for debt status choice
+            
+            params:
+                value as string
+        '''
+        
+        if not value:
+            raise ValueError("The 'value' parameter must be provided.")
+        
+        for key, status_value in Debt.STATUS_CHOICES:
+            if status_value.lower() == value.lower():
+                return key
+        
+        raise ValueError(f"No key found for status value: {value}.") 
+
+class DebtBacklog(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    debt = models.ForeignKey(Debt, related_name="debt_backlog", on_delete=models.CASCADE)
+    message = models.TextField(null=False)
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="created_debt_backlog",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None
+    )
+    created_date = models.DateTimeField(default=timezone.now)
+    is_system_generated = models.BooleanField(default=False)
+    
+
     
 
 class WhatsAppCompanyProfile(models.Model):

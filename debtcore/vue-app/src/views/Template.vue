@@ -8,7 +8,7 @@ import { useTableStore } from '@/store/table'
 
 const tableStore = useTableStore('template')
 
-const templateUrl = 'http://127.0.0.1:8000/api/template'
+const templateUrl = '/api/template'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,

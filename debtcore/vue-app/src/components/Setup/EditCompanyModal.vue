@@ -156,7 +156,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/company/setup/`,
+			`/api/company/setup/`,
 			{
 				...form
 			},

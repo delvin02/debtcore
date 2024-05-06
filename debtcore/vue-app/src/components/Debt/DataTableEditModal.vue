@@ -54,7 +54,7 @@ interface Debt {
 	invoice?: number
 	customer?: number | null
 	amount?: number | string | null
-	due_date: Date | string | null
+	invoice_date: Date | string | null
 	status: number | null
 }
 
@@ -62,7 +62,7 @@ const form = reactive<Debt>({
 	invoice: props.row.id,
 	customer: null,
 	amount: props.row.amount,
-	due_date: new Date(props.row.due_date),
+	invoice_date: new Date(props.row.invoice_date),
 	status: props.row.status
 })
 
@@ -84,7 +84,7 @@ async function fetchCountries(query?: string) {
 	customers.is_loading = true
 	try {
 		const response = await axios.get(
-			`http://127.0.0.1:8000/api/customer/list?search=${query || ''}`,
+			`/api/customer/list?search=${query || ''}`,
 			{
 				withCredentials: true,
 				headers: {
@@ -106,7 +106,7 @@ async function fetchCountries(query?: string) {
 async function fetchStatuses() {
 	customers.is_loading = true
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/status/list`, {
+		const response = await axios.get(`/api/debt/status/edit/list`, {
 			withCredentials: true,
 			headers: {
 				'Cache-Control': 'no-cache',
@@ -139,7 +139,7 @@ watch(
 
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/`)
+		const response = await axios.get(`/api/debt/${props.row.id}/`)
 		Object.assign(form, response.data.Result)
 	} catch (error) {
 		console.log(error)
@@ -151,7 +151,7 @@ async function init() {
 function validateForm() {
 	const validations = [
 		{ condition: form.invoice == null, message: 'Invoice cannot be blank' },
-		{ condition: form.due_date?.toString == null, message: 'Due Date cannot be blank' },
+		{ condition: form.invoice_date?.toString == null, message: 'Invoice Date cannot be blank' },
 		{ condition: form.status == null, message: 'Status cannot be blank' },
 		{ condition: form.customer == null, message: 'Customer cannot be blank' }
 	]
@@ -174,7 +174,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/debt/${props.row.id}/`,
+			`/api/debt/${props.row.id}/`,
 			{
 				...form
 			},
@@ -223,7 +223,7 @@ function handleStatusSelect(status: any) {
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
-	form.due_date = format(date, 'yyyy-MM-dd')
+	form.invoice_date = format(date, 'yyyy-MM-dd')
 }
 </script>
 
@@ -356,7 +356,7 @@ function updateDueDate(payload: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right"> Due Date </Label>
+						<Label for="email" class="text-right"> Invoice Date </Label>
 						<div class="col-span-3">
 							<Popover>
 								<PopoverTrigger as-child>
@@ -365,17 +365,17 @@ function updateDueDate(payload: any) {
 										:class="
 											cn(
 												'w-full justify-start text-left font-normal',
-												!form.due_date && 'text-muted-foreground'
+												!form.invoice_date && 'text-muted-foreground'
 											)
 										"
 									>
 										<VIcon name="bi-calendar-fill" class="mr-2 size-4" />
-										<span>{{ form.due_date ?? 'Select a date' }}</span>
+										<span>{{ form.invoice_date ?? 'Select a date' }}</span>
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
 									<Calendar
-										v-model="form.due_date"
+										v-model="form.invoice_date"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

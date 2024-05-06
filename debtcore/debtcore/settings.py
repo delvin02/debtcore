@@ -125,6 +125,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "https://4e4d-211-26-122-216.ngrok-free.app",
     "https://3c0f-211-26-122-216.ngrok-free.app",
+    "https://4a5e-27-33-84-90.ngrok-free.app",
+    os.getenv("DOMAIN")
+]
+
+CORS_ORIGIN_WHITELIST = [
     os.getenv("DOMAIN")
 ]
 CORS_ORIGIN_ALLOW_ALL = True

@@ -7,7 +7,7 @@ class DebtSerializer(serializers.ModelSerializer):
     class Meta:
         model = Debt
         fields = ['customer', 'invoice', 
-                  'due_date', 
+                  'invoice_date', 
                   'amount',
                   'status',
                   'document'
@@ -31,7 +31,6 @@ class DebtSerializer(serializers.ModelSerializer):
             message=f"Debt invoice created for {debt.customer.name} with invoice number {debt.invoice}.",
             created_by=user,
             created_date=timezone.now(),
-            is_system_generated=True
         )
 
         return debt
@@ -53,7 +52,7 @@ class DebtEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Debt
         fields = ['id', 'customer', 'invoice', 
-                  'due_date', 
+                  'invoice_date', 
                   'amount',
                   'status',
                   ]
@@ -64,7 +63,7 @@ class DebtTableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Debt
-        fields = ['id', 'invoice', 'customer_name', 'due_date', 'amount', 'status', 'document_url'
+        fields = ['id', 'invoice', 'customer_name', 'invoice_date', 'amount', 'status', 'document_url'
 ]
     def get_customer_name(self, obj):
         return obj.customer.name

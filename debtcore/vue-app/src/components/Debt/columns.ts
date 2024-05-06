@@ -57,10 +57,10 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "due_date",
+    accessorKey: "invoice_date",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
     cell: ({ row }) => {
-      const date = row.getValue('due_date') as string;
+      const date = row.getValue('invoice_date') as string;
       let formattedDate = '';
 
       if (date) {
@@ -83,7 +83,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: true,
     enableHiding: true,
     meta: {
-      title: "Due Date"
+      title: "Invoice Date"
     },
   },
   {

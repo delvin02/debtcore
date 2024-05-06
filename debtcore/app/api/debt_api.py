@@ -34,13 +34,8 @@ class DebtView(APIView):
         serializer = DebtSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)  # Consider using 201 for Created
-        else:
-            errors = {"error": "Debt creation failed.", "details": {}}
-            for field, messages in serializer.errors.items():
-                # Assuming messages is a list of error strings
-                errors["details"][field] = " ".join(messages)  # Join messages for simplicity
-            return JsonResponse(errors, status=400)
+            return JsonResponse({'Result': 'Debt created.'}, status=201)  # Consider using 201 for Created
+        return JsonResponse({"error": "Debt creation failed."}, status=400)
 
     def patch(self, request, *args, **kwargs):
         debt_id = kwargs.get('debt_id')
@@ -100,9 +95,19 @@ class DebtDocumentView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
-class DebtStatusChoicesAPIView(APIView):
+
+class DebtStatusCreateChoicesAPIView(APIView):
     def get(self, request, *args, **kwargs):
+        '''
+            status can only be set to draft or in progress.
+        '''
         status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES[:2]]
+        serializer = DebtSelectListSerializer(status_choices, many=True)
+        return Response({'Result': serializer.data}, status=200)
+     
+class DebtStatusEditChoicesAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+
+        status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES[:]]
         serializer = DebtSelectListSerializer(status_choices, many=True)
         return Response({'Result': serializer.data}, status=200)

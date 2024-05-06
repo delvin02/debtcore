@@ -47,7 +47,7 @@ interface Debt {
 	invoice?: string
 	customer?: number | null
 	amount?: number | string | null
-	due_date: Date | string | null
+	invoice_date: Date | string | null
 	status: number | null
 	document: File | null
 }
@@ -56,7 +56,7 @@ const form = reactive<Debt>({
 	invoice: '',
 	customer: null,
 	amount: null,
-	due_date: null,
+	invoice_date: null,
 	status: null,
 	document: null
 })
@@ -79,7 +79,7 @@ async function fetchCountries(query?: string) {
 	customers.is_loading = true
 	try {
 		const response = await axios.get(
-			`http://127.0.0.1:8000/api/customer/list?search=${query || ''}`,
+			`/api/customer/list?search=${query || ''}`,
 			{
 				withCredentials: true,
 				headers: {
@@ -101,7 +101,7 @@ async function fetchCountries(query?: string) {
 async function fetchStatuses() {
 	customers.is_loading = true
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/status/list`, {
+		const response = await axios.get(`/api/debt/status/create/list`, {
 			withCredentials: true,
 			headers: {
 				'Cache-Control': 'no-cache',
@@ -123,7 +123,7 @@ async function fetchStatuses() {
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
-const due_date = ref()
+const invoice_date = ref()
 const { toast } = useToast()
 
 watch(
@@ -138,7 +138,7 @@ watch(
 function validateForm() {
 	const validations = [
 		{ condition: form.invoice === '', message: 'Invoice cannot be blank' },
-		{ condition: form.due_date?.toString == null, message: 'Due Date cannot be blank' },
+		{ condition: form.invoice_date?.toString == null, message: 'Invoice Date cannot be blank' },
 		{ condition: form.status == null, message: 'Status cannot be blank' },
 		{ condition: form.customer == null, message: 'Customer cannot be blank' }
 	]
@@ -162,7 +162,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.post(
-			'http://127.0.0.1:8000/api/debt',
+			'/api/debt',
 			{
 				...form
 			},
@@ -237,7 +237,7 @@ function handleFileChange(event: Event) {
 
 function updateDueDate(payload: any) {
 	const date = new Date(payload)
-	form.due_date = format(date, 'yyyy-MM-dd')
+	form.invoice_date = format(date, 'yyyy-MM-dd')
 }
 </script>
 
@@ -371,7 +371,7 @@ function updateDueDate(payload: any) {
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="email" class="text-right">
-							Due Date
+							Invoice Date
 							<span
 								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
 								>*</span
@@ -386,7 +386,7 @@ function updateDueDate(payload: any) {
 										:class="
 											cn(
 												'w-full justify-start text-left font-normal',
-												!form.due_date && 'text-muted-foreground'
+												!form.invoice_date && 'text-muted-foreground'
 											)
 										"
 									>
@@ -395,13 +395,13 @@ function updateDueDate(payload: any) {
 											class="mr-2 h-4 w-4"
 										/>
 										<span>{{
-											form.due_date ? form.due_date : 'Pick a date'
+											form.invoice_date ? form.invoice_date : 'Pick a date'
 										}}</span>
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
 									<Calendar
-										v-model="form.due_date"
+										v-model="form.invoice_date"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

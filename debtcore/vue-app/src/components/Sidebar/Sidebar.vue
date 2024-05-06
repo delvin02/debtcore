@@ -38,11 +38,11 @@ const links1: LinkProp[] = [
 		icon: 'bi-cash-coin',
 		to: '/debt'
 	},
-	{
-		title: 'Conversation',
-		icon: 'fa-whatsapp',
-		to: '/conversation'
-	},
+	// {
+	// 	title: 'Conversation',
+	// 	icon: 'fa-whatsapp',
+	// 	to: '/conversation'
+	// },
 	{
 		title: 'Template',
 		icon: 'bi-file-earmark-font',

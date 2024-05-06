@@ -40,6 +40,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
                 :options="statuses"
             />
 
+
             <Button
                 v-if="isFiltered"
                 variant="ghost"

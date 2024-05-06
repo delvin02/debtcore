@@ -1,7 +1,79 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import tasks from '@/components/Dashboard/data/tasks.json'
+import DataTable from '@/components/Dashboard/DataTable.vue'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { columns } from '@/components/Dashboard/columns'
+import type { Task } from '@/components/Dashboard/data/schema'
+import axios from 'axios'
+import { onMounted, provide, onBeforeUnmount } from 'vue'
+import { useTableStore } from '@/store/table'
+
+const tableStore = useTableStore('debt')
+
+const debtsUrl = '/api/debt'
+const map_function = (task: any): Task => {
+	const serialized_task = {
+		id: task.id,
+		invoice: task.invoice,
+		customer_name: task.customer_name,
+		invoice_date: new Date(task.invoice_date),
+		status: 'Waiting',
+		additional_info: 'Scheduled on 17/10/2024' 
+	}
+	return serialized_task
+}
+
+onMounted(async () => {
+	await tableStore.fetch(debtsUrl, 0, map_function) // Pass the URL when calling the action
+})
+
+provide('tableStore', tableStore)
+
+onBeforeUnmount(() => {
+	tableStore.$reset()
+})
+</script>
 
 <template>
-	<div>
-		<h1>te lol</h1>
+	<div class="p-8 space-y-8 h-full">
+		<div class="flex items-center justify-between space-y-2">
+			<div>
+				<h2 class="text-2xl font-bold tracking-tight">Dashboard</h2>
+			</div>
+		</div>
+		<div class="flex sm:flex-row sm gap-4 flex-col w-full">
+			<Card class="w-1/3">
+				<CardHeader>
+					<CardTitle>100</CardTitle>
+					<CardDescription>Scheduled Task(s)</CardDescription>
+				</CardHeader>
+			</Card>
+			<Card class="w-1/3">
+				<CardHeader>
+					<CardTitle>RM 99999</CardTitle>
+					<CardDescription>Active Debt Amount</CardDescription>
+				</CardHeader>
+			</Card>
+			<Card class="w-1/3">
+				<CardHeader>
+					<CardTitle>RM 100</CardTitle>
+					<CardDescription>Settled Debt</CardDescription>
+				</CardHeader>
+			</Card>>
+
+		</div>
+		<div v-if="tableStore.is_loading" class="text-center">
+			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
+		</div>
+		<div v-else>
+			<DataTable :data="tableStore.tasks" :columns="columns" />
+		</div>
 	</div>
 </template>

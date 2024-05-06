@@ -54,7 +54,7 @@ const { toast } = useToast()
 
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/backlog/`)
+		const response = await axios.get(`/api/debt/${props.row.id}/backlog/`)
 
 		messages.splice(0, messages.length, ...response.data.Result)
 
@@ -88,7 +88,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.post(
-			`http://127.0.0.1:8000/api/debt/${props.row.id}/backlog/`,
+			`/api/debt/${props.row.id}/backlog/`,
 			{
 				...form
 			},
@@ -103,18 +103,10 @@ async function submit() {
 			title: response.data.Result,
 			variant: 'success'
 		})
+		form.message = ''
+		error_message.value = ''
 	} catch (error) {
 		let errorMessage = 'An unexpected error occurred.'
-		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				errorMessage = error.response.data.error
-			}
-		}
 		toast({
 			title: 'Whoops, something went wrong',
 			description: errorMessage || '',
@@ -131,6 +123,7 @@ function toggleSheet() {
 		init()
 	}
 }
+
 </script>
 
 <template>
@@ -146,37 +139,41 @@ function toggleSheet() {
 			</Button>
 		</div>
 		<Sheet :open="is_dialog_open" @update:open="is_dialog_open = $event">
-			<SheetContent class="w-[600px]" side="right">
+			<SheetContent class="w-[720px]" side="right">
 				<SheetHeader>
 					<SheetTitle>Backlog - {{ props.row.invoice }}</SheetTitle>
 				</SheetHeader>
 				<Separator class="mt-2 mb-4" />
 
-				<ScrollArea class="h-[80vh] flex flex-col gap-2">
+				<ScrollArea class="h-[80vh] flex flex-col">
 					<div class="pr-4">
-						<div v-for="(msg, index) in messages" :key="index" class="ml-2">
+						<div v-for="(msg, index) in messages" :key="index" class="ml-2 pr-4">
 							<div class="flex justify-between mt-2">
-								<div
-									class="text-primary font-bold flex place-items-center self-center"
-									v-if="msg.is_system_generated"
-								>
-									<VIcon
-										name="bi-circle-fill"
-										class="size-3 my-auto fill-green-600 mr-2"
-										animation="pulse"
-									/>
-									System Generated
-								</div>
-								<div class="text-primary font-bold" v-else>
-									{{ msg.created_by_name }}
-								</div>
-								<div class="text-primary">
-									{{ msg.created_date }}
-								</div>
+									<div
+											class="text-primary font-bold flex place-items-center self-center"
+											v-if="msg.is_system_generated"
+									>
+											<VIcon
+													name="bi-circle-fill"
+													class="size-3 my-auto fill-green-600 mr-2"
+													animation="pulse"
+											/>
+											System Generated
+									</div>
+									<div class="text-primary font-bold" v-else>
+											{{ msg.created_by_name }}
+									</div>
 							</div>
-							<Separator variant="default" />
-							<div>{{ msg.message }}</div>
-						</div>
+							
+							<div>
+								<div class="text-primary">
+											{{ msg.created_date }}
+									</div>
+									<Separator variant="default" />
+
+									<div>{{ msg.message }}</div>
+							</div>
+					</div>
 					</div>
 				</ScrollArea>
 				<Label for="error" class="text-red-600 flex" v-if="error_message">
