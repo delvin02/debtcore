@@ -81,8 +81,10 @@ class DebtDocumentView(APIView):
     def get(self, request, *args, **kwargs):
         debt_id = kwargs.get('debt_id')
         debt = get_object_or_404(Debt, pk=debt_id)
+        if not debt:
+            return JsonResponse({'error': 'Debt not found'}, status=404)
         serializer = DebtDocumentViewSerializer(debt, context={'request': request})
-        return Response({'Result':serializer.data})
+        return Response({'Result':serializer.data}, status=200)
     
     def patch(self, request, *args, **kwargs):
         debt_id = kwargs.get('debt_id')
@@ -91,7 +93,7 @@ class DebtDocumentView(APIView):
         serializer = DebtDocumentViewSerializer(debt, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response({'Result': 'Attachment updated'})
+            return Response({'Result': 'Attachment updated'}, status=200)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

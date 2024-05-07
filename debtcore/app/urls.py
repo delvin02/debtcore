@@ -46,6 +46,9 @@ urlpatterns = [
     path('api/template/<int:template_id>', WhatsappTemplateView.as_view(), name="get_template"),
     path('api/connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth"),
 
+    # Session
+    path('api/session', SessionView.as_view(), name="get_sessions"),
+
     # Conversation
     path('api/conversations', ConversationView.as_view, name="conversations"),
 

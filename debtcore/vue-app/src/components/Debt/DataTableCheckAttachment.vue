@@ -42,30 +42,50 @@ const form = reactive<Debt>({
 	document_url: props.row.document_url
 })
 
-function onError(reason: any) {
-	toast({
-		title: `PDF loading error: ${reason}`,
-		variant: 'destructive'
-	})
-}
-// default page
+let pdf: any = null
+let pages: any = null
+let info: any = null
+
 const page = ref(1)
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const { toast } = useToast()
-const { pdf, pages, info } = usePDF(props.row.document_url, {
-	onError
-})
+
+function onError(reason: any) {
+	toast({
+		title: `PDF loading error`,
+		variant: 'destructive'
+	})
+	is_dialog_open.value = !is_dialog_open.value
+	form.document_url = null
+}
 
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/debt/${props.row.id}/document/`)
+		const response = await axios.get(`/api/debt/${props.row.id}/document/`)
 
 		form.document_url = response.data.Result.document_url
-
-		is_loading.value = false
+		console.log(response.data.Result)
+		const {
+			pdf: loadedPdf,
+			pages: loadedPages,
+			info: loadedInfo
+		} = usePDF(props.row.document_url, {
+			onError: onError
+		})
+		pdf = loadedPdf
+		pages = loadedPages
+		info = loadedInfo
 	} catch (error) {
+		form.document_url = null
+		let errorMessage = 'An unexpected error occurred.'
+		toast({
+			title: 'Whoops, something went wrong',
+			description: errorMessage,
+			variant: 'destructive'
+		})
+	} finally {
 		is_loading.value = false
 	}
 }
@@ -91,7 +111,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
-			`http://127.0.0.1:8000/api/debt/${props.row.id}/document/`,
+			`/api/debt/${props.row.id}/document/`,
 			{
 				...form
 			},
@@ -198,7 +218,7 @@ function handleFileChange(event: Event) {
 						<p
 							class="col-start-2 col-span-3 mt-1 text-sm text-gray-500 dark:text-gray-300"
 						>
-							PNG, JPG or JPEG, PDF
+							PDF
 						</p>
 					</div>
 					<div v-else-if="form.document_url.endsWith('.pdf')">

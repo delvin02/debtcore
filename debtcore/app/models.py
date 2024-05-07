@@ -393,6 +393,10 @@ class Session(models.Model):
     status_code = models.IntegerField(default=0)
     event_type = models.IntegerField()
     payload = models.JSONField()
+
+    invoice = models.CharField(max_length=255, null=False)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    
     whatsapp_message_id = models.CharField(max_length=255, null=True, blank=True)
     
 
