@@ -37,10 +37,10 @@ app.conf.beat_schedule = {
     #     'task': 'tasks.process_webhook',
     #     'schedule': crontab(minute='*'),
     # },
-    'process_whatsapp_message': {
-        'task': 'tasks.process_whatsapp_messages.main',
-        'schedule': crontab(minute='*'),
-    }
+    # 'process_whatsapp_message': {
+    #     'task': 'tasks.process_whatsapp_messages.main',
+    #     'schedule': crontab(minute='*'),
+    # }
 }
 
 

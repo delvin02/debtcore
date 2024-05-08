@@ -6,7 +6,8 @@ export const taskSchema = z.object({
   id: z.number(),
   invoice: z.string(),
   customer_name: z.string().min(2).max(50),
-  invoice_date: z.preprocess((arg) => {
+  event_display: z.string(),
+  created_date: z.preprocess((arg) => {
     if (typeof arg === 'string') {
       return new Date(arg);
     }

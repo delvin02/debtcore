@@ -57,10 +57,26 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "invoice_date",
+    accessorKey: "event_display",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Event Type"}),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('event_display')),
+    enableSorting: true,
+    enableHiding: true,
+    enableColumnFilter: true,
+    filterFn: (row, id, value) => {
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() ?? '';
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
+    },
+    meta: {
+      title: "Event Type"
+    },
+  },
+  {
+    accessorKey: "created_date",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
     cell: ({ row }) => {
-      const date = row.getValue('invoice_date') as string;
+      const date = row.getValue('created_date') as string;
       let formattedDate = '';
 
       if (date) {
@@ -83,13 +99,13 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: true,
     enableHiding: true,
     meta: {
-      title: "Invoice Date"
+      title: "Created Date"
     },
   },
   {
     accessorKey: "status",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Status"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('status')),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('status')),
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {

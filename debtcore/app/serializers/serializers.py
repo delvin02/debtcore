@@ -10,3 +10,4 @@ from .setup_serializer import *
 from .whatsapp_profile_serializer import *
 from .whatsappuser_serializer import *
 from .conversation_serializer import *
+from .session_serializer import *

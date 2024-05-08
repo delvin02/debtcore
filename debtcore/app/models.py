@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 from django.utils import timezone
 from django.conf import settings
 from .validators import *
+from debtcore_shared.common.enum import StatusCode, EventType
 import uuid
 
 class CustomUserManager(UserManager):
@@ -248,7 +249,14 @@ class Debt(models.Model):
             if status_value.lower() == value.lower():
                 return key
         
-        raise ValueError(f"No key found for status value: {value}.") 
+        raise ValueError(f"No key found for status value: {value}.")
+    
+    @staticmethod
+    def get_status_text_for_key(value):
+        for key, description in Debt.STATUS_CHOICES:
+            if key == value:
+                return description
+        raise ValueError(f"No status description found for key: {value}")
 
 class DebtBacklog(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
@@ -385,19 +393,31 @@ class WebHook(models.Model):
 
 class Session(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    webhook = models.ForeignKey(WebHook, on_delete=models.CASCADE, related_name='session_webhook')
+    webhook = models.ForeignKey(WebHook, on_delete=models.CASCADE, null=True, blank=True, related_name='session_webhook')
     created_date = models.DateTimeField(default=timezone.now)
-    complete_date = models.DateTimeField(null=True, blank=True)
+    completed_date = models.DateTimeField(null=True, blank=True)
+    scheduled_date = models.DateTimeField(null=True, blank=True)
     transaction_status = models.IntegerField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, related_name='session_company')
     status_code = models.IntegerField(default=0)
     event_type = models.IntegerField()
-    payload = models.JSONField()
+    # payload = models.JSONField()
+    
+    debt = models.ForeignKey(Debt, on_delete=models.CASCADE, null=True, related_name='session_debt')
+    
+    additional_info = models.TextField()
+    
+    
 
     invoice = models.CharField(max_length=255, null=False)
+    customer_name = models.CharField(max_length=255, blank=True, null=False)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     
     whatsapp_message_id = models.CharField(max_length=255, null=True, blank=True)
     
-
+    def get_status_display(self):
+        return StatusCode(self.status_code).name.replace('_', ' ').title()
+    
+    def get_event_display(self):
+        return EventType(self.event_type).name.replace('_', ' ').title()
     

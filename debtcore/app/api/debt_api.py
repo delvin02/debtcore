@@ -11,6 +11,7 @@ from app.models import Debt
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
+from app.tasks.debt_session_process import debt_session_process
 
 class DebtView(APIView):
     permission_classes = [IsAuthenticated]
@@ -33,8 +34,9 @@ class DebtView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = DebtSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'Result': 'Debt created.'}, status=201)  # Consider using 201 for Created
+            debt = serializer.save()
+            debt_session_process.delay(debt.id)
+            return JsonResponse({'Result': 'Debt created.'}, status=201) 
         return JsonResponse({"error": "Debt creation failed."}, status=400)
 
     def patch(self, request, *args, **kwargs):

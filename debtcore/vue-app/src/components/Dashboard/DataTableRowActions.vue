@@ -15,6 +15,6 @@ const task = computed(() => taskSchema.parse(props.row.original))
 
 <template>
 	<div class="flex gap-1">
-		<DataTableEditModal :row="task" />
+		<!-- <DataTableEditModal :row="task" /> -->
 	</div>
 </template>

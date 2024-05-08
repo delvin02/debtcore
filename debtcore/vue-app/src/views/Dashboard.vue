@@ -23,9 +23,10 @@ const map_function = (task: any): Task => {
 		id: task.id,
 		invoice: task.invoice,
 		customer_name: task.customer_name,
-		invoice_date: new Date(task.invoice_date),
-		status: 'Waiting',
-		additional_info: 'Scheduled on 17/10/2024'
+		event_display: task.event_display,
+		created_date: task.created_date,
+		status: task.status_display,
+		additional_info: task.additional_info
 	}
 	return serialized_task
 }
@@ -78,7 +79,7 @@ onBeforeUnmount(() => {
 			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
 		</div>
 		<div v-else>
-			<DataTable :data="dashboardStore.tasks" :columns="columns" />
+			<DataTable :data="dashboardStore.tasks" :columns="columns"/>
 		</div>
 	</div>
 </template>

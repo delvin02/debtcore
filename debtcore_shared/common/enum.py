@@ -18,7 +18,7 @@ class TransactionStatus(Enum):
   FAILED_MAPPING = 5
   
 class StatusCode(Enum):
-  WAITING_TO_BE_PROCESSED = 0
+  WAITING = 0
   COMPANY_DISABLED = 1
   
   # Whatsapp Message (100-199)
@@ -32,4 +32,5 @@ class StatusCode(Enum):
 class EventType(Enum):
   INVALID = 0
   WHATSAPP_MESSAGE = 10
+  WHATSAPP_SCHEDULED_MESSAGE = 11
   

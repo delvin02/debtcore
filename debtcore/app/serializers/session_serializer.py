@@ -4,7 +4,7 @@ from django.utils import timezone
 
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Debt
+        model = Session
         fields = ['customer', 'invoice', 
                   'invoice_date', 
                   'amount',
@@ -41,9 +41,9 @@ class SessionSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class DebtEditSerializer(serializers.ModelSerializer):
+class SessionEditSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Debt
+        model = Session
         fields = ['id', 'customer', 'invoice', 
                   'invoice_date', 
                   'amount',
@@ -51,23 +51,23 @@ class DebtEditSerializer(serializers.ModelSerializer):
                   ]
             
 class SessionTableSerializer(serializers.ModelSerializer):
-    customer_name = serializers.SerializerMethodField()
+    status_display = serializers.SerializerMethodField()
     invoice = serializers.SerializerMethodField()
-
+    customer_name = serializers.SerializerMethodField()
+    event_display = serializers.SerializerMethodField()
+    
     class Meta:
         model = Session
-        fields = ['id', 'invoice', 'customer_name', 'invoice_date', 'amount', 'status']
+        fields = ['id', 'invoice', 'customer_name', 'event_display', 'created_date', 'status_code', 'status_display', 'additional_info']
+    
+    def get_invoice(self, obj):
+        return obj.debt.invoice
 
     def get_customer_name(self, obj):
-        return obj.customer.name
-
-    def get_invoice(self, obj):
-        return obj.invoice.nam
-      
-    def get_document_url(self, obj):
-        request = self.context.get('request')
-        if obj.document and hasattr(obj.document, 'url'):
-            return request.build_absolute_uri(obj.document.url)
-        else:
-            return None
-        
+        return obj.debt.customer.name
+    
+    def get_status_display(self, obj):
+        return obj.get_status_display()
+    
+    def get_event_display(self, obj):
+        return obj.get_event_display()

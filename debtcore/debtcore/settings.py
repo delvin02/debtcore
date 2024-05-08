@@ -74,10 +74,22 @@ LOGGING = {
             "filename": str(BASE_DIR / "logs/webhook-processor.log"),
             "formatter": "detailed",
         },
+        "session_processor_handler": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/session-processor.log"),
+            "formatter": "detailed",
+        },
         "whatsapp_message_handler": {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": str(BASE_DIR / "logs/whatsapp-message.log"),
+            "formatter": "detailed",
+        },
+        "debt_session_handler": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/debt-session.log"),
             "formatter": "detailed",
         },
     },
@@ -111,6 +123,13 @@ LOGGING = {
         },
         "whatsapp_message_logger": {
             "handlers": ["console", "whatsapp_message_handler"],
+            "level": "INFO",
+            'maxBytes': 1024*1024*10,  
+            'backupCount': 5,
+            "propagate": False,
+        },
+        "debt_for_session_loogger": {
+            "handlers": ["console", "debt_session_handler"],
             "level": "INFO",
             'maxBytes': 1024*1024*10,  
             'backupCount': 5,

@@ -42,23 +42,19 @@ const form = reactive<Debt>({
 	document_url: props.row.document_url
 })
 
-let pdf: any = null
-let pages: any = null
-let info: any = null
-
 const page = ref(1)
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const { toast } = useToast()
-
+const { pdf, pages, info } = usePDF(props.row.document_url, {
+	onError
+})
 function onError(reason: any) {
 	toast({
-		title: `PDF loading error`,
+		title: `PDF loading error: ${reason}`,
 		variant: 'destructive'
 	})
-	is_dialog_open.value = !is_dialog_open.value
-	form.document_url = null
 }
 
 async function init() {
@@ -67,16 +63,6 @@ async function init() {
 
 		form.document_url = response.data.Result.document_url
 		console.log(response.data.Result)
-		const {
-			pdf: loadedPdf,
-			pages: loadedPages,
-			info: loadedInfo
-		} = usePDF(props.row.document_url, {
-			onError: onError
-		})
-		pdf = loadedPdf
-		pages = loadedPages
-		info = loadedInfo
 	} catch (error) {
 		form.document_url = null
 		let errorMessage = 'An unexpected error occurred.'

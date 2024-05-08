@@ -25,6 +25,10 @@ class DebtSerializer(serializers.ModelSerializer):
         
         validated_data['company'] = user.company
         
+        document = self.context['request'].FILES.get('document')
+        if document:
+            validated_data['document'] = document
+            
         debt = super().create(validated_data)
         DebtBacklog.objects.create(
             debt=debt,
