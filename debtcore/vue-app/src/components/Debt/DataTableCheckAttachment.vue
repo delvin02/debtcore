@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogFooter
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter
 } from '@/components/ui/dialog'
-
+ 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -22,155 +22,145 @@ import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
-
+import type { AnyAaaaRecord } from 'dns'
+ 
 const tableStore = inject('tableStore', useTableStore('debt'))
-
+ 
 interface DataTableEditModalProps {
-	row: Task
+    row: Task
 }
-
+ 
 const props = defineProps<DataTableEditModalProps>()
-
+ 
 // Form Modal
 interface Debt {
-	document: string | File | null
-	document_url: string | null
+    document: string | File | null
+    document_url: string | null
 }
-
+ 
 const form = reactive<Debt>({
-	document: null,
-	document_url: props.row.document_url
+    document: null,
+    document_url: props.row.document_url
 })
-
+ 
 const page = ref(1)
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const { toast } = useToast()
 const { pdf, pages, info } = usePDF(props.row.document_url, {
-	onError
+    onError
 })
 function onError(reason: any) {
-	toast({
-		title: `PDF loading error: ${reason}`,
-		variant: 'destructive'
-	})
+    toast({
+        title: `PDF loading error: ${reason}`,
+        variant: 'destructive'
+    })
 }
-
+ 
 async function init() {
-	try {
-		const response = await axios.get(`/api/debt/${props.row.id}/document/`)
-
-		form.document_url = response.data.Result.document_url
-		console.log(response.data.Result)
-	} catch (error) {
-		form.document_url = null
-		let errorMessage = 'An unexpected error occurred.'
-		toast({
-			title: 'Whoops, something went wrong',
-			description: errorMessage,
-			variant: 'destructive'
-		})
-	} finally {
-		is_loading.value = false
-	}
+    try {
+        is_loading.value = true
+        const response = await axios.get(`/api/debt/${props.row.id}/document/`)
+        form.document_url = response.data.Result.document_url
+    } catch (error) {
+        replace()
+        let errorMessage = 'An unexpected error occurred.'
+        toast({
+            title: 'Whoops, something went wrong',
+            description: errorMessage,
+            variant: 'destructive'
+        })
+    } finally {
+        is_loading.value = false
+    }
 }
-
+ 
 const onPdfLoaded = () => {
-	const canvas = document.querySelector<HTMLCanvasElement>('#vp > div > div > div > canvas')
-	if (canvas) {
-		const canvasHeight = canvas.offsetHeight
-		const maxHeight = window.innerHeight - 250
-		const minHeight = 680
-
-		if (maxHeight > canvasHeight && canvasHeight < minHeight) {
-			dialogContentHeight.value = canvasHeight
-		} else if (maxHeight > canvasHeight) {
-			dialogContentHeight.value = maxHeight
-		} else {
-			dialogContentHeight.value = Math.min(Math.max(canvasHeight, minHeight), maxHeight)
-		}
-	}
+    const canvas = document.querySelector<HTMLCanvasElement>('#vp > div > div > div > canvas')
+    if (canvas) {
+        const canvasHeight = canvas.offsetHeight
+        const maxHeight = window.innerHeight - 250
+        const minHeight = 680
+ 
+        if (maxHeight > canvasHeight && canvasHeight < minHeight) {
+            dialogContentHeight.value = canvasHeight
+        } else if (maxHeight > canvasHeight) {
+            dialogContentHeight.value = maxHeight
+        } else {
+            dialogContentHeight.value = Math.min(Math.max(canvasHeight, minHeight), maxHeight)
+        }
+    }
 }
-
+ 
 async function submit() {
-	is_loading.value = true
-	try {
-		const response = await axios.patch(
-			`/api/debt/${props.row.id}/document/`,
-			{
-				...form
-			},
-			{
-				headers: {
-					'Content-Type': 'multipart/form-data'
-				}
-			}
-		)
-		toggleDialog()
-		await tableStore.refresh(tableStore.page_index)
-		toast({
-			title: response.data.Result,
-			variant: 'success'
-		})
-	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.'
-		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.data.details && typeof error.response.data.details === 'object') {
-				const errorKeys = Object.keys(error.response.data.details)
-				if (errorKeys.length > 0 && error.response.data.details[errorKeys[0]].length > 0) {
-					errorMessage = error.response.data.details[errorKeys[0]][0]
-				}
-			} else if (error.response.data.error) {
-				errorMessage = error.response.data.error
-			}
-		}
-		toast({
-			title: 'Whoops, something went wrong',
-			description: errorMessage || '',
-			variant: 'destructive'
-		})
-	} finally {
-		is_loading.value = false
-	}
+    is_loading.value = true
+    try {
+        const response = await axios.patch(
+            `/api/debt/${props.row.id}/document/`,
+            {
+                ...form
+            },
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        )
+        toggleDialog()
+        await tableStore.refresh(tableStore.page_index)
+        toast({
+            title: response.data.Result,
+            variant: 'success'
+        })
+    } catch (error) {
+        let errorMessage = 'An unexpected error occurred.'
+        toast({
+            title: 'Whoops, something went wrong',
+            description: errorMessage || '',
+            variant: 'destructive'
+        })
+    } finally {
+        is_loading.value = false
+    }
 }
-
+ 
 function replace() {
-	form.document_url = null
+    form.document_url = null
 }
 function toggleDialog() {
-	is_dialog_open.value = !is_dialog_open.value
-	if (is_dialog_open.value) {
-		init()
-	}
+    is_dialog_open.value = !is_dialog_open.value
+    if (is_dialog_open.value) {
+        init()
+    }
 }
-
+ 
 function handleFileChange(event: Event) {
-	const input = event.target as HTMLInputElement
-	if (input.files?.length) {
-		const file = input.files[0]
-
-		// only PDF
-		if (file.type !== 'application/pdf') {
-			toast({
-				title: 'Please select a PDF file',
-				variant: 'destructive'
-			})
-			input.value = ''
-			return
-		}
-
-		// Check if the file size is under 5MB
-		if (file.size > 5 * 1024 * 1024) {
-			toast({
-				title: 'The file size must be under 5MB',
-				variant: 'destructive'
-			})
-			input.value = ''
-			return
-		}
-		form.document = file
-	}
+    const input = event.target as HTMLInputElement
+    if (input.files?.length) {
+        const file = input.files[0]
+ 
+        // only PDF
+        if (file.type !== 'application/pdf') {
+            toast({
+                title: 'Please select a PDF file',
+                variant: 'destructive'
+            })
+            input.value = ''
+            return
+        }
+ 
+        // Check if the file size is under 5MB
+        if (file.size > 5 * 1024 * 1024) {
+            toast({
+                title: 'The file size must be under 5MB',
+                variant: 'destructive'
+            })
+            input.value = ''
+            return
+        }
+        form.document = file
+    }
 }
 </script>
 

@@ -111,7 +111,7 @@ class WhatsAppMessageProcessor(ServiceProcessorBase):
         
         # Implement the logic specific to WhatsApp messages here
         processed_data = f"Processed session data: {session.id}"
-        session.status_code = StatusCode.WHATSAPP_MESSAGE_SUCCESS.value
+        ##session.status_code = StatusCode.WHATSAPP_MESSAGE_SUCCESS.value
         return processed_data
     
     @staticmethod

@@ -42,15 +42,40 @@ class SessionView(APIView):
                 errors["details"][field] = " ".join(messages)  # Join messages for simplicity
             return JsonResponse(errors, status=400)
 
-    def patch(self, request, *args, **kwargs):
-        session_id = kwargs.get('session_id')
-        session_to_update = get_object_or_404(Session, pk=session_id) 
-        serializer = SessionEditSerializer(session_to_update, data=request.data, partial=True, context={'request': request})
+    # def patch(self, request, *args, **kwargs):
+    #     session_id = kwargs.get('session_id')
+    #     session_to_update = get_object_or_404(Session, pk=session_id) 
+    #     serializer = SessionEditSerializer(session_to_update, data=request.data, partial=True, context={'request': request})
 
-        if serializer.is_valid():
-            session = serializer.save()
-            return Response({'Result': 'Session updated'}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     if serializer.is_valid():
+    #         session = serializer.save()
+    #         return Response({'Result': 'Session updated'}, status=status.HTTP_201_CREATED)
+    #     else:
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+  
+class SessionScheduleEditView(APIView):
+  permission_classes = [IsAuthenticated]
+  
+
+  def get(self, request, *args, **kwargs):
+    session_id = kwargs.get('session_id')
+    if session_id:
+        # Retrieving a single session
+        session = get_object_or_404(Session, pk=session_id)
+        if not session:
+            return JsonResponse({'message': 'Session not found'}, status=404)
+        serializer = SessionScheduleEditSerializer(session)
+        return JsonResponse({'Result': serializer.data}, status=200)
+        
+  def patch(self, request, *args, **kwargs):
+    session_id = kwargs.get('session_id')
+    session_to_update = get_object_or_404(Session, pk=session_id) 
+    serializer = SessionScheduleEditSerializer(session_to_update, data=request.data, partial=True, context={'request': request})
+
+    if serializer.is_valid():
+        session = serializer.save()
+        return Response({'Result': 'Session updated'}, status=status.HTTP_201_CREATED)
+    else:
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

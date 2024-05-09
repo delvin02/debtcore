@@ -22,24 +22,40 @@ def debt_session_process(debt_id):
         if status_text != "In Progress":
             logger.info(f'Debt is not in progress, operation terminated.')
             return
-            
         
-        scheduled_date = debt.invoice_date - timedelta(days=7)
-        additional_info = f"Scheduled on {scheduled_date}"
+        dates = {
+            "7 days before": debt.invoice_date - timedelta(days=7),
+            "7 days after": debt.invoice_date + timedelta(days=7),
+            "30 days after": debt.invoice_date + timedelta(days=30),
+            "60 days after": debt.invoice_date + timedelta(days=60),
+            "90 days after": debt.invoice_date + timedelta(days=90)
+        }
         
-        session = Session.objects.create(
-            company = debt.company,
-            transaction_status = TransactionStatus.QUEUED.value,
-            event_type = EventType.WHATSAPP_SCHEDULED_MESSAGE.value,
-            status_code = StatusCode.WAITING_TO_BE_PROCESSED.value,
-            scheduled_date = scheduled_date,
-            additional_info = additional_info,
-            debt=debt,
-            invoice = debt.invoice
-        )
-            
-        logger.info(f'Starting data processing task {debt_id}')
-        
+        today = timezone.now().date()
+
+        for desc, scheduled_date in dates.items():
+            status_code = StatusCode.WAITING.value
+            transaction_status = TransactionStatus.QUEUED.value
+            additional_info = f"{desc} notification scheduled on {scheduled_date}"
+
+            if scheduled_date < today:
+                status_code = StatusCode.WHATSAPP_SCHEDULED_MESSAGE_PAST_DUE.value
+                transaction_status = TransactionStatus.COMPLETED_SKIPPED.value
+                additional_info = f"{desc} notification skipped as it is past due."
+
+
+            session = Session.objects.create(
+                company=debt.company,
+                transaction_status=transaction_status,
+                event_type=EventType.WHATSAPP_SCHEDULED_MESSAGE.value,
+                status_code=status_code,
+                scheduled_date=scheduled_date,
+                additional_info=additional_info,
+                debt=debt,
+                invoice=debt.invoice
+            )
+            logger.info(f'Session created for {desc} on {scheduled_date}')
+                    
     except Debt.DoesNotExist:
         logger.error(f'Debt with ID {debt_id} does not exist.')
     except Exception as e:

@@ -12,9 +12,10 @@ export const taskSchema = z.object({
       return new Date(arg);
     }
     return arg;
-  }, z.date()),  
+  }, z.date()),
   status: z.string(),
-  additional_info: z.string()
+  additional_info: z.string(),
+  editable: z.boolean()
 })
 
 export type Task = z.infer<typeof taskSchema>

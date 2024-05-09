@@ -304,49 +304,48 @@ def send_test_message(request):
         client = WhatsappMetaClient(company.meta_access_token)
         request_send_message = MessageRequest(client, whatsapp_company_profile.whatsapp_id)
         sync_send_message = async_to_sync(request_send_message.send_test_message)
-        # response = sync_send_message(text_message)
-        response={'messaging_product': 'whatsapp', 'contacts': [{'input': '61478643029', 'wa_id': '61478643029'}], 'messages': [{'id': 'wamid.HBgLNjE0Nzg2NDMwMjkVAgARGBJBREYwNjRGMkE2NDMwMEUTTTT', 'message_status': 'accepted'}]}
-
-        with transaction.atomic():
-            contact = response.get("contacts")[0]
+        response = sync_send_message(text_message)
+        
+        # with transaction.atomic():
+        #     contact = response.get("contacts")[0]
             
-            recipient, _ = WhatsAppUser.objects.get_or_create(
-                phone_number=to,
-                defaults={'whatsapp_id': contact.get('wa_id') }
-            )
+        #     recipient, _ = WhatsAppUser.objects.get_or_create(
+        #         phone_number=to,
+        #         defaults={'whatsapp_id': contact.get('wa_id') }
+        #     )
 
-            conversation, created = Conversation.objects.get_or_create(
-                company=company
-            )
+        #     conversation, created = Conversation.objects.get_or_create(
+        #         company=company
+        #     )
 
-            if created:
-                # If the conversation is newly created, add the initial participant
-                conversation.participants.add(recipient)
-            else:
-                # If the conversation already existed, you may want to add new participants
-                # or handle them differently based on your business logic
-                if not conversation.participants.filter(id=recipient.id).exists():
-                    conversation.participants.add(recipient)
-
-
-            body = extract_body_from_whatsapp_template(whatsapp_template)
-
-            # Parse body template message to something readable
-            parameters = template_component.get_parameters()
-            body_text = parse_whatsapp_body_template(body=body, parameters=parameters)
+        #     if created:
+        #         # If the conversation is newly created, add the initial participant
+        #         conversation.participants.add(recipient)
+        #     else:
+        #         # If the conversation already existed, you may want to add new participants
+        #         # or handle them differently based on your business logic
+        #         if not conversation.participants.filter(id=recipient.id).exists():
+        #             conversation.participants.add(recipient)
 
 
-            whatsapp_message = WhatsAppMessage.objects.create(
-                whatsapp_message_id=response.get("messages")[0].get('id'),
-                conversation=conversation,
-                sender=sender,
-                recipient=recipient,
-                company=company,
-                message_type=WhatsAppMessage.get_key_for_template(),
-                media_url=document_content.get('link'),
-                message_text=body_text,
-                footer='Powered By DebtCore'
-            )
+        #     body = extract_body_from_whatsapp_template(whatsapp_template)
+
+        #     # Parse body template message to something readable
+        #     parameters = template_component.get_parameters()
+        #     body_text = parse_whatsapp_body_template(body=body, parameters=parameters)
+
+
+        #     whatsapp_message = WhatsAppMessage.objects.create(
+        #         whatsapp_message_id=response.get("messages")[0].get('id'),
+        #         conversation=conversation,
+        #         sender=sender,
+        #         recipient=recipient,
+        #         company=company,
+        #         message_type=WhatsAppMessage.get_key_for_template(),
+        #         media_url=document_content.get('link'),
+        #         message_text=body_text,
+        #         footer='Powered By DebtCore'
+        #     )
             
         return JsonResponse({'message': "Test phone number send successfully."}, status=200)
     except Exception as e:

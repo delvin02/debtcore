@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from app.models import Session
 from django.utils import timezone
+from debtcore_shared.common.enum import *
 
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,24 +42,45 @@ class SessionSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class SessionEditSerializer(serializers.ModelSerializer):
+class SessionScheduleEditSerializer(serializers.ModelSerializer):
+    scheduled_date = serializers.SerializerMethodField()
+
     class Meta:
         model = Session
-        fields = ['id', 'customer', 'invoice', 
-                  'invoice_date', 
-                  'amount',
-                  'status',
-                  ]
+        fields = ['id', 'invoice', 'scheduled_date']
+
+    def get_scheduled_date(self, obj):
+        # Ensure the scheduled_date is not None
+        if obj.scheduled_date is not None:
+            # Return the date part of the datetime in 'yyyy-mm-dd' format
+            return obj.scheduled_date.strftime('%Y-%m-%d')
+        return None
+
+    def update(self, instance, validated_data):
+        scheduled_date = self.get_scheduled_date(instance)
+        instance.scheduled_date = scheduled_date
+        instance.additional_info = f"Notification re-scheduled on {scheduled_date}"
+        instance.save()
+        return instance
             
 class SessionTableSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField()
     invoice = serializers.SerializerMethodField()
     customer_name = serializers.SerializerMethodField()
     event_display = serializers.SerializerMethodField()
+    editable = serializers.SerializerMethodField()
     
     class Meta:
         model = Session
-        fields = ['id', 'invoice', 'customer_name', 'event_display', 'created_date', 'status_code', 'status_display', 'additional_info']
+        fields = ['id', 
+                  'invoice', 
+                  'customer_name', 
+                  'event_display', 
+                  'created_date', 
+                  'status_code', 
+                  'status_display', 
+                  'additional_info',
+                  'editable']
     
     def get_invoice(self, obj):
         return obj.debt.invoice
@@ -71,3 +93,6 @@ class SessionTableSerializer(serializers.ModelSerializer):
     
     def get_event_display(self, obj):
         return obj.get_event_display()
+    
+    def get_editable(self, obj) -> bool:
+        return obj.transaction_status == TransactionStatus.QUEUED.value

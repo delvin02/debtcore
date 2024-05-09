@@ -26,7 +26,8 @@ const map_function = (task: any): Task => {
 		event_display: task.event_display,
 		created_date: task.created_date,
 		status: task.status_display,
-		additional_info: task.additional_info
+		additional_info: task.additional_info,
+		editable: task.editable
 	}
 	return serialized_task
 }

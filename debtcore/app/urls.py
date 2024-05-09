@@ -48,6 +48,7 @@ urlpatterns = [
 
     # Session
     path('api/session', SessionView.as_view(), name="get_sessions"),
+    path('api/session/<int:session_id>/scheduled_date', SessionScheduleEditView.as_view(), name="get_session_schedule"),
 
     # Conversation
     path('api/conversations', ConversationView.as_view, name="conversations"),
