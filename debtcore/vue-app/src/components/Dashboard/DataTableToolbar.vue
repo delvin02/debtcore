@@ -33,12 +33,12 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
             />
             <!-- @input="table.getColumn('invoice')?.setFilterValue($event.target.value)" -->
 
-            <DataTableFacetedFilter
+            <!-- <DataTableFacetedFilter
                 v-if="table.getColumn('status')"
                 :column="table.getColumn('status')"
                 title="Status"
                 :options="statuses"
-            />
+            /> -->
 
 
             <Button

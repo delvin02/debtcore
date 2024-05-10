@@ -113,6 +113,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     objects = CustomUserManager()
+    
+    def get_full_name(self):
+        return self.name
 
 
 class Customer(models.Model):
@@ -396,7 +399,7 @@ class Session(models.Model):
     webhook = models.ForeignKey(WebHook, on_delete=models.CASCADE, null=True, blank=True, related_name='session_webhook')
     created_date = models.DateTimeField(default=timezone.now)
     completed_date = models.DateTimeField(null=True, blank=True)
-    scheduled_date = models.DateTimeField(null=True, blank=True)
+    scheduled_date = models.DateField(null=True, blank=True)
     transaction_status = models.IntegerField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, related_name='session_company')
     status_code = models.IntegerField(default=0)
@@ -407,7 +410,8 @@ class Session(models.Model):
     
     additional_info = models.TextField()
     
-    
+    change_info = models.TextField(null=True, blank=True)
+        
 
     invoice = models.CharField(max_length=255, null=False)
     customer_name = models.CharField(max_length=255, blank=True, null=False)
@@ -420,4 +424,5 @@ class Session(models.Model):
     
     def get_event_display(self):
         return EventType(self.event_type).name.replace('_', ' ').title()
+
     

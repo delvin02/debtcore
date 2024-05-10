@@ -41,6 +41,37 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
+    accessorKey: "created_date",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
+    cell: ({ row }) => {
+      const dateString = row.getValue('created_date') as string;
+      let formattedDate = '';
+      if (dateString) {
+        const parsedDate = new Date(dateString);
+        if (!isNaN(parsedDate.getTime())) {
+          formattedDate = parsedDate.toLocaleString('en-US', {
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: 'numeric', 
+            minute: 'numeric', 
+            second: 'numeric'
+          });
+        } else {
+          formattedDate = 'Not Provided';
+        }
+      } else {
+        formattedDate = 'Not provided';
+      }
+      return h('div', { class: `w-fit ${formattedDate !== 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
+    },
+    enableSorting: true,
+    enableHiding: true,
+    meta: {
+      title: "Created Date"
+    },
+  },
+  {
     accessorKey: "customer_name",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Customer"}),
     cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('customer_name')),

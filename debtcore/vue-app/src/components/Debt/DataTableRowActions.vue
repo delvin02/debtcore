@@ -17,7 +17,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
 
 <template>
 	<div class="flex gap-1">
-		<DataTableEditModal :row="task" />
+		<DataTableEditModal :row="task" v-if="task.editable"/>
 		<DataTableCheckAttachment :row="task" />
 		<DataTableBacklog :row="task" />
 	</div>

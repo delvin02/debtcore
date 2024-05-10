@@ -92,6 +92,12 @@ LOGGING = {
             "filename": str(BASE_DIR / "logs/debt-session.log"),
             "formatter": "detailed",
         },
+        "debt_session_cancel_handler": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/debt-session-cancel.log"),
+            "formatter": "detailed",
+        },
     },
     "formatters": {
         "default": {
@@ -130,6 +136,13 @@ LOGGING = {
         },
         "debt_for_session_loogger": {
             "handlers": ["console", "debt_session_handler"],
+            "level": "INFO",
+            'maxBytes': 1024*1024*10,  
+            'backupCount': 5,
+            "propagate": False,
+        },
+        "session_debt_cancel_logger": {
+            "handlers": ["console", "debt_session_cancel_handler"],
             "level": "INFO",
             'maxBytes': 1024*1024*10,  
             'backupCount': 5,

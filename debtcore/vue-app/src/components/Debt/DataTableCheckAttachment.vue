@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject, watch, computed, onMounted } from 'vue'
+import { ref, reactive, inject, nextTick , onMounted } from 'vue'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
@@ -22,8 +22,8 @@ import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import type { AnyAaaaRecord } from 'dns'
- 
+import { PDFDocumentLoadingTask } from 'pdfjs-dist/types/src/display/api';
+
 const tableStore = inject('tableStore', useTableStore('debt'))
  
 interface DataTableEditModalProps {
@@ -42,15 +42,23 @@ const form = reactive<Debt>({
     document: null,
     document_url: props.row.document_url
 })
- 
+
+interface Pdf {
+	pdf: any,
+	pages: any,
+	info: any
+}
+const pdf = reactive<Pdf>({
+  pdf: undefined,
+	pages: undefined,
+  info: undefined,
+});
+
 const page = ref(1)
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const { toast } = useToast()
-const { pdf, pages, info } = usePDF(props.row.document_url, {
-    onError
-})
 function onError(reason: any) {
     toast({
         title: `PDF loading error: ${reason}`,
@@ -62,7 +70,22 @@ async function init() {
     try {
         is_loading.value = true
         const response = await axios.get(`/api/debt/${props.row.id}/document/`)
+				
         form.document_url = response.data.Result.document_url
+				const result =  usePDF(
+					form.document_url, {
+						onError
+				})
+
+				nextTick(() => {
+            pdf.pdf = result.pdf;
+            pdf.pages = result.pages;
+            pdf.info = result.info;
+
+        });
+
+
+
     } catch (error) {
         replace()
         let errorMessage = 'An unexpected error occurred.'
@@ -162,6 +185,7 @@ function handleFileChange(event: Event) {
         form.document = file
     }
 }
+
 </script>
 
 <template>
@@ -194,7 +218,7 @@ function handleFileChange(event: Event) {
 						<p
 							class="col-start-2 col-span-3 mt-1 text-sm text-gray-500 dark:text-gray-300"
 						>
-							PDF
+							Accepted Type: <b>PDF</b> (MAX. 5MB)
 						</p>
 					</div>
 					<div v-else-if="form.document_url.endsWith('.pdf')">
@@ -204,10 +228,10 @@ function handleFileChange(event: Event) {
 							<Button variant="secondary" @click="page = page > 1 ? page - 1 : page">
 								<VIcon name="fa-chevron-left" class="size-fit" />
 							</Button>
-							<span class="mx-2">{{ page }} / {{ pages }}</span>
+							<span class="mx-2">{{ page }} / {{ pdf.pages }}</span>
 							<Button
 								variant="secondary"
-								@click="page = page < pages ? page + 1 : page"
+								@click="page = page < pdf.pages ? page + 1 : page"
 							>
 								<VIcon name="fa-chevron-right" class="size-fit" />
 							</Button>
@@ -218,7 +242,7 @@ function handleFileChange(event: Event) {
 							:style="{ height: dialogContentHeight + 'px' }"
 						>
 							<VuePDF
-								:pdf="pdf"
+								:pdf="pdf.pdf"
 								:page="page"
 								fit-parent
 								@loaded="onPdfLoaded"

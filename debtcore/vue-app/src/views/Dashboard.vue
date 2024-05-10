@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import tasks from '@/components/Dashboard/data/tasks.json'
 import DataTable from '@/components/Dashboard/DataTable.vue'
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle
-} from '@/components/ui/card'
+import DashboardCard from '@/components/Dashboard/DashboardCard.vue'
 import { columns } from '@/components/Dashboard/columns'
 import type { Task } from '@/components/Dashboard/data/schema'
 import axios from 'axios'
@@ -24,9 +17,10 @@ const map_function = (task: any): Task => {
 		invoice: task.invoice,
 		customer_name: task.customer_name,
 		event_display: task.event_display,
-		created_date: task.created_date,
+		scheduled_date: task.scheduled_date,
 		status: task.status_display,
 		additional_info: task.additional_info,
+		change_info: task.change_info,
 		editable: task.editable
 	}
 	return serialized_task
@@ -50,32 +44,7 @@ onBeforeUnmount(() => {
 				<h2 class="text-2xl font-bold tracking-tight">Dashboard</h2>
 			</div>
 		</div>
-		<div class="flex sm:flex-row sm gap-4 flex-col w-full">
-			<Card class="w-1/3">
-				<CardHeader>
-					<CardTitle>100</CardTitle>
-					<CardDescription>Scheduled Task(s)</CardDescription>
-				</CardHeader>
-			</Card>
-			<Card class="w-1/3">
-				<CardHeader>
-					<CardTitle>100</CardTitle>
-					<CardDescription>Active Debt(s)</CardDescription>
-				</CardHeader>
-			</Card>
-			<Card class="w-1/3">
-				<CardHeader>
-					<CardTitle>RM 99999</CardTitle>
-					<CardDescription>Active Debt Amount</CardDescription>
-				</CardHeader>
-			</Card>
-			<Card class="w-1/3">
-				<CardHeader>
-					<CardTitle>RM 100</CardTitle>
-					<CardDescription>Settled Debt</CardDescription>
-				</CardHeader> </Card
-			>>
-		</div>
+		<DashboardCard/>
 		<div v-if="dashboardStore.is_loading" class="text-center">
 			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
 		</div>

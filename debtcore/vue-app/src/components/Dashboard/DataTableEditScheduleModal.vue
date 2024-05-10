@@ -52,11 +52,13 @@ const props = defineProps<DataTableEditModalProps>()
 // Form Modal
 interface Debt {
 	id: number
+	invoice: string
 	scheduled_date: Date | string | null
 }
 
 const form = reactive<Debt>({
 	id: props.row.id,
+	invoice: props.row.invoice,
 	scheduled_date: null
 })
 
@@ -75,6 +77,15 @@ async function init() {
 	try {
 		const response = await axios.get(`/api/session/${props.row.id}/scheduled_date`)
 		Object.assign(form, response.data.Result)
+
+		if (response.data.Result.scheduled_date) {
+			const parsedDate = parseISO(response.data.Result.scheduled_date);
+			form.scheduled_date = format(parsedDate, 'yyyy-MM-dd');
+		} else {
+			form.scheduled_date = null; // or set a default value or keep as undefined
+		}
+		
+		console.log(form.scheduled_date);
 	} catch (error) {
 		console.log(error)
 	} finally {
@@ -174,21 +185,17 @@ function updateScheduleDate(payload: any) {
 				</DialogHeader>
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
-					<!-- <div class="grid grid-cols-4 items-center gap-4">
+					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="invoice" class="text-right">
 							Invoice
-							<span
-								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-								>*</span
-							>
 						</Label>
 						<Input
 							id="invoice"
 							v-model="form.invoice"
-							placeholder="INV-001"
 							class="col-span-3"
+							disabled
 						/>
-					</div> -->
+					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="email" class="text-right"> Schedule Date </Label>
 						<div class="col-span-3">
@@ -218,6 +225,7 @@ function updateScheduleDate(payload: any) {
 											type: 'string',
 											mask: 'YYYY/MM/DD'
 										}"
+										is-required
 									></Calendar>
 								</PopoverContent>
 							</Popover>

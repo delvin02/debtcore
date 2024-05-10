@@ -2,6 +2,7 @@ from rest_framework import serializers
 from app.models import Session
 from django.utils import timezone
 from debtcore_shared.common.enum import *
+import datetime
 
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,24 +43,41 @@ class SessionSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class DateOrDateTimeField(serializers.DateField):
+    def to_internal_value(self, data):
+        if isinstance(data, datetime.date):
+            return data
+        if isinstance(data, datetime.datetime):
+            return data.date()
+        
+        # Handle string data explicitly
+        try:
+            return datetime.datetime.strptime(data, '%Y-%m-%d').date()
+        except ValueError:
+            raise serializers.ValidationError("Date must be in 'YYYY-MM-DD' format.")
+
+    def to_representation(self, value):
+        # Return date as ISO formatted string
+        if value:
+            return value.isoformat()
+        return value
+    
 class SessionScheduleEditSerializer(serializers.ModelSerializer):
-    scheduled_date = serializers.SerializerMethodField()
+    scheduled_date = DateOrDateTimeField(allow_null=True)
 
     class Meta:
         model = Session
         fields = ['id', 'invoice', 'scheduled_date']
 
-    def get_scheduled_date(self, obj):
-        # Ensure the scheduled_date is not None
-        if obj.scheduled_date is not None:
-            # Return the date part of the datetime in 'yyyy-mm-dd' format
-            return obj.scheduled_date.strftime('%Y-%m-%d')
-        return None
-
     def update(self, instance, validated_data):
-        scheduled_date = self.get_scheduled_date(instance)
-        instance.scheduled_date = scheduled_date
-        instance.additional_info = f"Notification re-scheduled on {scheduled_date}"
+        
+        prev_scheduled_date = instance.scheduled_date
+        instance.scheduled_date = validated_data.get('scheduled_date', instance.scheduled_date)
+        instance.additional_info = f"Notification re-scheduled on {instance.scheduled_date}"
+        
+        user = self.context['request'].user
+        name = user.get_full_name()
+        instance.change_info = f"Last update by {name}, scheduled from {prev_scheduled_date} to {instance.scheduled_date}"
         instance.save()
         return instance
             
@@ -76,10 +94,11 @@ class SessionTableSerializer(serializers.ModelSerializer):
                   'invoice', 
                   'customer_name', 
                   'event_display', 
-                  'created_date', 
+                  'scheduled_date', 
                   'status_code', 
                   'status_display', 
                   'additional_info',
+                  'change_info',
                   'editable']
     
     def get_invoice(self, obj):
@@ -96,3 +115,4 @@ class SessionTableSerializer(serializers.ModelSerializer):
     
     def get_editable(self, obj) -> bool:
         return obj.transaction_status == TransactionStatus.QUEUED.value
+    

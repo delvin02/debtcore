@@ -9,18 +9,20 @@ import { useTableStore } from '@/store/table'
 
 const tableStore = useTableStore('debt')
 
-const debtsUrl = 'http://127.0.0.1:8000/api/debt'
+const debtsUrl = '/api/debt'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
 		status: task.status,
 		invoice: task.invoice,
+		created_date: new Date(task.created_date),
 		customer_name: task.customer_name,
 		invoice_date: new Date(task.invoice_date),
 		amount: task.amount,
-		document_url: task.document_url
+		document_url: task.document_url,
+		editable: task.editable
 	}
-	return serialized_task
+		return serialized_task
 }
 
 onMounted(async () => {

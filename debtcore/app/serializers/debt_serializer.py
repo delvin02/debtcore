@@ -2,6 +2,7 @@ from rest_framework import serializers
 from app.models import Debt, DebtBacklog 
 from django.utils import timezone
 from .country_serializer import CountrySerializer
+from debtcore_shared.common.enum import *
 
 class DebtSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,6 +53,7 @@ class DebtSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class DebtEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Debt
@@ -64,20 +66,25 @@ class DebtEditSerializer(serializers.ModelSerializer):
 class DebtTableSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     document_url = serializers.SerializerMethodField()
+    editable = serializers.SerializerMethodField()
 
     class Meta:
         model = Debt
-        fields = ['id', 'invoice', 'customer_name', 'invoice_date', 'amount', 'status', 'document_url'
-]
+        fields = ['id', 'invoice', 'created_date', 'customer_name', 'invoice_date', 'amount', 'status', 'document_url',
+                  'editable']
+        
     def get_customer_name(self, obj):
         return obj.customer.name
       
     def get_document_url(self, obj):
-        request = self.context.get('request')
         if obj.document and hasattr(obj.document, 'url'):
-            return request.build_absolute_uri(obj.document.url)
+            return obj.document.url
         else:
             return None
+        
+    def get_editable(self, obj) -> bool:
+        return int(obj.status) != obj.get_key_for_status("Canceled")
+    
 class DebtChangeSerializer(serializers.Serializer):
 
     class Meta:
@@ -95,9 +102,8 @@ class DebtDocumentViewSerializer(serializers.ModelSerializer):
         read_only_fields = ['document_url'] 
 
     def get_document_url(self, obj):
-        request = self.context.get('request')
         if obj.document and hasattr(obj.document, 'url'):
-            return request.build_absolute_uri(obj.document.url)
+            return obj.document.url
         else:
             return None
 

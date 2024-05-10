@@ -73,10 +73,10 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "created_date",
+    accessorKey: "scheduled_date",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
     cell: ({ row }) => {
-      const date = row.getValue('created_date') as string;
+      const date = row.getValue('scheduled_date') as string;
       let formattedDate = '';
 
       if (date) {
@@ -99,7 +99,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: true,
     enableHiding: true,
     meta: {
-      title: "Created Date"
+      title: "Scheduled Date"
     },
   },
   {
@@ -130,6 +130,21 @@ export const columns: ColumnDef<Task>[] = [
     },
     meta: {
       title: "Additional Info"
+    },
+  },
+  {
+    accessorKey: "change_info",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Change Info"}),
+    cell: ({ row }) => h('div', { class: 'w-44' }, row.getValue('change_info')),
+    enableSorting: true,
+    enableHiding: true,
+    filterFn: (row, id, value) => {
+      const rowValueLower = row.getValue(id)?.toString().toLowerCase() || '';
+      const filterValueLower = value?.toString().toLowerCase();
+      return rowValueLower.includes(filterValueLower);    
+    },
+    meta: {
+      title: "Change Info"
     },
   },
   {

@@ -12,6 +12,7 @@ from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from app.tasks.debt_session_process import debt_session_process
+from app.tasks.debt_service.debt_session_cancel_process import debt_session_cancel_process
 
 class DebtView(APIView):
     permission_classes = [IsAuthenticated]
@@ -27,7 +28,7 @@ class DebtView(APIView):
             serializer = DebtSerializer(debt)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
-            debts = Debt.objects.all()
+            debts = Debt.objects.all().order_by('-created_date')
             serializer = DebtTableSerializer(debts, many=True, context={'request': request})
             return JsonResponse({'Result': serializer.data}, status=200)
     
@@ -46,6 +47,13 @@ class DebtView(APIView):
 
         if serializer.is_valid():
             serializer.save()
+            
+            #If cancelled, then cancel existing sessions
+            status_key = serializer.data.get('status')
+            canceled_status = Debt.get_key_for_status('Canceled')
+            if status_key == canceled_status:
+                debt_session_cancel_process.delay(debt_id)
+            
             return Response({'Result': 'Debt updated.'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

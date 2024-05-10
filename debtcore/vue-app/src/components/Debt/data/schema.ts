@@ -5,6 +5,7 @@ import { z } from 'zod'
 export const taskSchema = z.object({
   id: z.number(),
   invoice: z.string(),
+  created_date: z.date(),
   customer_name: z.string().min(2).max(50),
   invoice_date: z.preprocess((arg) => {
     if (typeof arg === 'string') {
@@ -13,8 +14,9 @@ export const taskSchema = z.object({
     return arg;
   }, z.date()),  
   amount: z.string(),
-  document_url: z.string().url(),
-  status: z.number()
+  document_url: z.string(),
+  status: z.number(),
+  editable: z.boolean()
 })
 
 export type Task = z.infer<typeof taskSchema>
