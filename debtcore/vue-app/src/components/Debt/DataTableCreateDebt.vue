@@ -48,6 +48,7 @@ interface Debt {
 	customer?: number | null
 	amount?: number | string | null
 	invoice_date: Date | string | null
+	term: number
 	status: number | null
 	document: File | null
 }
@@ -57,6 +58,7 @@ const form = reactive<Debt>({
 	customer: null,
 	amount: null,
 	invoice_date: null,
+	term: 7,
 	status: null,
 	document: null
 })
@@ -78,17 +80,14 @@ const searchCustomerQuery = ref('')
 async function fetchCountries(query?: string) {
 	customers.is_loading = true
 	try {
-		const response = await axios.get(
-			`/api/customer/list?search=${query || ''}`,
-			{
-				withCredentials: true,
-				headers: {
-					'Cache-Control': 'no-cache',
-					Pragma: 'no-cache',
-					Expires: '0'
-				}
+		const response = await axios.get(`/api/customer/list?search=${query || ''}`, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
-		)
+		})
 
 		customers.data = response.data.Result
 	} catch (error) {
@@ -114,7 +113,12 @@ async function fetchStatuses() {
 		// defaulted to 'draft'
 		form.status = 1
 	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
+		let errorMessage = 'There was an error fetching the select list.'
+		toast({
+			title: 'Whoops, something went wrong',
+			description: errorMessage,
+			variant: 'destructive'
+		})
 	} finally {
 		statuses.is_loading = false
 	}
@@ -412,6 +416,16 @@ function updateDueDate(payload: any) {
 								</PopoverContent>
 							</Popover>
 						</div>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="amount" class="text-right">
+							Payment Term
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
+						<Input id="amount" v-model="form.term" placeholder="7" class="col-span-3" />
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="mobile" class="text-right">

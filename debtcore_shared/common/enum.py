@@ -18,22 +18,28 @@ class TransactionStatus(Enum):
   FAILED_MAPPING = 5
   
 class StatusCode(Enum):
-  WAITING = 0
-  COMPANY_DISABLED = 1
-  
-  # Whatsapp Message (100-199)
-  WHATSAPP_MESSAGE_SUCCESS = 100
-  WHATSAPP_MESSAGE_FAILED = 101
-  WHATSAPP_MESSAGE_PROCESSED = 102
+    WAITING = (0, "Waiting")
+    COMPANY_DISABLED = (1, "The company is disabled")
+    
+    # Whatsapp Message (100-199)
+    WHATSAPP_MESSAGE_SUCCESS = (100, "Whatsapp message sent successfully")
+    WHATSAPP_MESSAGE_FAILED = (101, "Whatsapp message failed to send")
+    WHATSAPP_MESSAGE_PROCESSED = (102, "Whatsapp message has been processed")
 
-  WHATSAPP_MESSAGE_MISSING_SENDER_PHONE_NUMBER = 110
-  WHATSAPP_MESSAGE_SENDER_NOT_FOUND = 111
-  
-  # Whatsapp Scheduled Message (200-299)
-  WHATSAPP_SCHEDULED_MESSAGE_SUCCESS = 200
-  WHATSAPP_SCHEDULED_MESSAGE_FAILED = 201
-  WHATSAPP_SCHEDULED_MESSAGE_PAST_DUE = 202
-  WHATSAPP_SCHEDULED_MESSAGE_CANCELED = 203
+    WHATSAPP_MESSAGE_MISSING_SENDER_PHONE_NUMBER = (110, "Missing sender's phone number")
+    WHATSAPP_MESSAGE_SENDER_NOT_FOUND = (111, "Sender not found")
+    
+    # Whatsapp Scheduled Message (200-299)
+    WHATSAPP_SCHEDULED_MESSAGE_SUCCESS = (200, "Scheduled message sent successfully")
+    WHATSAPP_SCHEDULED_MESSAGE_FAILED = (201, "Scheduled message failed to send")
+    WHATSAPP_SCHEDULED_MESSAGE_PAST_DUE = (202, "Scheduled message is past due")
+    WHATSAPP_SCHEDULED_MESSAGE_CANCELED = (203, "Scheduled message was canceled")
+
+    def __new__(cls, value, description=None):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.description = description
+        return obj
   
   
   

@@ -2,6 +2,18 @@
 *.sqlite3
 /node_modules
 
+
+.dbdata/
+*.ibd
+*.dblwr
+*.ibt
+ib_logfile*
+ibdata1
+ibtmp1
+undo_00*
+celerybeat-schedule
+
+
 .env
 
 # Logs

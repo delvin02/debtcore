@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from debtcore_shared.common.enum import *
 from app.models import Session
 import logging
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +15,13 @@ class ServiceProcessorBase(Task, ABC):
       self.event_type = event_type.value
       
     def run(self, *args, **kwargs):
-      
-        sessions = Session.objects.filter(event_type=self.event_type, transaction_status=TransactionStatus.QUEUED.value)
+        today = timezone.now().date()
+
+        sessions = Session.objects.filter(
+           event_type=self.event_type, 
+           transaction_status=TransactionStatus.QUEUED.value,
+           scheduled_date=today
+          )
         
         for session in sessions:
           

@@ -33,14 +33,19 @@ app.conf.update(
 )
 
 app.conf.beat_schedule = {
+    'process_debt_reminder': {
+        'task': 'tasks.process_debt_reminder.main',
+        'schedule': crontab(minute='*')
+    },
     # 'process_webhook': {
     #     'task': 'tasks.process_webhook',
     #     'schedule': crontab(minute='*'),
     # },
     # 'process_whatsapp_message': {
-    #     'task': 'tasks.process_whatsapp_messages.main',
+    #     'task': 'tasks.process_whatsapp_messages',
     #     'schedule': crontab(minute='*'),
-    # }
+    # },
+
 }
 
 

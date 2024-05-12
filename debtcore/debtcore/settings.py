@@ -98,6 +98,12 @@ LOGGING = {
             "filename": str(BASE_DIR / "logs/debt-session-cancel.log"),
             "formatter": "detailed",
         },
+        "debt_reminder_handler": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/debt-reminder.log"),
+            "formatter": "detailed",
+        },
     },
     "formatters": {
         "default": {
@@ -147,7 +153,14 @@ LOGGING = {
             'maxBytes': 1024*1024*10,  
             'backupCount': 5,
             "propagate": False,
-        }
+        },
+        "debt_reminder_logger": {
+            "handlers": ["console", "debt_reminder_handler"],
+            "level": "INFO",
+            'maxBytes': 1024*1024*10,  
+            'backupCount': 5,
+            "propagate": False,
+        },
     },
 }
 
@@ -155,9 +168,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    "https://4e4d-211-26-122-216.ngrok-free.app",
-    "https://3c0f-211-26-122-216.ngrok-free.app",
     "https://4a5e-27-33-84-90.ngrok-free.app",
+    "https://17df-211-26-122-216.ngrok-free.app",
     os.getenv("DOMAIN")
 ]
 

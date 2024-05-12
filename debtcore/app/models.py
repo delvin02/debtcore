@@ -420,7 +420,10 @@ class Session(models.Model):
     whatsapp_message_id = models.CharField(max_length=255, null=True, blank=True)
     
     def get_status_display(self):
-        return StatusCode(self.status_code).name.replace('_', ' ').title()
+        try:
+            return StatusCode(self.status_code).description
+        except ValueError:
+            return "Unknown status"
     
     def get_event_display(self):
         return EventType(self.event_type).name.replace('_', ' ').title()
