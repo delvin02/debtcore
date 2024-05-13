@@ -23,15 +23,6 @@ import {
 	CommandList
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
 import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
@@ -55,6 +46,7 @@ interface Debt {
 	customer?: number | null
 	amount?: number | string | null
 	invoice_date: Date | string | null
+	term: number
 	status: number | null
 }
 
@@ -63,6 +55,7 @@ const form = reactive<Debt>({
 	customer: null,
 	amount: props.row.amount,
 	invoice_date: new Date(props.row.invoice_date),
+	term: props.row.term,
 	status: props.row.status
 })
 
@@ -386,6 +379,16 @@ function updateDueDate(payload: any) {
 								</PopoverContent>
 							</Popover>
 						</div>
+					</div>
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="amount" class="text-right">
+							Payment Term
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
+						<Input id="amount" v-model="form.term" placeholder="7" class="col-span-3" />
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="mobile" class="text-right"> Status </Label>

@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from rest_framework.decorators import action
 import datetime
-from app.models import Session
+from app.models import Session, Company
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
@@ -20,7 +20,11 @@ class SessionView(APIView):
     
 
     def get(self, request, *args, **kwargs):
-        sessions = Session.objects.all().order_by('-scheduled_date')
+        company: Company = request.user.company
+        if not company:
+            return JsonResponse({'message': "Missing company."}, status=400)
+        
+        sessions = Session.objects.filter(company=company).order_by('-scheduled_date')
         serializer = SessionTableSerializer(sessions, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     

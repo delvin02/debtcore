@@ -26,7 +26,12 @@ class CustomerView(APIView):
             serializer = CustomerSerializer(customer)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
-            customers = Customer.objects.all()
+            
+            company = request.user.company
+            if not company:
+                return JsonResponse({'message': "Missing company."}, status=400)
+            
+            customers = Customer.objects.filter(company=company).order_by('-created_by')
             serializer = CustomerTableSerializer(customers, many=True)
             return JsonResponse({'Result': serializer.data}, status=200)
     

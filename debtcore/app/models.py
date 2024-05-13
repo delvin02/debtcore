@@ -212,6 +212,7 @@ class Debt(models.Model):
 
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')
     term = models.IntegerField(null=True, blank=True)
+    due_date = models.DateField(null=False)
     
     # Document
     document = models.FileField(upload_to=debt_document_path, validators=[validate_file_extension])

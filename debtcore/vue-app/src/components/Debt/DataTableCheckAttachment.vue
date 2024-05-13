@@ -61,7 +61,7 @@ const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const { toast } = useToast()
 function onError(reason: any) {
     toast({
-        title: `PDF loading error: ${reason}`,
+        title: `PDF loading error`,
         variant: 'destructive'
     })
 }

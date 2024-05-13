@@ -9,6 +9,7 @@ class DebtSerializer(serializers.ModelSerializer):
         model = Debt
         fields = ['customer', 'invoice', 
                   'invoice_date', 
+                  'term',
                   'amount',
                   'status',
                   'document'
@@ -70,7 +71,15 @@ class DebtTableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Debt
-        fields = ['id', 'invoice', 'created_date', 'customer_name', 'invoice_date', 'amount', 'status', 'document_url',
+        fields = ['id', 
+                  'invoice', 
+                  'customer_name', 
+                  'invoice_date', 
+                  'due_date', 
+                  'term',
+                  'amount', 
+                  'status', 
+                  'document_url',
                   'editable']
         
     def get_customer_name(self, obj):

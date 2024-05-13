@@ -28,7 +28,12 @@ class DebtView(APIView):
             serializer = DebtSerializer(debt)
             return JsonResponse({'Result': serializer.data}, status=200)
         else:
-            debts = Debt.objects.all().order_by('-created_date')
+            
+            company = request.user.company
+            if not company:
+                return JsonResponse({'message': "Missing company."}, status=400)
+            
+            debts = Debt.objects.filter(company=company).order_by('-created_date')
             serializer = DebtTableSerializer(debts, many=True, context={'request': request})
             return JsonResponse({'Result': serializer.data}, status=200)
     

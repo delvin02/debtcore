@@ -44,14 +44,14 @@ const links1: LinkProp[] = [
 	// 	to: '/conversation'
 	// },
 	{
-		title: 'Template',
-		icon: 'bi-file-earmark-font',
-		to: '/template'
-	},
-	{
 		title: 'Customer',
 		icon: 'fa-address-book',
 		to: '/customer'
+	},
+	{
+		title: 'Template',
+		icon: 'bi-file-earmark-font',
+		to: '/template'
 	}
 ]
 const connections: LinkProp[] = [

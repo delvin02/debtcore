@@ -24,7 +24,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Name"}),
-    cell: ({ row }) => h('div', { class: 'w-fit underline' }, row.getValue('name')),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('name')),
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {

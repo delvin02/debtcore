@@ -28,7 +28,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'invoice',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Invoice"}),
-    cell: ({ row }) => h('div', { class: 'w-20 underline' }, row.getValue('invoice')),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('invoice')),
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {
@@ -38,37 +38,6 @@ export const columns: ColumnDef<Task>[] = [
     },
     meta: {
       title: "Invoice"
-    },
-  },
-  {
-    accessorKey: "created_date",
-    header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
-    cell: ({ row }) => {
-      const dateString = row.getValue('created_date') as string;
-      let formattedDate = '';
-      if (dateString) {
-        const parsedDate = new Date(dateString);
-        if (!isNaN(parsedDate.getTime())) {
-          formattedDate = parsedDate.toLocaleString('en-US', {
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric', 
-            hour: 'numeric', 
-            minute: 'numeric', 
-            second: 'numeric'
-          });
-        } else {
-          formattedDate = 'Not Provided';
-        }
-      } else {
-        formattedDate = 'Not provided';
-      }
-      return h('div', { class: `w-fit ${formattedDate !== 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
-    },
-    enableSorting: true,
-    enableHiding: true,
-    meta: {
-      title: "Created Date"
     },
   },
   {
@@ -115,6 +84,46 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: true,
     meta: {
       title: "Invoice Date"
+    },
+  },
+  {
+    accessorKey: "due_date",
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
+    cell: ({ row }) => {
+      const dateString = row.getValue('due_date') as string;
+      let formattedDate = '';
+      if (dateString) {
+        const parsedDate = new Date(dateString);
+        if (!isNaN(parsedDate.getTime())) {
+          formattedDate = parsedDate.toLocaleString('en-US', {
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: 'numeric', 
+            minute: 'numeric', 
+            second: 'numeric'
+          });
+        } else {
+          formattedDate = 'Not Provided';
+        }
+      } else {
+        formattedDate = 'Not provided';
+      }
+      return h('div', { class: `w-fit ${formattedDate !== 'Not Provided' ? '' : 'text-red-600 font-bold'}` }, formattedDate);
+    },
+    enableSorting: true,
+    enableHiding: true,
+    meta: {
+      title: "Due Date"
+    },
+  },
+  {
+    accessorKey: 'term',
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: "Term"}),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('term')),
+    enableHiding: true,
+    meta: {
+      title: "Term"
     },
   },
   {

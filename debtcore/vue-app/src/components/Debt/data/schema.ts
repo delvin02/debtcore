@@ -5,14 +5,20 @@ import { z } from 'zod'
 export const taskSchema = z.object({
   id: z.number(),
   invoice: z.string(),
-  created_date: z.date(),
   customer_name: z.string().min(2).max(50),
   invoice_date: z.preprocess((arg) => {
     if (typeof arg === 'string') {
       return new Date(arg);
     }
     return arg;
-  }, z.date()),  
+  }, z.date()),
+  due_date: z.preprocess((arg) => {
+    if (typeof arg === 'string') {
+      return new Date(arg);
+    }
+    return arg;
+  }, z.date()),
+  term: z.number(),
   amount: z.string(),
   document_url: z.string(),
   status: z.number(),

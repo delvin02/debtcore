@@ -44,7 +44,7 @@ const login = async () => {
 
 	const error = await user.login(email.value, password.value)
 	if (!error) {
-		router.push('/')
+		router.push('/dashboard')
 	} else {
 		errorMessage.value = error // Display the error message from the login attempt
 	}
