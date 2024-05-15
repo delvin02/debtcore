@@ -1,12 +1,12 @@
 import type { ColumnDef } from '@tanstack/vue-table'
 import { h } from 'vue'
-
 import { labels, statuses } from './data/data'
 import type { Task } from './data/schema'
 import DataTableColumnHeader from './DataTableColumnHeader.vue'
 import DataTableRowActions from './DataTableRowActions.vue'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { RouterLink } from 'vue-router';
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -24,7 +24,14 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Name"}),
-    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('name')),
+    cell: ({ row }) => {
+      const customer_id = row.original.id // Retrieve customer ID
+      const name: string = row.getValue('name');
+      return h(RouterLink, { 
+        class: 'w-fit underline cursor-pointer', 
+        to: `/customer/${customer_id}`
+      }, () => name)
+    },  
     enableSorting: false,
     enableHiding: false,
     filterFn: (row, id, value) => {

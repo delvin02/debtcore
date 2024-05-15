@@ -205,7 +205,7 @@ class Debt(models.Model):
     STATUS_CHOICES = (
         (1, 'Draft'),
         (2, 'In Progress'),
-        (3, 'Claiming'),
+        (3, 'Escalated'),
         (4, 'Done'),
         (5, 'Canceled')
     )

@@ -3,6 +3,7 @@ from app.models import Customer, Debt
 from django.utils import timezone
 from .country_serializer import CountrySerializer
 from django.db import models
+from django.utils import timezone
 
 class CustomerSerializer(serializers.ModelSerializer):
     streetAddress = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
@@ -84,7 +85,48 @@ class CustomerTableSerializer(serializers.ModelSerializer):
             return 0
     def get_country_name(self, obj):
         return obj.country.name
+
+
+
+
+class CustomerDebtTableSerializer(serializers.ModelSerializer):
+    document_url = serializers.SerializerMethodField()
+    editable = serializers.SerializerMethodField()
+    overdue = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Debt
+        fields = ['id', 
+                  'invoice', 
+                  'invoice_date', 
+                  'due_date',
+                  'overdue',
+                  'amount', 
+                  'status', 
+                  'document_url',
+                  'editable']
+    
+    def get_overdue(self, obj):
+        today = timezone.now().date()
+        due_date = obj.due_date
+        overdue = (today - due_date).days
+        return overdue
+    
+    def get_customer_name(self, obj):
+        return obj.customer.name
       
+    def get_document_url(self, obj):
+        if obj.document and hasattr(obj.document, 'url'):
+            return obj.document.url
+        else:
+            return None
+        
+    def get_editable(self, obj) -> bool:
+        return int(obj.status) != obj.get_key_for_status("Canceled")
+
+''''
+    HELPERS
+'''
 class CustomerChangeSerializer(serializers.Serializer):
 
     class Meta:

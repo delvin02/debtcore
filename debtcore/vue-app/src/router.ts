@@ -82,9 +82,9 @@ const router = createRouter({
       component: () => import ("@/views/Setup.vue")
     },
     {
-      path: '/customer/:customerId',
+      path: '/customer/:customer_id',
       name: 'customerdebt',
-      component: () => import("@/views/CustomerDebt.vue")
+      component: () => import("@/views/CustomerDetail.vue")
     },
   ],
 })

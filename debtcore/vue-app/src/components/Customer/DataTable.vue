@@ -17,7 +17,7 @@ import {
 	useVueTable
 } from '@tanstack/vue-table'
 
-import { onMounted, ref, watchEffect, inject } from 'vue'
+import { ref, watchEffect, inject } from 'vue'
 import type { Task } from './data/schema'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'

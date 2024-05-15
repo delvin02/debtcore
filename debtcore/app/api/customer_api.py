@@ -11,6 +11,8 @@ from app.models import Customer
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
+from rest_framework.decorators import api_view
+from django.db.models import Q, Sum
 
 class CustomerView(APIView):
     permission_classes = [IsAuthenticated]
@@ -59,7 +61,76 @@ class CustomerView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+@api_view(['GET'])
+def customer_debt_card_data(request, *args, **kwargs):
+    company = request.user.company
+
+    if not company:
+        return JsonResponse({'message': "Missing company."}, status=400)
     
+    today = timezone.now().date()
+    customer_id = kwargs.get('customer_id')
+
+    all_time_revenue = Debt.objects.filter(
+        Q(company=company) &
+        Q(customer=customer_id)
+    ).exclude(
+        status=Debt.get_key_for_status('Canceled')
+    ).aggregate(all_time_revenue=Sum('amount'))['all_time_revenue'] or 0
+    
+    outstanding_debt_amount = Debt.objects.filter(
+      Q(company=company) &
+      Q(customer=customer_id) &
+      (
+        Q(status=Debt.get_key_for_status('In Progress')) |
+        Q(status=Debt.get_key_for_status('Escalated'))
+      )
+    ).aggregate(outstanding_debt_amount=Sum('amount'))['outstanding_debt_amount'] or 0
+    
+    overdue_amount = Debt.objects.filter(
+        Q(company=company) &
+        Q(customer=customer_id) &
+        Q(due_date__lt= today) &
+        (
+            Q(status=Debt.get_key_for_status('In Progress')) |
+            Q(status=Debt.get_key_for_status('Escalated'))
+        )
+    ).aggregate(overdue_amount=Sum('amount'))['overdue_amount'] or 0
+    
+
+    total_invoices = Debt.objects.filter(
+        Q(company=company) &
+        Q(customer=customer_id)
+    ).exclude( status=Debt.get_key_for_status('Canceled')).count()
+
+    data = {
+      'all_time_revenue': all_time_revenue,
+      'outstanding_debt_amount': outstanding_debt_amount,
+      'overdue_amount': overdue_amount,
+      'total_invoices': total_invoices
+    }
+    return JsonResponse({'Result': data}, status=200)
+
+class CustomerDebtView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+
+    def get(self, request, *args, **kwargs):
+        customer_id = kwargs.get('customer_id')
+        if customer_id:
+            # Retrieving a single customer
+            customer = get_object_or_404(Customer, pk=customer_id)
+            if not customer:
+                return JsonResponse({'message': 'Customer not found'}, status=404)
+            
+            debts = customer.customer_debt.all().order_by('-created_date')
+
+            serializer = CustomerDebtTableSerializer(debts, many=True, context={'request': request})
+            return JsonResponse({'Result': serializer.data}, status=200)
+        
+
+        
 
 class CustomerChangeView(APIView):
     permission_classes = [IsAuthenticated]

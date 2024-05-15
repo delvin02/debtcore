@@ -23,6 +23,7 @@ services:
       - debtcore/.env
     volumes:
       - .dbdata:/var/lib/mysql
+      - .mysql-conf:/etc/mysql/conf.d/my.cnf
     ports:
       - '33066:3306'
   

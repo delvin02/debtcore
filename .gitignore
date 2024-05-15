@@ -4,6 +4,7 @@
 
 
 .dbdata/
+.mysql-conf/
 *.ibd
 *.dblwr
 *.ibt

@@ -31,6 +31,9 @@ urlpatterns = [
 
     path('api/customer', CustomerView.as_view(), name="get_companies"),
     path('api/customer/<int:customer_id>/', CustomerView.as_view(), name="get_company"),  
+    path('api/customer/<int:customer_id>/debt', CustomerDebtView.as_view(), name="get_company_debt"),  
+    path('api/customer/<int:customer_id>/debt/card', customer_debt_card_data, name="get_session_data"),
+
     path('api/customer/list', GetCustomerSelectList.as_view(), name="get_customer_list"),
 
     path('api/country/list', GetCountrySelectList.as_view(), name="get_country_list"),

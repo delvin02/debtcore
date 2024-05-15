@@ -11,7 +11,7 @@ from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from rest_framework.decorators import api_view
-from django.db.models import Q, Sum, DecimalField
+from django.db.models import Q, Sum
 from django.db.models.functions import Coalesce
 
 
@@ -83,7 +83,7 @@ def session_card_data(request):
       Q(company=company) &
       (
         Q(status=Debt.get_key_for_status('In Progress')) |
-        Q(status=Debt.get_key_for_status('Claiming'))
+        Q(status=Debt.get_key_for_status('Escalated'))
       )
     ).count()
     
@@ -91,7 +91,7 @@ def session_card_data(request):
         Q(company=company) &
         (
             Q(status=Debt.get_key_for_status('In Progress')) |
-            Q(status=Debt.get_key_for_status('Claiming'))
+            Q(status=Debt.get_key_for_status('Escalated'))
         )
     ).aggregate(active_debts_amount=Sum('amount'))['active_debts_amount'] or 0
     

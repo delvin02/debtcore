@@ -14,6 +14,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@internationalized/date": "^3.5.3",
     "@kalimahapps/vue-icons": "^1.4.0",
     "@tanstack/vue-table": "^8.14.0",
     "@tato30/vue-pdf": "^1.9.6",
