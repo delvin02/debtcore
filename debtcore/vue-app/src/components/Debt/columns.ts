@@ -98,10 +98,7 @@ export const columns: ColumnDef<Task>[] = [
           formattedDate = parsedDate.toLocaleString('en-US', {
             year: 'numeric', 
             month: 'short', 
-            day: 'numeric', 
-            hour: 'numeric', 
-            minute: 'numeric', 
-            second: 'numeric'
+            day: 'numeric'
           });
         } else {
           formattedDate = 'Not Provided';

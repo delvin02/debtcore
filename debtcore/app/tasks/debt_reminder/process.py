@@ -25,11 +25,11 @@ class DebtReminderProcessor(ServiceProcessorBase):
             customer_whatsapp_phone_number = customer.whatsapp_phone_number
 
             overdue_info = ""
-            if debt.invoice_date:
-                  invoice_date = debt.invoice_date if isinstance(debt.invoice_date, date) else debt.invoice_date.date()
+            if debt.due_date:
+                  due_date = debt.due_date if isinstance(debt.due_date, date) else debt.invoice_date.date()
 
-                  if today > invoice_date:
-                        days_since_invoice = (today - invoice_date).days
+                  if today > due_date:
+                        days_since_invoice = (today - due_date).days
                         overdue_info = f" (Overdued by {days_since_invoice} days)"
 
 

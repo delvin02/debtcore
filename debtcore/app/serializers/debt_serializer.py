@@ -3,11 +3,13 @@ from app.models import Debt, DebtBacklog
 from django.utils import timezone
 from .country_serializer import CountrySerializer
 from debtcore_shared.common.enum import *
+from datetime import timedelta
 
 class DebtSerializer(serializers.ModelSerializer):
     class Meta:
         model = Debt
-        fields = ['customer', 'invoice', 
+        fields = ['customer', 
+                  'invoice', 
                   'invoice_date', 
                   'term',
                   'amount',
@@ -26,6 +28,11 @@ class DebtSerializer(serializers.ModelSerializer):
         validated_data['last_updated_date'] = timezone.now()
         
         validated_data['company'] = user.company
+
+        invoice_date = validated_data.get('invoice_date')
+        term = validated_data.get('term')
+        if invoice_date and term is not None:
+            validated_data['due_date'] = invoice_date + timedelta(days=term)
         
         document = self.context['request'].FILES.get('document')
         if document:

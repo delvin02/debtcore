@@ -76,17 +76,14 @@ const searchCustomerQuery = ref('')
 async function fetchCountries(query?: string) {
 	customers.is_loading = true
 	try {
-		const response = await axios.get(
-			`/api/customer/list?search=${query || ''}`,
-			{
-				withCredentials: true,
-				headers: {
-					'Cache-Control': 'no-cache',
-					Pragma: 'no-cache',
-					Expires: '0'
-				}
+		const response = await axios.get(`/api/customer/list?search=${query || ''}`, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
-		)
+		})
 
 		customers.data = response.data.Result
 	} catch (error) {
@@ -223,12 +220,7 @@ function updateDueDate(payload: any) {
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="hidden h-8 lg:flex"
-				@click="toggleDialog"
-			>
+			<Button variant="default" size="sm" class="hidden h-8 lg:flex" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-pen" class="size-4" />
 			</Button>
@@ -349,7 +341,13 @@ function updateDueDate(payload: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right"> Invoice Date </Label>
+						<Label for="email" class="text-right">
+							Invoice Date
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
 						<div class="col-span-3">
 							<Popover>
 								<PopoverTrigger as-child>
