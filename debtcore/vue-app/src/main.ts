@@ -141,7 +141,7 @@ addIcons(
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL
 
-const baseURL = 'https://17df-211-26-122-216.ngrok-free.app';
+const baseURL = 'https://eefe-49-178-103-117.ngrok-free.app';
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 

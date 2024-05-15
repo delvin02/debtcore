@@ -7,22 +7,19 @@ import {
     DialogTitle,
     DialogFooter
 } from '@/components/ui/dialog'
- 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { ref, reactive, inject, nextTick , onMounted } from 'vue'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
-import { format, parseISO } from 'date-fns'
 import { useTableStore } from '@/store/table'
 import type { Task } from '@/components/Debt/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
-import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
-import { PDFDocumentLoadingTask } from 'pdfjs-dist/types/src/display/api';
 
 const tableStore = inject('tableStore', useTableStore('debt'))
  
@@ -57,6 +54,7 @@ const pdf = reactive<Pdf>({
 const page = ref(1)
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
+const error_message = ref<String | null>(null)
 const dialogContentHeight = ref<number>(window.innerHeight - 250)
 const { toast } = useToast()
 function onError(reason: any) {
@@ -77,14 +75,12 @@ async function init() {
 						onError
 				})
 
-				nextTick(() => {
+        nextTick(() => {
             pdf.pdf = result.pdf;
             pdf.pages = result.pages;
             pdf.info = result.info;
 
         });
-
-
 
     } catch (error) {
         replace()
@@ -116,7 +112,24 @@ const onPdfLoaded = () => {
     }
 }
  
+function validateForm() {
+	const validations = [
+		{ condition: form.document == null, message: 'Attachment cannot be blank' },
+	]
+
+	for (let validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
+		}
+	}
+	return true
+}
 async function submit() {
+    const isValid = validateForm()
+	if (!isValid) {
+		return
+	}
     is_loading.value = true
     try {
         const response = await axios.patch(
@@ -267,6 +280,13 @@ function handleFileChange(event: Event) {
 						alt="Document preview"
 						class="object-contain"
 					/>
+				</div>
+                <Separator />
+				<div class="grid grid-cols-4 items-center gap-4" v-if="error_message">
+					<Label for="name" class="text-red-600 col-span-3 col-start-2">
+						<VIcon name="fa-exclamation-triangle" class="size-4 fill-red-600" />
+						{{ error_message }}
+					</Label>
 				</div>
 				<DialogFooter class="flex justify-end">
 					<Button

@@ -66,11 +66,30 @@ class DebtEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Debt
         fields = ['id', 'customer', 'invoice', 
-                  'invoice_date', 
+                  'invoice_date',
+                  'term',
                   'amount',
                   'status',
                   ]
-            
+        
+    def update(self, instance, validated_data):
+        invoice_date = validated_data.get('invoice_date', instance.invoice_date)
+        term = validated_data.get('term', instance.term)
+        
+        if invoice_date and term is not None:
+            validated_data['due_date'] = invoice_date + timedelta(days=term)
+        
+        instance.customer = validated_data.get('customer', instance.customer)
+        instance.invoice = validated_data.get('invoice', instance.invoice)
+        instance.invoice_date = invoice_date
+        instance.term = term
+        instance.amount = validated_data.get('amount', instance.amount)
+        instance.status = validated_data.get('status', instance.status)
+        instance.due_date = validated_data.get('due_date', instance.due_date)
+
+        instance.save()
+        return instance
+     
 class DebtTableSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     document_url = serializers.SerializerMethodField()

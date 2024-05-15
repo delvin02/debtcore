@@ -44,10 +44,16 @@ class WhatsAppMessageTemplateRequest():
                 },
                 {
                     "type": "BODY",
-                    "text": "Hi {{1}},\n\nThis is a friendly reminder about invoice #{{2}} for {{3}} which is due on {{4}}.\n\nFor your convenience, please make payment to this bank:\nBank: {{5}}\nAccount Number: {{6}}\n\nOnce transferred, please add the payment attachment for our reference.\nLet us know if you have any questions.\n\nThanks,\n{{7}}",
+                    "text": "Hi {{1}},\n\nThis is a friendly reminder about invoice #{{2}} for {{3}}.\n\n- *Invoice Date*: {{4}}\n- *Due Date*: {{5}}\n- *Days Overdue*: {{6}}\n\n*Please note: This is an automated message, please do not reply.*\n\nThanks,\n{{7}}",
                     "example": {
                         "body_text": [
-                            ["John Doe", "12345", "RM 500", "2024-04-22", "CIMB Bank", "987654321", "SEMIX SDN BHD"]
+                            ["John Doe", 
+                             "001", 
+                             "RM 500", 
+                             "2024-04-22", 
+                             "2024-04-26", 
+                             "5 days", 
+                             "SEMIX SDN BHD"]
                         ]
                     }
                 },

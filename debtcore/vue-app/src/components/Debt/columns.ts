@@ -28,7 +28,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'invoice',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Invoice"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('invoice')),
+    cell: ({ row }) => h('div', { class: `w-20 font-bold ${row.original.editable ? '' : 'line-through decoration-red-600'}` }, row.getValue('invoice')),
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {

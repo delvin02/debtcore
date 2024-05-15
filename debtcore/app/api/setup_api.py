@@ -279,12 +279,12 @@ def send_test_message(request):
         template_head.add_parameter(param_type="document", content=document_content)
         
         template_component: TemplateComponent = TemplateComponent(component_type="body")
-        template_component.add_parameter(param_type='text', content='John Doe')
+        template_component.add_parameter(param_type='text', content='Llama Sdn. Bhd')
         template_component.add_parameter(param_type='text', content='001')
         template_component.add_parameter(param_type='text', content='RM 200')
         template_component.add_parameter(param_type='text', content='2023-04-20')
-        template_component.add_parameter(param_type='text', content='CIMB BANK')
-        template_component.add_parameter(param_type='text', content='1122 1060')
+        template_component.add_parameter(param_type='text', content='2023-04-22')
+        template_component.add_parameter(param_type='text', content='5 days')
         template_component.add_parameter(param_type='text', content=company.name)
 
 

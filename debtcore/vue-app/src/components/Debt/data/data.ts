@@ -40,11 +40,6 @@ export const statuses = [
     label: 'Claiming',
     icon: 'fa-circle'
   },
-  // {
-  //   value: '4',
-  //   label: 'Verifying Payment',
-  //   icon: 'bi-arrow-up-square-fill'
-  // },
   {
     value: '4',
     label: 'Done',
