@@ -27,26 +27,21 @@ export const labels = [
 export const statuses = [
   {
     value: '1',
-    label: 'Draft',
-    icon: 'fa-pen'
-  },
-  {
-    value: '2',
     label: 'In Progress',
     icon: 'bi-stopwatch'
   },
   {
-    value: '3',
+    value: '2',
     label: 'Claiming',
     icon: 'fa-circle'
   },
   {
-    value: '4',
+    value: '3',
     label: 'Done',
     icon: 'fa-check-circle'
   },
   {
-    value: '5',
+    value: '4',
     label: 'Canceled',
     icon: 'fa-times-circle'
   },

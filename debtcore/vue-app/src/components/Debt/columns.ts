@@ -176,10 +176,14 @@ export const columns: ColumnDef<Task>[] = [
     },
     enableSorting: true,
     enableHiding: true,
-    filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase() || '';
-      const filterValueLower = value?.toString().toLowerCase();
-      return rowValueLower.includes(filterValueLower);    
+    filterFn: (row, id, values) => {
+      const rowValue = row.getValue(id);
+      if (!rowValue) return false;
+    
+      const rowValueLower = rowValue.toString().toLowerCase();
+      const filterValues = values as string[];
+    
+      return filterValues.some((value) => rowValueLower.includes(value.toLowerCase())); 
     },
     meta: {
       title: "Status"

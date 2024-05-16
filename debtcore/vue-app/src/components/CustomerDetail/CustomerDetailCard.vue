@@ -4,7 +4,7 @@ import { onMounted, reactive } from 'vue'
 import axios from 'axios'
 
 interface CustomerDetailCardProps {
-	customer_id: number
+	customer_id: string
 }
 
 const props = defineProps<CustomerDetailCardProps>()

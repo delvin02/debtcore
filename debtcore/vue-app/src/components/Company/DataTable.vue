@@ -129,7 +129,7 @@ watchEffect(() => {
 						</TableHead>
 					</TableRow>
 				</TableHeader>
-				<TableBody>
+				<TableBody id="dbTableBody">
 					<template v-if="table.getRowModel().rows?.length">
 						<TableRow
 							v-for="row in table.getRowModel().rows"

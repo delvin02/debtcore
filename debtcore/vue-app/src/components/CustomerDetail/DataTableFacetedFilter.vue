@@ -3,8 +3,6 @@ import type { Column } from '@tanstack/vue-table'
 import type { Component } from 'vue'
 import { computed } from 'vue'
 import type { Task } from './data/schema'
-// import PlusCircledIcon from '~icons/radix-icons/plus-circled'
-// import CheckIcon from '~icons/radix-icons/check'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -36,6 +34,17 @@ const props = defineProps<DataTableFacetedFilter>()
 
 const facets = computed(() => props.column?.getFacetedUniqueValues())
 const selectedValues = computed(() => new Set(props.column?.getFilterValue() as string[]))
+
+const toggleSelectedValue = (value: string) => {
+  const isSelected = selectedValues.value.has(value);
+  if (isSelected) {
+    selectedValues.value.delete(value);
+  } else {
+    selectedValues.value.add(value);
+  }
+  const filterValues = Array.from(selectedValues.value);
+  props.column?.setFilterValue(filterValues.length ? filterValues : undefined);
+};
 </script>
 
 <template>
@@ -76,10 +85,6 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
         </PopoverTrigger>
         <PopoverContent class="w-[200px] p-0" align="start">
             <Command>
-                <!-- :filter-function="
-                    (list: DataTableFacetedFilter['options'], term) =>
-                        list.filter((i) => i.label.toLowerCase()?.includes(term))
-                " -->
                 <CommandInput :placeholder="title" />
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
@@ -88,20 +93,7 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
                             v-for="option in options"
                             :key="option.value"
                             :value="option"
-                            @select="
-                                (e) => {
-                                    const isSelected = selectedValues.has(option.value)
-                                    if (isSelected) {
-                                        selectedValues.delete(option.value)
-                                    } else {
-                                        selectedValues.add(option.value)
-                                    }
-                                    const filterValues = Array.from(selectedValues)
-                                    column?.setFilterValue(
-                                        filterValues.length ? filterValues : undefined
-                                    )
-                                }
-                            "
+                            @select="() => toggleSelectedValue(option.value)"
                         >
                             <div
                                 :class="
@@ -113,7 +105,7 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
                                     )
                                 "
                             >
-                                <CheckIcon :class="cn('h-4 w-4')" />
+                                <VIcon name="fa-check" class="h-4 w-4" />
                             </div>
                             <component
                                 :is="option.icon"
@@ -136,7 +128,7 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
                             <CommandItem
                                 :value="{ label: 'Clear filters' }"
                                 class="justify-center text-center"
-                                @select="column?.setFilterValue(undefined)"
+                                @select="() => props.column?.setFilterValue(undefined)"
                             >
                                 Clear filters
                             </CommandItem>

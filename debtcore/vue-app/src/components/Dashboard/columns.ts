@@ -1,7 +1,5 @@
 import type { ColumnDef } from '@tanstack/vue-table'
 import { h } from 'vue'
-
-import { labels, statuses } from './data/data'
 import type { Task } from './data/schema'
 import DataTableColumnHeader from './DataTableColumnHeader.vue'
 import DataTableRowActions from './DataTableRowActions.vue'
@@ -28,7 +26,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'invoice',
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Invoice"}),
-    cell: ({ row }) => h('div', { class: 'w-20 underline' }, row.getValue('invoice')),
+    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('invoice')),
     enableSorting: true,
     enableHiding: true,
     filterFn: (row, id, value) => {

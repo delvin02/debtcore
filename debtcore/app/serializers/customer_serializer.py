@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Customer, Debt
+from app.models import Customer, Debt, Country
 from django.utils import timezone
 from .country_serializer import CountrySerializer
 from django.db import models
@@ -10,7 +10,8 @@ class CustomerSerializer(serializers.ModelSerializer):
     city = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
     state = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
     postcode = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
-    
+    country_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Customer
         fields = ['name', 'business_registration_id', 
@@ -20,9 +21,13 @@ class CustomerSerializer(serializers.ModelSerializer):
                   'city', 
                   'state', 
                   'postcode', 
-                  'country'
+                  'country',
+                  'country_name'
                   ]
       
+    def get_country_name(self, obj):
+        return obj.country.name if obj.country else None
+    
     def create(self, validated_data):
       user = self.context['request'].user
     

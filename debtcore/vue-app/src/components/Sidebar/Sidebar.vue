@@ -26,7 +26,6 @@ const user = useAuthStore()
 const links: LinkProp[] = [
 	{
 		title: 'Dashboard',
-		label: '128',
 		icon: 'fa-home',
 		to: '/dashboard'
 	}

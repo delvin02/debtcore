@@ -2,11 +2,13 @@
 import tasks from '@/components/CustomerDetail/data/tasks.json'
 import DataTable from '@/components/CustomerDetail/DataTable.vue'
 import CustomerDetailCard from '@/components/CustomerDetail/CustomerDetailCard.vue'
+import CustomerDetailInfo from '@/components/CustomerDetail/CustomerDetailInfo.vue'
 import { columns } from '@/components/CustomerDetail/columns'
 import type { Task } from '@/components/CustomerDetail/data/schema'
 import { onMounted, provide, onBeforeUnmount, ref, type Ref } from 'vue'
 import { useTableStore } from '@/store/table'
 import { useRoute } from 'vue-router'
+
 const route = useRoute()
 const customer_id = route.params.customer_id
 
@@ -53,20 +55,7 @@ onBeforeUnmount(() => {
 	</div>
 
 	<div class="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-		<div class="p-4 bg-secondary">
-			<h2 class="text-3xl font-bold tracking-tight mt-2 mb-4">Semix Sdn Bhd</h2>
-
-			<div class="flex justify-items-center place-items-center items-center">
-				<VIcon name="fa-phone-alt" class="w-4 h-4" />
-				<p class="text-muted-foreground ml-2 place-self-center">0478 643 029</p>
-			</div>
-			<div class="flex justify-items-center place-items-center items-center">
-				<VIcon name="fa-address-book" class="w-4 h-4" />
-				<p class="text-muted-foreground ml-2 place-self-center">
-					301 Pirie Street, Adelaide SA 5000
-				</p>
-			</div>
-		</div>
+		<CustomerDetailInfo :customer_id="customer_id" />
 		<!-- <Popover>
 			<PopoverTrigger as-child>
 				<Button

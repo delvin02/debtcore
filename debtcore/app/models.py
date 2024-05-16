@@ -34,6 +34,7 @@ class Country(models.Model):
 
     class Meta:
         verbose_name_plural = "Countries"
+        
     
 class Company(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
@@ -203,11 +204,10 @@ class Debt(models.Model):
     invoice_date = models.DateField(null=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     STATUS_CHOICES = (
-        (1, 'Draft'),
-        (2, 'In Progress'),
-        (3, 'Escalated'),
-        (4, 'Done'),
-        (5, 'Canceled')
+        (1, 'In Progress'),
+        (2, 'Escalated'),
+        (3, 'Done'),
+        (4, 'Canceled')
     )
 
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='1')

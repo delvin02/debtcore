@@ -76,7 +76,7 @@
     @apply bg-background text-foreground;
   }
 
-  tr > td:last-child  {
+  #dbTableBody tr > td:last-child  {
     @apply border-l-2 border-secondary w-5
   }
 }

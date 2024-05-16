@@ -105,7 +105,9 @@ export const columns: ColumnDef<Task>[] = [
       const overdue: number = row.getValue('overdue');
       let displayText: string;
       
-      if (overdue > 0) {
+      if (overdue == 1) {
+        displayText = '1 day'
+      }else if (overdue > 0) {
         displayText = `${overdue} day(s)`;
       } else if (overdue === 0) {
         displayText = '0 day';
@@ -173,10 +175,14 @@ export const columns: ColumnDef<Task>[] = [
     },
     enableSorting: true,
     enableHiding: true,
-    filterFn: (row, id, value) => {
-      const rowValueLower = row.getValue(id)?.toString().toLowerCase() || '';
-      const filterValueLower = value?.toString().toLowerCase();
-      return rowValueLower.includes(filterValueLower);    
+    filterFn: (row, id, values) => {
+      const rowValue = row.getValue(id);
+      if (!rowValue) return false;
+    
+      const rowValueLower = rowValue.toString().toLowerCase();
+      const filterValues = values as string[];
+    
+      return filterValues.some((value) => rowValueLower.includes(value.toLowerCase()));
     },
     meta: {
       title: "Status"
