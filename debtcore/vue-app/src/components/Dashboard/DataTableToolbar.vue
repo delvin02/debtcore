@@ -3,7 +3,6 @@ import type { Table } from '@tanstack/vue-table'
 import { computed } from 'vue'
 import type { Task } from './data/schema'
 
-import { statuses } from './data/data'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
 import DataTableViewOptions from './DataTableViewOptions.vue'
 import DataTableCreateDebt from './DataTableCreateDebt.vue'

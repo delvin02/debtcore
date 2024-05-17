@@ -377,7 +377,6 @@ function updateCountryQuery(event: any) {
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
 									<Calendar
-										v-model="form.date_live"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

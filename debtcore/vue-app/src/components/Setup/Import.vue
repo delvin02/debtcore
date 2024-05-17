@@ -95,7 +95,8 @@ async function TemplateImport() {
 			<tr>
 				<td class="p-2"><EditCompanyModal /></td>
 				<td class="p-2">
-					<Button @click="() => CompanyRefresh()" :disabled="company_refresh.is_loading">
+					<Button class="flex ml-auto"
+					@click="() => CompanyRefresh()" :disabled="company_refresh.is_loading">
 						<VIcon
 							name="fa-circle-notch"
 							animation="spin"
@@ -116,7 +117,7 @@ async function TemplateImport() {
 				<td class="font-bold text-center">Created</td>
 				<td class="px-2">
 					<Button
-						class="my-2"
+						class="my-2 "
 						@click="() => TemplateExport()"
 						:disabled="template.is_loading"
 					>
@@ -133,7 +134,7 @@ async function TemplateImport() {
 				</td>
 				<td class="px-2">
 					<Button
-						class="my-2"
+						class="my-2 flex ml-auto"
 						@click="() => TemplateImport()"
 						:disabled="template_import.is_loading"
 					>

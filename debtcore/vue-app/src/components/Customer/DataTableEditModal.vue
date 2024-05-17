@@ -1,21 +1,18 @@
 <script setup lang="ts">
 import {
 	Dialog,
-	DialogContent,
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 	DialogScrollContent,
 	DialogFooter
 } from '@/components/ui/dialog'
-
 import { Input } from '@/components/ui/input'
 
 import { Label } from '@/components/ui/label'
 
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject, watch } from 'vue'
+import { ref, reactive, inject, watch, computed } from 'vue'
 import { cn } from '@/lib/utils'
 import {
 	Command,
@@ -205,6 +202,8 @@ function handleCountrySelect(country: any) {
 function updateCountryQuery(event: any) {
 	searchCountryQuery.value = event.target.value
 }
+
+
 </script>
 
 <template>
@@ -256,7 +255,7 @@ function updateCountryQuery(event: any) {
 							<Input
 								id="whatsapp_phone"
 								v-model="form.whatsapp_phone_number"
-								placeholder="012-9886348"
+								placeholder="01110155555"
 								class="col-span-3"
 							/>
 						</div>

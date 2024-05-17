@@ -37,3 +37,40 @@ class ServiceProcessorBase(Task, ABC):
     def process(self, *argss, **kwargs):
         """Process the task. This method should be overridden by subclasses."""
         raise NotImplementedError("Each task must implement its own process method")
+    
+    '''
+      Complete session success
+    '''
+    def complete_session_success(self, session: Session, 
+                         status_code: StatusCode, 
+                         additional_info: str,
+                        ):
+      self._update_session(session, status_code, additional_info, TransactionStatus.COMPLETED.value)
+    
+    def complete_session_info(self, session: Session, 
+                         status_code: StatusCode, 
+                         additional_info: str,
+                        ):
+      self._update_session(session, status_code, additional_info, TransactionStatus.COMPLETED.value)
+    
+    '''
+      Fail session 
+    '''
+    
+    def fail_session(self, session: Session, 
+                         status_code: StatusCode, 
+                         additional_info: str):
+        self._update_session(session, status_code, additional_info, TransactionStatus.FAILED.value)
+    
+    '''
+      Parent method
+    '''
+    def _update_session(self, session: Session, status_code: StatusCode, 
+                        additional_info: str, 
+                        transaction_status: TransactionStatus):
+      session.status_code = status_code
+      session.additional_info = additional_info
+      session.transaction_status = transaction_status
+      
+      session.completed_date = timezone.now().date()
+      

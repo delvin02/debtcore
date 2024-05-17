@@ -4,6 +4,9 @@ from django.utils import timezone
 from django.conf import settings
 from .validators import *
 from debtcore_shared.common.enum import StatusCode, EventType
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 import uuid
 
 class CustomUserManager(UserManager):
@@ -28,10 +31,13 @@ class Country(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     name = models.CharField(max_length=100, unique=True, verbose_name="Country Name")
     code = models.CharField(max_length=2, unique=True, verbose_name="Country Code")
-
+    phone_code = models.CharField(max_length=5, unique=True, null=True, blank=True, verbose_name="Phone Code")
+    
     def __str__(self):
         return self.name
 
+
+    
     class Meta:
         verbose_name_plural = "Countries"
         
@@ -154,6 +160,25 @@ class Customer(models.Model):
         default=None
     )   
     last_updated_date = models.DateTimeField(blank=True, null=True)
+    
+    def merge_with_phone_code(self):
+        """
+        Merges the country phone code with the customer's WhatsApp phone number.
+
+        Returns:
+            str: The full WhatsApp phone number with the country phone code as a prefix.
+        """
+        country = self.country
+        if not country.phone_code:
+            raise ValueError("Phone code is not set for this country.")
+
+        # Ensure the phone number does not start with the country code already
+        if self.whatsapp_phone_number.startswith(country.phone_code):
+            return self.whatsapp_phone_number
+
+        # Remove leading zeroes from the phone number
+        phone_number = self.whatsapp_phone_number.lstrip('0')
+        return f"{country.phone_code}{phone_number}"
 
 class WhatsappTemplate(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
@@ -237,6 +262,7 @@ class Debt(models.Model):
     )   
     last_updated_date = models.DateTimeField(blank=True, null=True)
     
+    
     @staticmethod
     def get_key_for_status(value: str) -> int:
         '''
@@ -261,7 +287,18 @@ class Debt(models.Model):
             if key == value:
                 return description
         raise ValueError(f"No status description found for key: {value}")
-
+    
+    
+    class Meta:
+        verbose_name_plural = "Debts"
+        
+# @receiver(post_save, sender=Debt)
+# def update_document_path(sender, instance, created, **kwargs):
+#     if created:
+#         # Update the document path only if the instance was just created
+#         instance.document.name = debt_document_path(instance, instance.document.name)
+#         instance.save()
+        
 class DebtBacklog(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     debt = models.ForeignKey(Debt, related_name="debt_backlog", on_delete=models.CASCADE)

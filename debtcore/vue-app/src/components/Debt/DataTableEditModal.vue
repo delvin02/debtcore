@@ -366,7 +366,6 @@ function updateDueDate(payload: any) {
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
 									<Calendar
-										v-model="form.invoice_date"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

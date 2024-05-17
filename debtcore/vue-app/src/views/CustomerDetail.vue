@@ -10,7 +10,7 @@ import { useTableStore } from '@/store/table'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const customer_id = route.params.customer_id
+const customer_id = route.params.customer_id as string
 
 const tableStore = useTableStore('debt')
 const debtsUrl = `/api/customer/${customer_id}/debt`
@@ -23,6 +23,7 @@ const map_function = (task: any): Task => {
 		due_date: new Date(task.due_date),
 		overdue: task.overdue,
 		amount: task.amount,
+		term: task.term,
 		document_url: task.document_url,
 		editable: task.editable
 	}

@@ -27,7 +27,7 @@ import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
 import { useTableStore } from '@/store/table'
-import type { Task } from '@/components/Debt/data/schema'
+import type { Task } from '@/components/CustomerDetail/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
@@ -366,7 +366,6 @@ function updateDueDate(payload: any) {
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
 									<Calendar
-										v-model="form.invoice_date"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

@@ -106,7 +106,8 @@ class CustomerDebtTableSerializer(serializers.ModelSerializer):
                   'invoice_date', 
                   'due_date',
                   'overdue',
-                  'amount', 
+                  'amount',
+                  'term',
                   'status', 
                   'document_url',
                   'editable']

@@ -14,24 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ref, reactive, inject, watch, computed } from 'vue'
 import { cn } from '@/lib/utils'
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList
-} from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
 import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
 import { format, parseISO, addDays } from 'date-fns'
@@ -40,6 +23,11 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import type { Task } from '@/components/Dashboard/data/schema'
+import {
+  CalendarDate,
+  type DateValue,
+  getLocalTimeZone,
+} from '@internationalized/date'
 
 const dashboardStore = inject('dashboardStore', useTableStore('dashboard'))
 
@@ -69,7 +57,7 @@ const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 const tomorrow = addDays(new Date(), 1) 
-const formattedTomorrow = format(tomorrow, 'yyyy-MM-dd');
+const formattedTomorrow = new CalendarDate(tomorrow.getFullYear(), tomorrow.getMonth() + 1, tomorrow.getDate());
 
 
 
@@ -158,11 +146,12 @@ function toggleDialog() {
 }
 
 
-
 function updateScheduleDate(payload: any) {
 	const date = new Date(payload)
 	form.scheduled_date = format(date, 'yyyy-MM-dd')
 }
+
+
 </script>
 
 <template>
@@ -217,8 +206,7 @@ function updateScheduleDate(payload: any) {
 								<PopoverContent class="w-auto p-0">
 									<Calendar
 										mode="date"
-										:min-date="formattedTomorrow"
-										v-model="form.scheduled_date"
+										:min-value="formattedTomorrow"
 										@update:model-value="updateScheduleDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

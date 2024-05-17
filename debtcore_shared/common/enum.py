@@ -35,6 +35,8 @@ class StatusCode(Enum):
     WHATSAPP_SCHEDULED_MESSAGE_PAST_DUE = (202, "Scheduled message is past due")
     WHATSAPP_SCHEDULED_MESSAGE_CANCELED = (203, "Scheduled message was canceled")
 
+    WHATSAPP_SCHEDULED_MESSAGE_MISSING_TEMPLATE = (203, "Scheduled message missing template")
+
     def __new__(cls, value, description=None):
         obj = object.__new__(cls)
         obj._value_ = value

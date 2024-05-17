@@ -19,12 +19,11 @@ class GetCountrySelectList(APIView):
         # Using Q objects to construct a single query that handles all cases
         query = Q()
         if search_query:
-            query |= Q(name__icontains=search_query)
+            query &= Q(name__icontains=search_query)
+
         if current_country_id:
-            query |= Q(id=current_country_id)
+            query &= (Q(id=current_country_id) | ~Q(id=current_country_id))
 
-        # Apply the query to the database and limit the results
         countries = Country.objects.filter(query).distinct()[:20]
-
         serializer = CountrySelectListSerializer(countries, many=True)
         return JsonResponse({'Result': serializer.data}, status=status.HTTP_200_OK)

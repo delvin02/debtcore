@@ -162,7 +162,10 @@ class GetCustomerSelectList(APIView):
 
 
     def get(self, request, format=None):
-        companies = Customer.objects.all()
+        company = request.user.company
+        if not company:
+            return JsonResponse({'message': 'Company not assigned'}, status=400)
+        companies = Customer.objects.filter(company=company).all()
         serializer = CustomerSelectListSerializer(companies, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     

@@ -1,5 +1,5 @@
 from app.service.base.ServiceProcessorBase import ServiceProcessorBase
-from app.models import Company, Session, Debt
+from app.models import Company, Session, Debt, WhatsappTemplate
 from django.core.exceptions import ObjectDoesNotExist
 import json
 import logging
@@ -7,6 +7,14 @@ from debtcore_shared.common.enum import StatusCode, TransactionStatus
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from datetime import date
+from debtcore_shared.meta.client import WhatsappMetaClient
+from debtcore_shared.meta.model.Message import Message
+from debtcore_shared.meta.model.MessageObject.Language import Language
+from debtcore_shared.meta.model.MessageObject.TemplateObject import TemplateObject
+from debtcore_shared.meta.model.MessageObject.TemplateComponent import TemplateComponent
+from debtcore_shared.meta.api.message import MessageRequest
+from django.conf import settings
+from asgiref.sync import async_to_sync
 
 logger = logging.getLogger("debt_reminder_logger")
 
@@ -17,177 +25,75 @@ class DebtReminderProcessor(ServiceProcessorBase):
     #     """Process the session specifically for WhatsApp messages."""
             logger.info(f"Starting processing for session: {session.id}")
             today = timezone.now().date()
-
+            
+            company = session.company
+            
             debt: Debt = session.debt
             customer = debt.customer
 
             customer_name = customer.name
-            customer_whatsapp_phone_number = customer.whatsapp_phone_number
+            to = customer.merge_with_phone_code()
 
             overdue_info = ""
+            overdue = 0
             if debt.due_date:
                   due_date = debt.due_date if isinstance(debt.due_date, date) else debt.invoice_date.date()
 
                   if today > due_date:
-                        days_since_invoice = (today - due_date).days
-                        overdue_info = f" (Overdued by {days_since_invoice} days)"
+                        overdue = (today - due_date).days
+                        overdue_info = f" (Overdued by {overdue} days)"
+            
+            
+            language: Language = Language("en")
+            
+            template_head: TemplateComponent = TemplateComponent(component_type="header")
+
+            # Define the content for the document parameter
+            document_content = {
+                  "link": f"{settings.DOMAIN}{debt.document.url}"
+            }
+
+            whatsapp_template = WhatsappTemplate.objects.get(name='payment_reminder',company=company)
+
+            if not whatsapp_template:
+                  self.fail_session(session, 
+                                    StatusCode.WHATSAPP_SCHEDULED_MESSAGE_MISSING_TEMPLATE.value,
+                                    "Default template 'payment_reminder' not found.")
+                  return
 
 
-            session.additional_info = f"Payment reminder sent to {customer_name} at {customer_whatsapp_phone_number}{overdue_info}"
-            session.transaction_status = TransactionStatus.COMPLETED.value
-            session.status_code = StatusCode.WHATSAPP_SCHEDULED_MESSAGE_SUCCESS.value
-    #     deserialized_payload = json.loads(session.payload)
-        
-    #     entry = deserialized_payload.get("entry")[0]
+            # Add the document parameter to the header component
+            template_head.add_parameter(param_type="document", content=document_content)
+            
+            template_component: TemplateComponent = TemplateComponent(component_type="body")
+            template_component.add_parameter(param_type='text', content=customer.name)
+            template_component.add_parameter(param_type='text', content=debt.invoice)
+            template_component.add_parameter(param_type='text', content=f'RM {debt.amount}')
+            template_component.add_parameter(param_type='text', content=str(debt.invoice_date))
+            template_component.add_parameter(param_type='text', content=str(debt.due_date))
+            template_component.add_parameter(param_type='text', content=str(overdue))
+            template_component.add_parameter(param_type='text', content=company.name)
 
 
-    #     # TODO -> Whatsapp Business Acocunt ID entry.get('id')
+            template_obj: TemplateObject = TemplateObject(name=whatsapp_template.name, language=language)
 
-    #     change = entry.get('changes')[0]
-    #     value = change.get('value')
+            template_obj.add_component(template_head)
+            template_obj.add_component(template_component)
 
-    #     # Assuming the payload structure from your sample
-    #     messaging_product = value.get("messaging_product", None)
+            text_message = Message(message_type='template', to=to, template=template_obj)
 
-    #     metadata = value.get("metadata", {})
+            # Get default company phone number
+            whatsapp_company_profile = company.whatsapp_phone_numbers_company.get(is_default_phone=True)
 
-    #     if "statuses" in value:
-    #         return
-    #         self.handle_send_message(session, value)
+            if not whatsapp_company_profile:
+                  pass
+                  #return JsonResponse({'message': "No default phone found."}, status=404)
 
-    #     contact = value.get("contacts")[0]
-    #     message_data = value.get("messages")[0]
-        
-    #     if not metadata:
-    #         session.status_code = StatusCode.WHATSAPP_MESSAGE_MISSING_SENDER_PHONE_NUMBER.value
-    #         return
-        
-
-    #     # Recipient
-    #     db_company_whatsapp_user: WhatsAppUser = None
-    #     try:
-    #         # Check if the recipient is one of our company
-    #         db_company_whatsapp_user = WhatsAppUser.objects.get(
-    #                     whatsapp_id=metadata.get('phone_number_id', None)
-    #                 )
-    #     except ObjectDoesNotExist:
-    #         # No object found, set status code and save session
-    #         session.status_code = StatusCode.WHATSAPP_MESSAGE_SENDER_NOT_FOUND.value
-    #         return
-        
-
-
-    #     # Sender
-    #     whatsapp_phone = contact.get('wa_id')
-    #     profile = contact.get('profile', {})
-    #     name = profile.get('name')
-    #     db_whatsapp_sender, created = WhatsAppUser.objects.get_or_create(phone_number=whatsapp_phone,
-    #                                                                             name=name)
-
-
-    #     # Message
-    #     message_id = message_data.get('id')
-
-    #     is_message_processed = self.find_message_by_source_id(message_id)
-    #     if is_message_processed:
-    #         session.status_code = StatusCode.WHATSAPP_MESSAGE_PROCESSED.value
-    #         return
-
-    #     #sender_id = message_data.get('from')
-    #     message_text = message_data.get("text", {}).get("body")
-    #     message_type_value = message_data.get("type")
-    #     sent_at = message_data.get("timestamp")
-        
-    #     message_type = self.extract_message_type(message_type_value)
-
-    #     '''
-    #         Conversation            
-    #     '''
-
-        
-    #     conversation, created = Conversation.objects.get_or_create(
-    #         company=db_company_whatsapp_user.company
-    #     )        
-
-    #     if created:
-    #         # If the conversation is newly created, add the initial participant
-    #         conversation.participants.add(db_company_whatsapp_user)
-    #     else:
-    #         # If the conversation already existed, you may want to add new participants
-    #         # or handle them differently based on your business logic
-    #         if not conversation.participants.filter(id=db_company_whatsapp_user.id).exists():
-    #             conversation.participants.add(db_company_whatsapp_user)
-
-    #     whatsapp_message = WhatsAppMessage.objects.create(
-    #         whatsapp_message_id = message_id,
-    #         conversation=conversation,
-    #         sender=db_whatsapp_sender,
-    #         recipient=db_company_whatsapp_user,
-    #         message_text=message_text,
-    #         message_type=message_type,
-    #         sent_at=parse_datetime(sent_at),
-    #         company = db_company_whatsapp_user.company
-    #     )
-        
-        
-    #     # Implement the logic specific to WhatsApp messages here
-    #     processed_data = f"Processed session data: {session.id}"
-    #     ##session.status_code = StatusCode.WHATSAPP_MESSAGE_SUCCESS.value
-    #     return processed_data
-    
-    # @staticmethod
-    # def find_message_by_source_id(whatsapp_message_id: str) -> bool:
-    #     try:
-    #         WhatsAppMessage.objects.get(whatsapp_message_id=whatsapp_message_id)
-    #         return True  # Return True if the message is found
-    #     except WhatsAppMessage.DoesNotExist:
-    #         return False
-    
-
-    # # extract message type based on WhatsAppMessage -> MESSAGE_CHOICES in app/models.py
-    # @staticmethod
-    # def extract_message_type(type: str) -> str:
-    #     MESSAGE_CHOICES = WhatsAppMessage.MESSAGE_CHOICES
-
-    #     for choice_value, choice_label in MESSAGE_CHOICES:
-    #         if choice_label.lower() == type.lower():
-    #             return choice_value
-        
-    #     return None
-
-    # @staticmethod
-    # def handle_send_message(session: Session, value: object) -> None:
-    #     metadata = value.get("metadata", {})
-
-    #     # status
-    #     status = value.get('statuses')[0]
-    #     whatsapp_message_id = status.get('id')
-    #     message_status = status.get('status')
-    #     timestamp = status.get('timestamp')
-    #     recipient_id = status.get('recipient_id')
-
-    #     # Recipient
-    #     db_company_whatsapp_user: WhatsAppUser = None
-    #     try:
-    #         db_company_whatsapp_user = WhatsAppUser.objects.get(
-    #                 whatsapp_id=metadata.get('phone_number_id', None)
-    #             )
-    #     except ObjectDoesNotExist:
-    #         session.status_code = StatusCode.WHATSAPP_MESSAGE_SENDER_NOT_FOUND.value
-    #         return
-        
-
-    #     conversation, created = Conversation.objects.get_or_create(
-    #         company=db_company_whatsapp_user.company
-    #     )        
-
-    #     if created:
-    #         # If the conversation is newly created, add the initial participant
-    #         conversation.participants.add(db_company_whatsapp_user)
-    #     else:
-    #         # If the conversation already existed, you may want to add new participants
-    #         # or handle them differently based on your business logic
-    #         if not conversation.participants.filter(id=db_company_whatsapp_user.id).exists():
-    #             conversation.participants.add(db_company_whatsapp_user)
-
-    #     # TODO - record the conversation fee
+            client = WhatsappMetaClient(company.meta_access_token)
+            request_send_message = MessageRequest(client, whatsapp_company_profile.whatsapp_id)
+            sync_send_message = async_to_sync(request_send_message.send_test_message)
+            response = sync_send_message(text_message)
+            
+            self.complete_session_success(session, 
+                                          StatusCode.WHATSAPP_SCHEDULED_MESSAGE_SUCCESS.value, 
+                                          f"Payment reminder sent to {customer_name} at {to}{overdue_info}")

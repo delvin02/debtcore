@@ -17,6 +17,7 @@ export const taskSchema = z.object({
     }
     return arg;
   }, z.date()),
+  term: z.number(),
   overdue: z.number(),
   amount: z.string(),
   document_url: z.string(),
