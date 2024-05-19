@@ -1,1 +1,0 @@
-import{z as n}from"./index-dIKOytT1.js";const e=n.object({id:n.number(),name:n.string().min(2).max(50),whatsapp_phone_number:n.string(),email:n.string(),country_name:n.string(),outstanding_debts:n.number()});export{e as t};

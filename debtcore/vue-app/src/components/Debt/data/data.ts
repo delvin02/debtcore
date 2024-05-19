@@ -32,7 +32,7 @@ export const statuses = [
   },
   {
     value: '2',
-    label: 'Claiming',
+    label: 'Escalated',
     icon: 'fa-circle'
   },
   {

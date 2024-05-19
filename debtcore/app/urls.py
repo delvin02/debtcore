@@ -49,10 +49,13 @@ urlpatterns = [
     path('api/template/<int:template_id>', WhatsappTemplateView.as_view(), name="get_template"),
     path('api/connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth"),
 
-    # Session
+    # Transaction
+    path('api/transaction', TransactionView.as_view(), name="get_transactions"),
+    path('api/transaction/<int:session_id>/scheduled_date', TransactionScheduleEditView.as_view(), name="get_transaction_schedule"),
+    path('api/transaction/card', transaction_card_data, name="get_transaction_data"),
+
     path('api/session', SessionView.as_view(), name="get_sessions"),
     path('api/session/<int:session_id>/scheduled_date', SessionScheduleEditView.as_view(), name="get_session_schedule"),
-    path('api/session/card', session_card_data, name="get_session_data"),
 
     # Conversation
     path('api/conversations', ConversationView.as_view, name="conversations"),

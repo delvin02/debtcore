@@ -71,7 +71,8 @@ import {
   BiBookmarkPlusFill,
   BiCircleFill,
   BiXSquare,  
-  BiCheckSquare 
+  BiCheckSquare,
+  BiArrowLeftRight 
  } from "oh-vue-icons/icons/bi/index.js";
 
  import { MdCancel, MdPendingactions  } from "oh-vue-icons/icons/md/index.js";
@@ -140,12 +141,13 @@ addIcons(
   FaSync,
   FaShareSquare,
   FaDownload,
-  FaMapPin 
+  FaMapPin,
+  BiArrowLeftRight 
 )
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL
 
-export const baseURL = 'https://eefe-49-178-103-117.ngrok-free.app';
+export const baseURL = 'https://17df-211-26-122-216.ngrok-free.app';
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 

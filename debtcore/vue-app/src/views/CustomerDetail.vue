@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import tasks from '@/components/CustomerDetail/data/tasks.json'
 import DataTable from '@/components/CustomerDetail/DataTable.vue'
 import CustomerDetailCard from '@/components/CustomerDetail/CustomerDetailCard.vue'
 import CustomerDetailInfo from '@/components/CustomerDetail/CustomerDetailInfo.vue'

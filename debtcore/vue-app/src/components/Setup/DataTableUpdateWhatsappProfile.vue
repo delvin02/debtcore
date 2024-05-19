@@ -32,7 +32,6 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import Textarea from '../ui/textarea/Textarea.vue'
-import type { Url } from 'url'
 
 const phoneStore = inject('phoneStore', useTableStore('phone'))
 

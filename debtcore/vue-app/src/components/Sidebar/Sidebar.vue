@@ -72,10 +72,15 @@ const links2: LinkProp[] = [
 		to: '/company'
 	},
 	{
-		title: 'Usage Report',
-		icon: 'bi-graph-up-arrow',
-		to: '/usage-report'
+		title: 'Session',
+		icon: 'bi-arrow-left-right',
+		to: '/session'
 	}
+	// {
+	// 	title: 'Usage Report',
+	// 	icon: 'bi-graph-up-arrow',
+	// 	to: '/usage-report'
+	// }
 ]
 </script>
 

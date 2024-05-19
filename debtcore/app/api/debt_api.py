@@ -118,7 +118,7 @@ class DebtStatusCreateChoicesAPIView(APIView):
         '''
             status can only be set to draft or in progress.
         '''
-        status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES[:2]]
+        status_choices = [{"key": key, "value": value} for key, value in Debt.STATUS_CHOICES[:1]]
         serializer = DebtSelectListSerializer(status_choices, many=True)
         return Response({'Result': serializer.data}, status=200)
      

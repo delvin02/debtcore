@@ -6,4 +6,3 @@ import { accounts, conversations } from '@/components/Conversation/data/conversa
 <template>
 	<Conversation :accounts="accounts" :conversations="conversations" />
 </template>
-@/components/Conversation/data/conversations

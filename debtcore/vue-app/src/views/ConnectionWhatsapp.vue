@@ -15,7 +15,7 @@ onMounted(() => {
 
 const process = (code: string) => {
 	axios
-		.post('https://4e4d-211-26-122-216.ngrok-free.app/api/connections/facebook', { code })
+		.post('/api/connections/facebook', { code })
 		.then(() => {
 			router.push({ name: 'connections' })
 		})

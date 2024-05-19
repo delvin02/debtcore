@@ -16,10 +16,9 @@
       crossorigin
       href="http://localhost:5174/src/index.css"
     />
-    {% else %}
+    {% else %} {% endif %}
     <!-- In production, use the vue_css template tag to load the compiled CSS -->
     <link rel="stylesheet" href="{% vue_css 'main' %}" />
-    {% endif %}
   </head>
   {% endblock %}
   <body>
@@ -44,12 +43,17 @@
       crossorigin
       src="http://localhost:5174/src/main.ts"
     ></script>
-    {% else %}
+    {% else %} {% endif %}
     <!-- In production, load the compiled JS from static files -->
+    {% comment %}
     <script type="module" src="{% static 'vue/main.js' %}"></script>
-    {% endif %} {% endblock %}
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-
+    {% endcomment %} {% endblock %}
+    <script
+      async
+      defer
+      crossorigin="anonymous"
+      src="https://connect.facebook.net/en_US/sdk.js"
+    ></script>
   </body>
 </html>
 

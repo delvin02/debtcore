@@ -84,6 +84,7 @@ class SessionScheduleEditSerializer(serializers.ModelSerializer):
 class SessionTableSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField()
     invoice = serializers.SerializerMethodField()
+    company_name = serializers.SerializerMethodField()
     customer_name = serializers.SerializerMethodField()
     event_display = serializers.SerializerMethodField()
     editable = serializers.SerializerMethodField()
@@ -91,7 +92,8 @@ class SessionTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
         fields = ['id', 
-                  'invoice', 
+                  'invoice',
+                  'company_name',
                   'customer_name', 
                   'event_display', 
                   'scheduled_date', 
@@ -99,11 +101,15 @@ class SessionTableSerializer(serializers.ModelSerializer):
                   'status_display', 
                   'additional_info',
                   'change_info',
+                  'completed_date',
                   'editable']
     
     def get_invoice(self, obj):
         return obj.debt.invoice
 
+    def get_company_name(self, obj):
+        return obj.debt.company.name
+    
     def get_customer_name(self, obj):
         return obj.debt.customer.name
     

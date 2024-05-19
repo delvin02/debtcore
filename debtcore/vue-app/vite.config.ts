@@ -56,7 +56,10 @@ export default defineConfig({
       output: {
         dir: '../app/static/vue/',
         entryFileNames: 'main.js',
+        chunkFileNames: `assets/[name].[hash].js`,
+        assetFileNames: `assets/[name].[hash].[ext]`
       },
     },
+    chunkSizeWarningLimit: 1500 // Adjust this value as needed
   },
 });

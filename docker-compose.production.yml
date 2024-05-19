@@ -1,0 +1,79 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn debtcore.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    ports:
+      - "8000:8000"
+      - "5678:5678"  
+
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      - PYTHONPATH=/app/debtcore:$PYTHONPATH
+      - DJANGO_SETTINGS_MODULE=debtcore.settings
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    depends_on:
+      - backend
+      - redis
+      - db
+    environment:
+      - PYTHONPATH=/app/debtcore:$PYTHONPATH
+      - DJANGO_SETTINGS_MODULE=debtcore.settings
+    command: python -m celery -A debtcore.celery worker -l info -c 4
+    ports:
+      - 6000:6000
+
+  celerybeat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    depends_on:
+      - backend
+      - redis
+      - db
+    environment:
+      - PYTHONPATH=/app/debtcore:$PYTHONPATH
+      - DJANGO_SETTINGS_MODULE=debtcore.settings
+    command: celery -A debtcore.celery beat -l info 
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass test
+    volumes:
+      - redisdata:/data
+
+  db:
+    image: mysql:8.0.26
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'debtcore'
+      MYSQL_USER: 'lucid'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    env_file:
+      - .env
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - '33066:3306'
+
+
+volumes:
+  dbdata:
+  redisdata:

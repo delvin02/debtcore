@@ -19,7 +19,6 @@ import { useTableStore } from '@/store/table'
 // import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 // import { cn } from '@/lib/utils'
 
-
 // const df = new DateFormatter('en-US', {
 //   dateStyle: 'medium',
 // })
@@ -29,9 +28,9 @@ import { useTableStore } from '@/store/table'
 //   end: new CalendarDate(2022, 1, 20).add({ days: -20 }),
 // }) as Ref<DateRange>
 
-const dashboardStore = useTableStore('dashboard')
+const transactionStore = useTableStore('dashboard')
 
-const sessionUrl = '/api/session'
+const transactionUrl = '/api/transaction'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
@@ -48,13 +47,13 @@ const map_function = (task: any): Task => {
 }
 
 onMounted(async () => {
-	await dashboardStore.fetch(sessionUrl, 0, map_function) // Pass the URL when calling the action
+	await transactionStore.fetch(transactionUrl, 0, map_function) // Pass the URL when calling the action
 })
 
-provide('dashboardStore', dashboardStore)
+provide('tableStore', transactionStore)
 
 onBeforeUnmount(() => {
-	dashboardStore.$reset()
+	transactionStore.$reset()
 })
 </script>
 
@@ -93,12 +92,12 @@ onBeforeUnmount(() => {
 				<RangeCalendar v-model="value" initial-focus :number-of-months="2" @update:start-value="(startDate) => value.start = startDate" />
 			</PopoverContent>
 		</Popover> -->
-		<DashboardCard/>
-		<div v-if="dashboardStore.is_loading" class="text-center">
+		<DashboardCard />
+		<div v-if="transactionStore.is_loading" class="text-center">
 			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
 		</div>
 		<div v-else>
-			<DataTable :data="dashboardStore.tasks" :columns="columns"/>
+			<DataTable :data="transactionStore.tasks" :columns="columns" />
 		</div>
 	</div>
 </template>

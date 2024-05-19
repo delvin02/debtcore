@@ -77,7 +77,7 @@ const statuses: GenericSelectListModel = reactive({
 
 const searchCustomerQuery = ref('')
 
-async function fetchCountries(query?: string) {
+async function fetchCustomers(query?: string) {
 	customers.is_loading = true
 	try {
 		const response = await axios.get(`/api/customer/list?search=${query || ''}`, {
@@ -134,7 +134,7 @@ watch(
 	searchCustomerQuery,
 	_.debounce(async (newQuery) => {
 		if (is_dialog_open.value) {
-			await fetchCountries(newQuery)
+			await fetchCustomers(newQuery)
 		}
 	}, 500)
 )
@@ -196,7 +196,7 @@ async function submit() {
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	if (is_dialog_open.value) {
-		fetchCountries(searchCustomerQuery.value)
+		fetchCustomers(searchCustomerQuery.value)
 		fetchStatuses()
 	}
 }
@@ -326,7 +326,7 @@ function updateDueDate(payload: any) {
 										<CommandInput
 											class="h-9"
 											v-model="searchCustomerQuery"
-											placeholder="Search country..."
+											placeholder="Search customer..."
 										/>
 										<CommandEmpty>No customer found.</CommandEmpty>
 										<CommandList>

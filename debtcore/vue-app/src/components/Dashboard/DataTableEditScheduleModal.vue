@@ -23,13 +23,9 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import type { Task } from '@/components/Dashboard/data/schema'
-import {
-  CalendarDate,
-  type DateValue,
-  getLocalTimeZone,
-} from '@internationalized/date'
+import { CalendarDate, type DateValue, getLocalTimeZone } from '@internationalized/date'
 
-const dashboardStore = inject('dashboardStore', useTableStore('dashboard'))
+const tableStore = inject('tableStore', useTableStore('transaction'))
 
 interface DataTableEditModalProps {
 	row: Task
@@ -50,37 +46,36 @@ const form = reactive<Debt>({
 	scheduled_date: null
 })
 
-
-
 const is_loading = ref(false)
 const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
-const tomorrow = addDays(new Date(), 1) 
-const formattedTomorrow = new CalendarDate(tomorrow.getFullYear(), tomorrow.getMonth() + 1, tomorrow.getDate());
-
-
+const tomorrow = addDays(new Date(), 1)
+const formattedTomorrow = new CalendarDate(
+	tomorrow.getFullYear(),
+	tomorrow.getMonth() + 1,
+	tomorrow.getDate()
+)
 
 async function init() {
 	try {
-		const response = await axios.get(`/api/session/${props.row.id}/scheduled_date`)
+		const response = await axios.get(`/api/transaction/${props.row.id}/scheduled_date`)
 		Object.assign(form, response.data.Result)
 
 		if (response.data.Result.scheduled_date) {
-			const parsedDate = parseISO(response.data.Result.scheduled_date);
-			form.scheduled_date = format(parsedDate, 'yyyy-MM-dd');
+			const parsedDate = parseISO(response.data.Result.scheduled_date)
+			form.scheduled_date = format(parsedDate, 'yyyy-MM-dd')
 		} else {
-			form.scheduled_date = null; // or set a default value or keep as undefined
+			form.scheduled_date = null // or set a default value or keep as undefined
 		}
-		
-		console.log(form.scheduled_date);
+
+		console.log(form.scheduled_date)
 	} catch (error) {
 		console.log(error)
 	} finally {
 		is_loading.value = false
 	}
 }
-
 
 // function validateForm() {
 // 	const validations = [
@@ -108,7 +103,7 @@ async function submit() {
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
-			`/api/session/${props.row.id}/scheduled_date`,
+			`/api/transaction/${props.row.id}/scheduled_date`,
 			{
 				...form
 			},
@@ -120,7 +115,7 @@ async function submit() {
 		)
 		toggleDialog()
 
-		await dashboardStore.refresh(dashboardStore.page_index)
+		await tableStore.refresh(tableStore.page_index)
 		toast({
 			title: response.data.Result,
 			variant: 'success'
@@ -145,13 +140,10 @@ function toggleDialog() {
 	}
 }
 
-
 function updateScheduleDate(payload: any) {
 	const date = new Date(payload)
 	form.scheduled_date = format(date, 'yyyy-MM-dd')
 }
-
-
 </script>
 
 <template>
@@ -175,15 +167,8 @@ function updateScheduleDate(payload: any) {
 				<!-- :validation-schema="vendorSchema" -->
 				<div class="grid gap-4 py-4">
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="invoice" class="text-right">
-							Invoice
-						</Label>
-						<Input
-							id="invoice"
-							v-model="form.invoice"
-							class="col-span-3"
-							disabled
-						/>
+						<Label for="invoice" class="text-right"> Invoice </Label>
+						<Input id="invoice" v-model="form.invoice" class="col-span-3" disabled />
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="email" class="text-right"> Schedule Date </Label>

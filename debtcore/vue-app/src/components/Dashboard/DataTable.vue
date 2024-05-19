@@ -33,7 +33,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useTableStore } from '@/store/table'
 
-const tableStore = inject('tableStore', useTableStore('debt'))
+const tableStore = inject('tableStore', useTableStore('transaction'))
 
 interface DataTableProps {
 	columns: ColumnDef<Task, any>[]

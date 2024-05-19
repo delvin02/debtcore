@@ -78,17 +78,14 @@ const searchCustomerQuery = ref('')
 async function fetchCountries(query?: string) {
 	customers.is_loading = true
 	try {
-		const response = await axios.get(
-			`/api/customer/list?search=${query || ''}`,
-			{
-				withCredentials: true,
-				headers: {
-					'Cache-Control': 'no-cache',
-					Pragma: 'no-cache',
-					Expires: '0'
-				}
+		const response = await axios.get(`/api/customer/list?search=${query || ''}`, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
-		)
+		})
 
 		customers.data = response.data.Result
 	} catch (error) {
@@ -401,7 +398,6 @@ function updateDueDate(payload: any) {
 								</PopoverTrigger>
 								<PopoverContent class="w-auto p-0">
 									<Calendar
-										v-model="form.invoice_date"
 										@update:model-value="updateDueDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

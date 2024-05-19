@@ -9,7 +9,7 @@ import { useTableStore } from '@/store/table'
 
 const tableStore = useTableStore('company')
 
-const companiesUrl = 'http://127.0.0.1:8000/api/company'
+const companiesUrl = '/api/company'
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
