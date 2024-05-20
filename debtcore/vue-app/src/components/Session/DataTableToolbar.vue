@@ -5,8 +5,6 @@ import type { Task } from './data/schema'
 
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
 import DataTableViewOptions from './DataTableViewOptions.vue'
-import DataTableCreateDebt from './DataTableCreateDebt.vue'
-// import Cross2Icon from '~icons/radix-icons/cross-2'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -23,7 +21,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 	<div class="flex items-center justify-between">
 		<div class="flex flex-1 items-center space-x-2">
 			<Input
-				placeholder="Search invoice..."
+				placeholder="Search..."
 				:model-value="(table.getColumn('invoice')?.getFilterValue() as string) ?? ''"
 				class="h-8 w-[150px] lg:w-[250px]"
 				@input="table.setGlobalFilter($event.target.value)"

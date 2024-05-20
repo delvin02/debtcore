@@ -2,29 +2,35 @@ from app.models import *
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from app.common.permission import IsAdminOrStaff
 from rest_framework import status
 from rest_framework.decorators import action
-import datetime
 from app.models import Session, Company
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from rest_framework.decorators import api_view
-from django.db.models import Q, Sum
-from django.db.models.functions import Coalesce
+from django.db.models import Q
+from django.utils import timezone
 
 
 class SessionView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrStaff]
     
 
     def get(self, request, *args, **kwargs):
-        company: Company = request.user.company
-        if not company:
-            return JsonResponse({'message': "Missing company."}, status=400)
+        filtered_company = request.query_params.get('company')
+        start_date = request.query_params.get('date[start]')
+        end_date = request.query_params.get('date[end]')
         
-        sessions = Session.objects.filter(company=company).order_by('-scheduled_date')
+        query = Q()
+        if filtered_company:
+            query &= Q(company=filtered_company)
+        
+        if start_date and end_date:
+            query &= Q(scheduled_date__range=[start_date, end_date])
+        
+        sessions = Session.objects.filter(query).order_by('-scheduled_date')
         serializer = SessionTableSerializer(sessions, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     
@@ -43,7 +49,7 @@ class SessionView(APIView):
     
   
 class SessionScheduleEditView(APIView):
-  permission_classes = [IsAuthenticated]
+  permission_classes = [IsAdminOrStaff]
   
 
   def get(self, request, *args, **kwargs):

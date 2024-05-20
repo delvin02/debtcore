@@ -63,16 +63,21 @@ class DateOrDateTimeField(serializers.DateField):
         return value
     
 class SessionScheduleEditSerializer(serializers.ModelSerializer):
-    scheduled_date = DateOrDateTimeField(allow_null=True)
+    scheduled_date = DateOrDateTimeField(allow_null=False)
 
     class Meta:
         model = Session
         fields = ['id', 'invoice', 'scheduled_date']
 
     def update(self, instance, validated_data):
+        scheduled_date = validated_data.get('scheduled_date')
         
+        # Raise a validation error if scheduled_date is None
+        if scheduled_date is None:
+            raise serializers.ValidationError({"scheduled_date": "Scheduled date cannot be None."})
+
         prev_scheduled_date = instance.scheduled_date
-        instance.scheduled_date = validated_data.get('scheduled_date', instance.scheduled_date)
+        instance.scheduled_date = scheduled_date
         instance.additional_info = f"Notification re-scheduled on {instance.scheduled_date}"
         
         user = self.context['request'].user
@@ -88,6 +93,7 @@ class SessionTableSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     event_display = serializers.SerializerMethodField()
     editable = serializers.SerializerMethodField()
+    completed_date = serializers.SerializerMethodField()
     
     class Meta:
         model = Session
@@ -107,6 +113,12 @@ class SessionTableSerializer(serializers.ModelSerializer):
     def get_invoice(self, obj):
         return obj.debt.invoice
 
+    def get_completed_date(self, obj):
+        if obj.completed_date:
+            dt = obj.completed_date.astimezone(timezone.get_current_timezone())
+            return dt.strftime("%Y-%m-%d at %I:%M %p")
+        return None 
+    
     def get_company_name(self, obj):
         return obj.debt.company.name
     
@@ -120,5 +132,5 @@ class SessionTableSerializer(serializers.ModelSerializer):
         return obj.get_event_display()
     
     def get_editable(self, obj) -> bool:
-        return obj.transaction_status == TransactionStatus.QUEUED.value
+        return True
     

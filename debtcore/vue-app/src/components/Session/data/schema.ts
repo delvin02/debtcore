@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseISO } from 'date-fns';
 
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
@@ -14,6 +15,7 @@ export const taskSchema = z.object({
     }
     return arg;
   }, z.date()),
+  completed_date: z.string().nullable(),
   status: z.string(),
   additional_info: z.string(),
   change_info: z.string().nullable(),

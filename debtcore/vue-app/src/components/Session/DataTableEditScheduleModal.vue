@@ -37,13 +37,14 @@ const props = defineProps<DataTableEditModalProps>()
 interface Debt {
 	id: number
 	invoice: string
-	scheduled_date: Date | string | null
+	scheduled_date: DateValue
 }
 
 const form = reactive<Debt>({
 	id: props.row.id,
 	invoice: props.row.invoice,
-	scheduled_date: null
+	scheduled_date: new CalendarDate(props.row.scheduled_date.getFullYear(), 
+	props.row.scheduled_date.getMonth() + 1, props.row.scheduled_date.getDate())
 })
 
 const is_loading = ref(false)
@@ -57,49 +58,26 @@ const formattedTomorrow = new CalendarDate(
 	tomorrow.getDate()
 )
 
-async function init() {
-	try {
-		const response = await axios.get(`/api/session/${props.row.id}/scheduled_date`)
-		Object.assign(form, response.data.Result)
+function validateForm() {
+	const validations = [
+		{ condition: form.scheduled_date == null, message: 'Schedule Date cannot be blank' },
+	]
 
-		if (response.data.Result.scheduled_date) {
-			const parsedDate = parseISO(response.data.Result.scheduled_date)
-			form.scheduled_date = format(parsedDate, 'yyyy-MM-dd')
-		} else {
-			form.scheduled_date = null // or set a default value or keep as undefined
+	for (let  validation of validations) {
+		if (validation.condition) {
+			error_message.value = validation.message
+			return false
 		}
-
-		console.log(form.scheduled_date)
-	} catch (error) {
-		console.log(error)
-	} finally {
-		is_loading.value = false
 	}
+	return true
 }
-
-// function validateForm() {
-// 	const validations = [
-// 		{ condition: form.invoice == null, message: 'Invoice cannot be blank' },
-// 		{ condition: form.invoice_date?.toString == null, message: 'Invoice Date cannot be blank' },
-// 		{ condition: form.status == null, message: 'Status cannot be blank' },
-// 		{ condition: form.customer == null, message: 'Customer cannot be blank' }
-// 	]
-
-// 	for (let  validation of validations) {
-// 		if (validation.condition) {
-// 			error_message.value = validation.message
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
 
 async function submit() {
 	// checking
-	//const isValid = validateForm()
-	// if (!isValid) {
-	// 	return
-	// }
+	const isValid = validateForm()
+	if (!isValid) {
+		return
+	}
 	is_loading.value = true
 	try {
 		const response = await axios.patch(
@@ -133,16 +111,15 @@ async function submit() {
 }
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
-	if (is_dialog_open.value) {
-		init()
+	//if (is_dialog_open.value) {
+		// init()
 		// fetchCountries(searchCustomerQuery.value)
 		// fetchStatuses()
-	}
+	//}
 }
 
 function updateScheduleDate(payload: any) {
-	const date = new Date(payload)
-	form.scheduled_date = format(date, 'yyyy-MM-dd')
+	form.scheduled_date = payload as CalendarDate
 }
 </script>
 
@@ -192,6 +169,7 @@ function updateScheduleDate(payload: any) {
 									<Calendar
 										mode="date"
 										:min-value="formattedTomorrow"
+										:model-value="form.scheduled_date as CalendarDate"
 										@update:model-value="updateScheduleDate($event)"
 										:masks="{ L: 'YYYY-MM-DD' }"
 										:modelConfig="{

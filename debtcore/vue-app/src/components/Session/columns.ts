@@ -6,6 +6,8 @@ import DataTableRowActions from './DataTableRowActions.vue'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { OhVueIcon as VIcon } from 'oh-vue-icons'
+import { parseISO } from 'date-fns';
+import { parseDate } from '@internationalized/date'
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -179,18 +181,8 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "completed_date",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title}),
-    cell: ({ row }) => {
-      const date = row.getValue('completed_date');
-      if (!date || typeof date !== 'string' && typeof date !== 'number') {
-        return h('div', { class: 'w-fit' }, '');
-      }      
-      const options: Intl.DateTimeFormatOptions = {
-        year: 'numeric', month: 'long', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-      };
-      const formattedDate = new Intl.DateTimeFormat('en-US', options).format(new Date(date)); 
-      return h('div', { class: 'w-fit' }, formattedDate); 
-    },
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('completed_date')),
+
     enableSorting: true,
     enableHiding: true,
     meta: {

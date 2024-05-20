@@ -11,15 +11,17 @@ export const useTableStore = (key: string) => {
       page_size: 10,
       fetch_url: '',
       map_function: undefined as ((dataItem: any) => any) | undefined,
+      filters: {},
     }),
     actions: {
-      async fetch(url: string, pageIndex?: number, mapFunction?: (dataItem: any) => any) {
+      async fetch(url: string, pageIndex?: number, mapFunction?: (dataItem: any) => any, filters?: Record<string, any>) {
         this.tasks = [];
         this.is_loading = true;
         this.fetch_url = url;
         this.map_function = mapFunction; 
         try {
           const response = await axios.get(url, {
+            params: filters,
             withCredentials: true,
             headers: {
               'Cache-Control': 'no-cache',
@@ -41,7 +43,7 @@ export const useTableStore = (key: string) => {
       },
       async refresh(pageIndex?: number) {
         if (this.fetch_url) {
-          await this.fetch(this.fetch_url, pageIndex, this.map_function);
+          await this.fetch(this.fetch_url, pageIndex, this.map_function, this.filters);
         }
       },
       set_page_index(index: number) {
@@ -49,6 +51,9 @@ export const useTableStore = (key: string) => {
       },
       set_page_size(size: number) {
         this.page_size = size;
+      },
+      set_filter(filters: Record<string, any>) {
+        this.filters = filters;
       },
       $reset() {
         this.tasks = [];

@@ -12,6 +12,7 @@ from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from app.common.permission import IsAdminOrStaff
+from django.db.models import Q
 
 class CompanyView(APIView):
     permission_classes = [IsAdminOrStaff]
@@ -99,9 +100,19 @@ class GetCompanySelectList(APIView):
     permission_classes = [IsAdminOrStaff]
 
     def get(self, request, format=None):
-        companies = Company.objects.all()
+        
+        search_query = request.GET.get('search', '').strip()
+
+        # Using Q objects to construct a single query that handles all cases
+        query = Q()
+        if search_query:
+            query &= Q(name__icontains=search_query)
+
+
+        companies = Company.objects.filter(query).distinct()[:20]
         serializer = CompanySelectListSerializer(companies, many=True)
-        return JsonResponse({'Result': serializer.data}, status=200)
+        return JsonResponse({'Result': serializer.data}, status=status.HTTP_200_OK)
+    
     
 class CompanyUtils:
     @staticmethod

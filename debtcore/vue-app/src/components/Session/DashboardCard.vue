@@ -12,30 +12,42 @@ import {
 	CommandList
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
-import { ref, type Ref, onMounted, reactive, onBeforeUnmount } from 'vue'
+import { ref, type Ref, onMounted, reactive, inject, watch } from 'vue'
 import type { DateRange } from 'radix-vue'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { RangeCalendar } from '@/components/ui/range-calendar'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import axios from 'axios'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { useTableStore } from '@/store/table'
+import _ from 'lodash'
+
+const tableStore = inject('tableStore', useTableStore('session'))
+
+const today = new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+
+const value = ref({
+	start: new CalendarDate(2024, 5, 20).subtract({ months: 3}),
+	end: today
+}) as Ref<DateRange>
+
 
 interface Session {
-	invoice?: number
-	company?: number | null
+		date: DateRange
+		company: number | null
 }
 
-const form = reactive<Session>({
-	invoice: 1,
-	company: null
+const filterForm = reactive<Session>({
+		date: value.value as DateRange,
+		company: null
 })
-
 const companies: GenericSelectListModel = reactive({
 	is_loading: false,
 	is_open: false,
 	data: [{ value: '', label: '' }]
 })
 
+const { toast } = useToast()
 const searchCompanyQuery = ref('')
 
 async function fetchCompanies(query?: string) {
@@ -52,11 +64,22 @@ async function fetchCompanies(query?: string) {
 
 		companies.data = response.data.Result
 	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
-	} finally {
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'There is an error fetching the companies.',
+			variant: 'destructive'
+		})	
+		} finally {
 		companies.is_loading = false
 	}
 }
+
+watch(
+	searchCompanyQuery,
+	_.debounce(async (newQuery) => {
+		await fetchCompanies(newQuery)
+	}, 300)
+)
 // const dataUrl = '/api/session/card'
 // const init = async () => {
 // 	try {
@@ -66,7 +89,15 @@ async function fetchCompanies(query?: string) {
 // 		console.log(error)
 // 	}
 // }
+const filter = () => {
+	tableStore.set_filter(filterForm)
+	tableStore.refresh(tableStore.page_index)
+}
 
+const all = () => {
+	tableStore.set_filter({})
+	tableStore.refresh(tableStore.page_index)
+}
 onMounted(() => {
 	fetchCompanies()
 })
@@ -75,13 +106,14 @@ const df = new DateFormatter('en-US', {
 	dateStyle: 'medium'
 })
 
-const value = ref({
-	start: new CalendarDate(2022, 1, 20),
-	end: new CalendarDate(2022, 1, 20).add({ days: 20 })
-}) as Ref<DateRange>
-
 function handleCompanySelect(company: any) {
-	form.company = company.id
+	if (company.id == filterForm.company)
+	{
+		filterForm.company = null
+	} else
+	{
+		filterForm.company = company.id
+	}
 	companies.is_open = false
 }
 </script>
@@ -89,30 +121,30 @@ function handleCompanySelect(company: any) {
 <template>
 	<div class="border border-secondary rounded p-4">
 		<div class="flex flex-col gap-4">
-			<div class="mx-auto grid grid-cols-2 gap-x-2">
-				<div class="col-span-1 text-right my-auto">
+			<div class="flex flex-row gap-x-2 justify-items-center items-center mx-auto w-full">
+				<div class="w-1/3 text-right my-auto">
 					<p>Schduled Date</p>
 				</div>
-				<Popover class="col-span-1">
+				<Popover>
 					<PopoverTrigger as-child>
 						<Button
 							variant="outline"
 							:class="
 								cn(
-									'w-[250px] justify-start text-left font-normal',
-									!value && 'text-muted-foreground'
+									'w-1/3 justify-start text-left font-normal',
+									!filterForm.date && 'text-muted-foreground'
 								)
 							"
 						>
 							<CalendarIcon class="mr-2 h-4 w-4" />
-							<template v-if="value.start">
-								<template v-if="value.end">
-									{{ df.format(value.start.toDate(getLocalTimeZone())) }} -
-									{{ df.format(value.end.toDate(getLocalTimeZone())) }}
+							<template v-if="filterForm.date.start">
+								<template v-if="filterForm.date.end">
+									{{ df.format(filterForm.date.start.toDate(getLocalTimeZone())) }} -
+									{{ df.format(filterForm.date.end.toDate(getLocalTimeZone())) }}
 								</template>
 
 								<template v-else>
-									{{ df.format(value.start.toDate(getLocalTimeZone())) }}
+									{{ df.format(filterForm.date.start.toDate(getLocalTimeZone())) }}
 								</template>
 							</template>
 							<template v-else> Pick a date </template>
@@ -120,16 +152,16 @@ function handleCompanySelect(company: any) {
 					</PopoverTrigger>
 					<PopoverContent class="w-auto p-0">
 						<RangeCalendar
-							v-model="value"
+							v-model="filterForm.date as DateRange"
 							initial-focus
 							:number-of-months="2"
-							@update:start-value="(startDate) => (value.start = startDate)"
+							@update:start-value="(startDate) => (filterForm.date.start = startDate)"
 						/>
 					</PopoverContent>
 				</Popover>
 			</div>
-			<div class="mx-auto grid grid-cols-2 gap-x-2">
-				<div class="col-span-1 text-right my-auto">
+			<div class="flex flex-row gap-x-2 justify-items-center items-center mx-auto w-full">
+				<div class="w-1/3 text-right my-auto">
 					<p>Company</p>
 				</div>
 				<Popover class="col-span-1" v-model:open="companies.is_open">
@@ -138,12 +170,12 @@ function handleCompanySelect(company: any) {
 							variant="outline"
 							role="combobox"
 							:aria-expanded="companies.is_open"
-							class="w-[250px] justify-between px-3"
+							class="w-1/3 justify-between px-3"
 							:disabled="companies.is_loading"
 						>
 							{{
-								form.company
-									? companies.data.find((company) => company.id === form.company)
+								filterForm.company
+									? companies.data.find((company) => company.id === filterForm.company)
 											?.label
 									: 'Select company'
 							}}
@@ -181,7 +213,7 @@ function handleCompanySelect(company: any) {
 											name="fa-check"
 											:class="[
 												'ml-auto h-4 w-4',
-												form.company === company.id
+												filterForm.company === company.id
 													? 'opacity-100'
 													: 'opacity-0'
 											]"
@@ -194,9 +226,12 @@ function handleCompanySelect(company: any) {
 				</Popover>
 			</div>
 		</div>
-		<Separator class="my-3" />
-		<div class="flex flex-end gap-4">
-			<Button class="ml-auto">Filter</Button>
+		<div class="flex self-end justify-end justify-self-end">
+		<Button @click="filter" class="w-[100px]">Filter</Button>
+		</div>
+		<Separator  class="my-3" />
+		<div class="flex justify-end space-x-2">
+			<Button @click="all" class="w-[100px]">All</Button>
 		</div>
 	</div>
 </template>

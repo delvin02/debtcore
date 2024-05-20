@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import tasks from '@/components/Session/data/tasks.json'
+import { CalendarDate } from '@internationalized/date'
 import DataTable from '@/components/Session/DataTable.vue'
 import DashboardCard from '@/components/Session/DashboardCard.vue'
 import { columns } from '@/components/Session/columns'
@@ -28,9 +28,9 @@ import { useTableStore } from '@/store/table'
 //   end: new CalendarDate(2022, 1, 20).add({ days: -20 }),
 // }) as Ref<DateRange>
 
-const sessionStore = useTableStore('session')
+const tableStore = useTableStore('session')
 
-const sessionUrl = '/api/session'
+const sessionUrl = `/api/session`
 const map_function = (task: any): Task => {
 	const serialized_task = {
 		id: task.id,
@@ -39,6 +39,7 @@ const map_function = (task: any): Task => {
 		customer_name: task.customer_name,
 		event_display: task.event_display,
 		scheduled_date: task.scheduled_date,
+		completed_date: task.completed_date,
 		status: task.status_display,
 		additional_info: task.additional_info,
 		change_info: task.change_info,
@@ -48,13 +49,13 @@ const map_function = (task: any): Task => {
 }
 
 onMounted(async () => {
-	await sessionStore.fetch(sessionUrl, 0, map_function) // Pass the URL when calling the action
+	await tableStore.fetch(sessionUrl, 0, map_function) // Pass the URL when calling the action
 })
 
-provide('sessionStore', sessionStore)
+provide('tableStore', tableStore)
 
 onBeforeUnmount(() => {
-	sessionStore.$reset()
+	tableStore.$reset()
 })
 </script>
 
@@ -66,11 +67,11 @@ onBeforeUnmount(() => {
 			</div>
 		</div>
 		<DashboardCard />
-		<div v-if="sessionStore.is_loading" class="text-center">
+		<div v-if="tableStore.is_loading" class="text-center">
 			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
 		</div>
 		<div v-else>
-			<DataTable :data="sessionStore.tasks" :columns="columns" />
+			<DataTable :data="tableStore.tasks" :columns="columns" />
 		</div>
 	</div>
 </template>
