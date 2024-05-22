@@ -30,7 +30,6 @@ import {
 	TableHeader,
 	TableRow
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
 import { useTableStore } from '@/store/table'
 
 const tableStore = inject('tableStore', useTableStore('session'))

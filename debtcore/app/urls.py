@@ -56,7 +56,7 @@ urlpatterns = [
 
     path('api/session', SessionView.as_view(), name="get_sessions"),
     path('api/session/<int:session_id>/scheduled_date', SessionScheduleEditView.as_view(), name="get_session_schedule"),
-
+    path('api/session/<int:session_id>/send_whatsapp', send_whatsapp, name="session_send_whatsapp"),
     # Conversation
     path('api/conversations', ConversationView.as_view, name="conversations"),
 

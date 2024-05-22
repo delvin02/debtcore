@@ -72,7 +72,8 @@ import {
   BiCircleFill,
   BiXSquare,  
   BiCheckSquare,
-  BiArrowLeftRight 
+  BiArrowLeftRight,
+  BiWhatsapp 
  } from "oh-vue-icons/icons/bi/index.js";
 
  import { MdCancel, MdPendingactions  } from "oh-vue-icons/icons/md/index.js";
@@ -142,7 +143,8 @@ addIcons(
   FaShareSquare,
   FaDownload,
   FaMapPin,
-  BiArrowLeftRight 
+  BiArrowLeftRight,
+  BiWhatsapp
 )
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL

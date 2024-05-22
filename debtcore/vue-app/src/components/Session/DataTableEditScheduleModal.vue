@@ -127,14 +127,14 @@ function updateScheduleDate(payload: any) {
 	<div>
 		<div>
 			<Button
-				variant="default"
+				variant="ghost"
 				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
+				class="hidden h-8 lg:flex w-full"
 				@click="toggleDialog"
 			>
-				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
-				<VIcon name="fa-pen" class="size-4" />
-			</Button>
+			<VIcon name="fa-pen" class="size-4 mr-2" />
+				Edit Schedule
+		</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">

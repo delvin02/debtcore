@@ -3,7 +3,24 @@ import type { Row } from '@tanstack/vue-table'
 import { computed } from 'vue'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+
 import DataTableEditScheduleModal from './DataTableEditScheduleModal.vue'
+import DataTableSendMessageModal from './DataTableSendMessageModal.vue'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
@@ -15,6 +32,21 @@ const task = computed(() => taskSchema.parse(props.row.original))
 
 <template>
 	<div class="flex gap-1">
-		<DataTableEditScheduleModal :row="task" v-if="task.editable" />
+		<DropdownMenu>
+    <DropdownMenuTrigger as-child>
+      <Button
+        variant="default"
+        class="flex h-8 w-8 p-0 "
+      >
+        <VIcon name="bi-three-dots" class="size-4" />
+        <span class="sr-only">Open menu</span>
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" class="w-min-fit">
+			<DataTableEditScheduleModal :row="task" />
+			<DropdownMenuSeparator/>
+			<DataTableSendMessageModal :row="task" />
+    </DropdownMenuContent>
+  </DropdownMenu>
 	</div>
 </template>

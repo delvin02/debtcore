@@ -28,7 +28,7 @@ export const columns: ColumnDef<Task>[] = [
       const customer_id = row.original.id // Retrieve customer ID
       const name: string = row.getValue('name');
       return h(RouterLink, { 
-        class: 'w-fit underline cursor-pointer', 
+        class: 'w-fit underline cursor-pointer font-bold', 
         to: `/customer/${customer_id}`
       }, () => name)
     },  

@@ -83,8 +83,7 @@ def customer_debt_card_data(request, *args, **kwargs):
       Q(company=company) &
       Q(customer=customer_id) &
       (
-        Q(status=Debt.get_key_for_status('In Progress')) |
-        Q(status=Debt.get_key_for_status('Escalated'))
+        Q(status=Debt.get_key_for_status('In Progress')) 
       )
     ).aggregate(outstanding_debt_amount=Sum('amount'))['outstanding_debt_amount'] or 0
     
@@ -93,8 +92,7 @@ def customer_debt_card_data(request, *args, **kwargs):
         Q(customer=customer_id) &
         Q(due_date__lt= today) &
         (
-            Q(status=Debt.get_key_for_status('In Progress')) |
-            Q(status=Debt.get_key_for_status('Escalated'))
+            Q(status=Debt.get_key_for_status('In Progress')) 
         )
     ).aggregate(overdue_amount=Sum('amount'))['overdue_amount'] or 0
     

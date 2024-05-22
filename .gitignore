@@ -1,9 +1,12 @@
 .venv
 *.sqlite3
 /node_modules
-./debtcore/app/static/vue
 
-.dbdata/
+# build from vue, ignore the compiled files
+debtcore/app/static/vue/*
+
+
+.dbdata/*
 .mysql-conf/
 *.ibd
 *.dblwr

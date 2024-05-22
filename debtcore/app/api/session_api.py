@@ -5,13 +5,15 @@ from rest_framework.response import Response
 from app.common.permission import IsAdminOrStaff
 from rest_framework import status
 from rest_framework.decorators import action
-from app.models import Session, Company
+from app.models import Session, Company, Customer
+from app.tasks.debt_reminder.process import DebtReminderProcessor
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Q
 from django.utils import timezone
+from app.common.utils import process_debt_reminder
 
 
 class SessionView(APIView):
@@ -73,3 +75,19 @@ class SessionScheduleEditView(APIView):
     else:
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@permission_classes([IsAdminOrStaff])
+@api_view(['POST'])
+def send_whatsapp(request, *args, **kwargs):
+    company = request.user.company
+
+    if not company:
+        return JsonResponse({'message': "Missing company."}, status=400)
+    
+    session_id = kwargs.get('session_id')
+    
+    if not session_id:
+        return JsonResponse({'message': "Session id is missing"}, status=400)
+    
+    process_debt_reminder(session_id)
+    
+    return JsonResponse({'Result': "WhatsApp message sent successfully."}, status=200)
