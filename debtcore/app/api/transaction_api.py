@@ -82,16 +82,14 @@ def transaction_card_data(request):
     active_debts = Debt.objects.filter(
       Q(company=company) &
       (
-        Q(status=Debt.get_key_for_status('In Progress')) |
-        Q(status=Debt.get_key_for_status('Escalated'))
+        Q(status=Debt.get_key_for_status('In Progress')) 
       )
     ).count()
     
     active_debts_amount = Debt.objects.filter(
         Q(company=company) &
         (
-            Q(status=Debt.get_key_for_status('In Progress')) |
-            Q(status=Debt.get_key_for_status('Escalated'))
+            Q(status=Debt.get_key_for_status('In Progress')) 
         )
     ).aggregate(active_debts_amount=Sum('amount'))['active_debts_amount'] or 0
     

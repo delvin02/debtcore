@@ -17,7 +17,7 @@
     "strict": true,
     "jsx": "preserve",
     "allowJs": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
@@ -27,7 +27,7 @@
     "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
     },
     "lib": ["es2018", "dom", "dom.iterable", "scripthost", "es2015", "esnext"],
     "plugins": [

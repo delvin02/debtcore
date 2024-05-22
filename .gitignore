@@ -1,7 +1,7 @@
 .venv
 *.sqlite3
 /node_modules
-
+./debtcore/app/static/vue
 
 .dbdata/
 .mysql-conf/

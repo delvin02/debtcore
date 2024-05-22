@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import tasks from '@/components/Dashboard/data/tasks.json'
-import DataTable from '@/components/Dashboard/DataTable.vue'
-import DashboardCard from '@/components/Dashboard/DashboardCard.vue'
-import { columns } from '@/components/Dashboard/columns'
-import type { Task } from '@/components/Dashboard/data/schema'
+import tasks from '@/components/Transaction/data/tasks.json'
+import DataTable from '@/components/Transaction/DataTable.vue'
+import DashboardCard from '@/components/Transaction/DashboardCard.vue'
+import { columns } from '@/components/Transaction/columns'
+import type { Task } from '@/components/Transaction/data/schema'
 import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount, ref, type Ref } from 'vue'
 import { useTableStore } from '@/store/table'
@@ -101,3 +101,4 @@ onBeforeUnmount(() => {
 		</div>
 	</div>
 </template>
+@/components/Transaction/columns@/components/Transaction/data/schema

@@ -22,7 +22,7 @@ import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
-import type { Task } from '@/components/Dashboard/data/schema'
+import type { Task } from '@/components/Transaction/data/schema'
 import { CalendarDate, type DateValue, getLocalTimeZone } from '@internationalized/date'
 
 const tableStore = inject('tableStore', useTableStore('transaction'))
@@ -228,3 +228,4 @@ function updateScheduleDate(payload: any) {
 		</Dialog>
 	</div>
 </template>
+@/components/Transaction/data/schema
