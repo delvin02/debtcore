@@ -212,7 +212,7 @@ function updateCountryQuery(event: any) {
 			<Button
 				variant="default"
 				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
+				class=" h-8 ml-2 flex"
 				@click="toggleDialog"
 			>
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->

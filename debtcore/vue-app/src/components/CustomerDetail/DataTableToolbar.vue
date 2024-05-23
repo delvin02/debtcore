@@ -6,8 +6,7 @@ import type { Task } from './data/schema'
 import { statuses } from './data/data'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
 import DataTableViewOptions from './DataTableViewOptions.vue'
-import DataTableCreateDebt from './DataTableCreateDebt.vue'
-// import Cross2Icon from '~icons/radix-icons/cross-2'
+import DataTableExportReport from './DataTableExportReport.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -51,6 +50,6 @@ console.error(props.table.getColumn('status'))
 			</Button>
 		</div>
 		<DataTableViewOptions :table="table" />
-		<DataTableCreateDebt :table="table" />
+		<DataTableExportReport :table="table" />
 	</div>
 </template>

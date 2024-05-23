@@ -13,6 +13,8 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
+import NavMobile from './NavMobile.vue'
+
 import { useSideBarStore } from '@/store/sidebar'
 import { useAuthStore } from '@/store/user'
 
@@ -45,11 +47,6 @@ const links1: LinkProp[] = [
 		icon: 'bi-cash-coin',
 		to: '/debt'
 	},
-	// {
-	// 	title: 'Conversation',
-	// 	icon: 'fa-whatsapp',
-	// 	to: '/conversation'
-	// },
 	{
 		title: 'Customer',
 		icon: 'fa-address-book',
@@ -84,76 +81,79 @@ const links2: LinkProp[] = [
 		icon: 'bi-arrow-left-right',
 		to: '/session'
 	}
-	// {
-	// 	title: 'Usage Report',
-	// 	icon: 'bi-graph-up-arrow',
-	// 	to: '/usage-report'
-	// }
 ]
 </script>
 
 <template>
-	<!-- :collapsed-size="navCollapsedSize"-->
 	<ResizablePanel
 		id="resize-panel-1"
 		:default-size="defaultLayout[0]"
 		collapsible
-		:class="
-			cn(
-				store.isCollapsible
-					? 'hidden absolute min-w-full'
-					: 'md:block' &&
-							'md:position-fixed md:max-w-[250px] transition-all duration-300 ease-in-out'
-			)
-		"
-		@expand="store.onExpand()"
-		@collapse="store.onCollapse()"
+		:class="cn(
+			store.isCollapsed 
+			? 'md:hidden ' 
+			: 'md:block md:max-w-[250px]', 
+			'hidden transition-all duration-300 ease-in-out')"
+		@expand="store.onExpand"
+		@collapse="store.onCollapse"
 		default="{20}"
 		:disabled="true"
 	>
-		<div
-			:class="
-				cn('flex items-center justify-center', store.isCollapsible ? 'h-[52px]' : 'px-2')
-			"
-		>
-			<h1 class="text-2xl font-bold">test</h1>
-
-			<!-- <AccountSwitcher :is-collapsed="isCollapsed" :accounts="accounts" /> -->
+		<div :class="cn('flex items-center justify-center', store.isCollapsed ? 'h-[52px]' : 'px-2')">
+			<h1 class="text-2xl font-bold">DebtCore</h1>
 		</div>
 		<Separator />
-		<h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
 			Dashboard
 		</h1>
-		<Nav :is-collapsed="store.isCollapsible" :links="links" />
+		<Nav :is-collapsed="store.isCollapsed" :links="links" />
 		<Separator />
-		<h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
 			Management
 		</h1>
-		<Nav :is-collapsed="store.isCollapsible" :links="links1" />
+		<Nav :is-collapsed="store.isCollapsed" :links="links1" />
 		<Separator />
-		<h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
 			Settings
 		</h1>
-		<Nav :is-collapsed="store.isCollapsible" :links="connections" />
+		<Nav :is-collapsed="store.isCollapsed" :links="connections" />
 		<div v-show="user.is_admin">
 			<Separator />
-			<h1 v-if="!store.isCollapsible" class="text-left mt-2 mx-3 text-foreground font-thin">
+			<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
 				Admin
 			</h1>
-			<Nav :is-collapsed="store.isCollapsible" :links="links2" />
+			<Nav :is-collapsed="store.isCollapsed" :links="links2" />
 		</div>
 	</ResizablePanel>
-	<Sheet>
-		<SheetContent class="w-[400px] sm:w-[540px]" side="left" :open="store.isCollapsible">
+	<Sheet class="md:hidden" :open="store.isCollapsed" @update:open="store.setCollapsible($event)">
+		<SheetContent class="w-full" side="left" >
 			<SheetHeader>
-				<SheetTitle>Are you sure absolutely sure?</SheetTitle>
+				<SheetTitle>Navigation</SheetTitle>
 				<SheetDescription>
-					This action cannot be undone. This will permanently delete your account and
-					remove your data from our servers.
+					<h1  class="text-left mt-2 mx-3 text-foreground font-thin">
+						Dashboard
+					</h1>
+					<NavMobile :links="links" />
+					<Separator />
+					<h1  class="text-left mt-2 mx-3 text-foreground font-thin">
+						Management
+					</h1>
+					<NavMobile :links="links1" />
+					<Separator />
+					<h1  class="text-left mt-2 mx-3 text-foreground font-thin">
+						Settings
+					</h1>
+					<NavMobile :links="connections" />
+					<div v-show="user.is_admin">
+						<Separator />
+						<h1  class="text-left mt-2 mx-3 text-foreground font-thin">
+							Admin
+						</h1>
+						<NavMobile :links="links2" />
+					</div>
 				</SheetDescription>
 			</SheetHeader>
 		</SheetContent>
 	</Sheet>
 	<ResizableHandle id="resize-handle-1" />
 </template>
-@/store/sidebar

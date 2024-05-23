@@ -150,7 +150,7 @@ function toggleSheet() {
 			<Button
 				variant="secondary"
 				size="sm"
-				class="hidden h-8 lg:flex border border-primary"
+				class="h-8 flex border border-primary"
 				@click="toggleSheet"
 			>
 				<VIcon name="bi-bookmark-plus-fill" class="size-4" />

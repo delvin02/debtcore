@@ -138,28 +138,18 @@ function toggleSheet() {
 			<Button
 				variant="default"
 				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
+				class="h-8 ml-2 flex"
 				@click="toggleSheet"
 			>
 				View
 			</Button>
 		</div>
 		<Sheet :open="is_dialog_open" @update:open="is_dialog_open = $event">
-			<SheetContent side="right" :class="cn('flex flex-col sm:max-w-fit')">
+			<SheetContent side="right" :class="cn('flex flex-col w-full')">
 				<SheetTitle>View Template</SheetTitle>
 				<Separator />
-				<div class="flex items-stretch gap-4 h-full">
-					<div class="w-[300px] border-r-2 pr-4">
-						<SheetHeader>
-							<SheetTitle>Language</SheetTitle>
-						</SheetHeader>
-						<Separator class="my-3" />
-
-						<div class="h-full mt-2 w-[200px]">
-							<Label variant="ghost" class="w-full justify-start"> English </Label>
-						</div>
-					</div>
-					<div class="w-[400px]">
+				<div class="flex flex-col md:flex-row items-stretch gap-4 h-full">
+					<div class="w-fit">
 						<SheetHeader>
 							<SheetTitle>Preview Message</SheetTitle>
 						</SheetHeader>

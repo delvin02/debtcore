@@ -204,7 +204,7 @@ function handleFileChange(event: Event) {
 <template>
 	<div>
 		<div>
-			<Button variant="default" size="sm" class="hidden h-8 lg:flex" @click="toggleDialog">
+			<Button variant="default" size="sm" class="h-8 lg:flex" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-regular-file-image" class="size-4" />
 			</Button>
@@ -250,8 +250,8 @@ function handleFileChange(event: Event) {
 							</Button>
 						</div>
 						<ScrollArea
-							class="border border-primary"
-							style="width: 720px; overflow-y: auto; overflow-x: hidden"
+							class="border border-primary md:w-[720px] w-full"
+							style=" overflow-y: auto; overflow-x: hidden"
 							:style="{ height: dialogContentHeight + 'px' }"
 						>
 							<VuePDF

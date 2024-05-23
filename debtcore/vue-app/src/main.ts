@@ -6,6 +6,7 @@ import App from './App.vue'
 import router  from '@/router'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import axios from 'axios';
+import { useSideBarStore } from '@/store/sidebar'
 
 import {
   FaExclamationTriangle,
@@ -149,7 +150,7 @@ addIcons(
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL
 
-export const baseURL = 'https://d415-211-26-122-216.ngrok-free.app';
+export const baseURL = '/';
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 
@@ -174,11 +175,12 @@ if (csrfConfig.csrfToken && csrfConfig.csrfHeaderName) {
   axios.defaults.headers.common[csrfConfig.csrfHeaderName] = csrfConfig.csrfToken;
 }
 
+
+
 const app = createApp(App).component('VIcon', OhVueIcon)
 
 app.use(createPinia())
 app.use(router)
-
 
 app.mount('#app')
 

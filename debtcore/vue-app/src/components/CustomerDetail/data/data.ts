@@ -32,16 +32,11 @@ export const statuses = [
   },
   {
     value: '2',
-    label: 'Claiming',
-    icon: 'fa-circle'
-  },
-  {
-    value: '3',
     label: 'Done',
     icon: 'fa-check-circle'
   },
   {
-    value: '4',
+    value: '3',
     label: 'Canceled',
     icon: 'fa-times-circle'
   },

@@ -23,15 +23,6 @@ import {
 	CommandList
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
 import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
@@ -251,7 +242,7 @@ function updateDueDate(payload: any) {
 			<Button
 				variant="default"
 				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
+				class="h-8 ml-2 flex"
 				@click="toggleDialog"
 			>
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->

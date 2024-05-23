@@ -40,25 +40,25 @@ onMounted(() => {
 
 <template>
   <div class="flex sm:flex-row sm gap-4 flex-col w-full">
-			<Card class="w-1/3">
+			<Card class="w-full md:w-1/3">
 				<CardHeader>
 					<CardTitle>{{ card_data.scheduled_reminders }}</CardTitle>
 					<CardDescription>Scheduled Reminder(s)</CardDescription>
 				</CardHeader>
 			</Card>
-			<Card class="w-1/3">
+			<Card class="w-full md:w-1/3">
 				<CardHeader>
 					<CardTitle>{{ card_data.active_debts }}</CardTitle>
 					<CardDescription>Active Debt(s)</CardDescription>
 				</CardHeader>
 			</Card>
-			<Card class="w-1/3">
+			<Card class="w-full md:w-1/3">
 				<CardHeader>
 					<CardTitle>RM {{ card_data.active_debts_amount }}</CardTitle>
 					<CardDescription>Active Debt Amount</CardDescription>
 				</CardHeader>
 			</Card>
-			<Card class="w-1/3">
+			<Card class="w-full md:w-1/3">
 				<CardHeader>
 					<CardTitle>RM {{ card_data.settled_debts_amount }}</CardTitle>
 					<CardDescription>Settled Debt</CardDescription>

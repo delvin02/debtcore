@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
 		/>
 	</div>
 
-	<div class="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+	<div class="block h-full flex-1 flex-col space-y-8 p-8 md:flex">
 		<CustomerDetailInfo :customer_id="customer_id" />
 		<!-- <Popover>
 			<PopoverTrigger as-child>

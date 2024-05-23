@@ -2,22 +2,26 @@ import { defineStore } from 'pinia'
 import axios from "axios"
 
 export const useSideBarStore = defineStore('sidebar', {
-    state: () => ({ collapsible: false }),
+    state: () => (
+        { 
+            collapse: false
+        }
+    ),
     getters: {
-        isCollapsible: (state) => state.collapsible,
+        isCollapsed: (state) => state.collapse
     },
     actions: {
         onCollapse(): void {
-            this.collapsible = true
+            this.collapse = true
         },
         onExpand(): void {
-            this.collapsible = false
+            this.collapse = false
         },
         toggleCollapsible(): void {
-            this.collapsible = !this.collapsible;
+            this.collapse = !this.collapse;
         },
         setCollapsible(payload: boolean) {
-            this.collapsible = payload
+            this.collapse = payload
         }
     }
 })

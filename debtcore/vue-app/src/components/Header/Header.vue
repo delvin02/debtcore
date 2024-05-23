@@ -54,7 +54,7 @@ const logout = () => {
 				<Tooltip>
 					<TooltipTrigger as-child>
 						<Button
-							:variant="store.isCollapsible ? 'default' : 'ghost'"
+							:variant="store.isCollapsed ? 'default' : 'ghost'"
 							class="ml-2"
 							size="icon"
 							@click="store.toggleCollapsible()"
@@ -159,4 +159,3 @@ const logout = () => {
         <div v-else class="p-8 text-center text-muted-foreground">No message selected</div> -->
 	</div>
 </template>
-@/store/sidebar

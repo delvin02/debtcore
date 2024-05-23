@@ -164,7 +164,7 @@ export const columns: ColumnDef<Task>[] = [
       if (!status)
         return null
 
-        return h(Badge, { variant:"secondary", class: 'flex w-fit items-center' }, [
+        return h(Badge, { variant:"secondary", class: 'flex w-full items-center whitespace-nowrap' }, [
           status.icon && h(VIcon, {  
             name: status.icon, 
             class: 'mr-1 h-4 w-4 text-muted-foreground',

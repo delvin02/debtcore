@@ -121,8 +121,8 @@ function handleCompanySelect(company: any) {
 <template>
 	<div class="border border-secondary rounded p-4">
 		<div class="flex flex-col gap-4">
-			<div class="flex flex-row gap-x-2 justify-items-center items-center mx-auto w-full">
-				<div class="w-1/3 text-right my-auto">
+			<div class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full">
+				<div class="w-1/3 text-left lg:text-right my-auto">
 					<p>Schduled Date</p>
 				</div>
 				<Popover>
@@ -131,12 +131,12 @@ function handleCompanySelect(company: any) {
 							variant="outline"
 							:class="
 								cn(
-									'w-1/3 justify-start text-left font-normal',
+									'w-full lg:w-1/3 justify-start text-left font-normal',
 									!filterForm.date && 'text-muted-foreground'
 								)
 							"
 						>
-							<CalendarIcon class="mr-2 h-4 w-4" />
+							<VIcon name="bi-calendar-fill" class="mr-2 h-4 w-4" />
 							<template v-if="filterForm.date.start">
 								<template v-if="filterForm.date.end">
 									{{ df.format(filterForm.date.start.toDate(getLocalTimeZone())) }} -
@@ -160,8 +160,8 @@ function handleCompanySelect(company: any) {
 					</PopoverContent>
 				</Popover>
 			</div>
-			<div class="flex flex-row gap-x-2 justify-items-center items-center mx-auto w-full">
-				<div class="w-1/3 text-right my-auto">
+			<div class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full">
+				<div class="w-1/3 text-left lg:text-right my-auto">
 					<p>Company</p>
 				</div>
 				<Popover class="col-span-1" v-model:open="companies.is_open">
@@ -170,7 +170,7 @@ function handleCompanySelect(company: any) {
 							variant="outline"
 							role="combobox"
 							:aria-expanded="companies.is_open"
-							class="w-1/3 justify-between px-3"
+							class="w-full lg:w-1/3 justify-start  px-3"
 							:disabled="companies.is_loading"
 						>
 							{{
@@ -226,8 +226,8 @@ function handleCompanySelect(company: any) {
 				</Popover>
 			</div>
 		</div>
-		<div class="flex self-end justify-end justify-self-end">
-		<Button @click="filter" class="w-[100px]">Filter</Button>
+		<div class="flex self-end justify-end justify-self-end mt-3">
+			<Button @click="filter" class="w-[100px]">Filter</Button>
 		</div>
 		<Separator  class="my-3" />
 		<div class="flex justify-end space-x-2">

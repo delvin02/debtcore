@@ -114,9 +114,9 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div class="space-y-4 text-muted-foreground">
+	<div class="flex flex-col space-y-4 text-muted-foreground">
 		<DataTableToolbar :table="table" />
-		<div class="rounded-md border">
+		<div class="flex rounded-md border">
 			<Table>
 				<TableHeader>
 					<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">

@@ -39,7 +39,7 @@ onMounted(() => {
 
 <template>
 	<div>
-		<div class="grid grid-cols-4 mb-2 gap-4">
+		<div class="grid grid-cols-2 md:grid-cols-4 mb-2 gap-4">
 			<div>
 				<Card>
 					<CardHeader>

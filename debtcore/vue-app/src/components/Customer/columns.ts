@@ -43,7 +43,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => h(DataTableColumnHeader, { column, title: "Email"}),
-    cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('email')),
+    cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('email')),
     enableSorting: false,
     enableHiding: false,
     meta: {
