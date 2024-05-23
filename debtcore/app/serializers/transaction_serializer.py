@@ -77,6 +77,7 @@ class TransactionScheduleEditSerializer(serializers.ModelSerializer):
         
         user = self.context['request'].user
         name = user.get_full_name()
+        instance.status_code = StatusCode.WAITING.value
         instance.change_info = f"Last update by {name}, scheduled from {prev_scheduled_date} to {instance.scheduled_date}"
         instance.save()
         return instance
@@ -114,5 +115,7 @@ class TransactionTableSerializer(serializers.ModelSerializer):
         return obj.get_event_display()
     
     def get_editable(self, obj) -> bool:
-        return obj.transaction_status == TransactionStatus.QUEUED.value
+        SUCCESS_CODES = (200, 202, 203) 
+
+        return obj.transaction_status == TransactionStatus.QUEUED.value or obj.status_code not in SUCCESS_CODES
     

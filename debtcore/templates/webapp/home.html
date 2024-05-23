@@ -11,14 +11,11 @@
     <title>{% block title %}{% endblock %}</title>
     {% if DEBUG %}
     <!-- In development, point to Vite's development server for CSS -->
-    <link
-      rel="stylesheet"
-      crossorigin
-      href="http://localhost:5174/src/index.css"
-    />
-    {% else %} {% endif %}
+
+    {% comment %} {% else %}
     <!-- In production, use the vue_css template tag to load the compiled CSS -->
     <link rel="stylesheet" href="{% vue_css 'main' %}" />
+    {% endcomment %} {% endif %}
   </head>
   {% endblock %}
   <body>

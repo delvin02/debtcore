@@ -13,8 +13,11 @@ export const useSideBarStore = defineStore('sidebar', {
         onExpand(): void {
             this.collapsible = false
         },
-        toggleCollapsible(): boolean {
-            return this.collapsible = !this.collapsible;
+        toggleCollapsible(): void {
+            this.collapsible = !this.collapsible;
+        },
+        setCollapsible(payload: boolean) {
+            this.collapsible = payload
         }
     }
 })

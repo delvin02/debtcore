@@ -24,7 +24,7 @@ class TransactionView(APIView):
         if not company:
             return JsonResponse({'message': "Missing company."}, status=400)
         
-        sessions = Session.objects.filter(company=company).order_by('-scheduled_date')
+        sessions = Session.objects.filter(company=company).order_by('-created_date')
         serializer = TransactionTableSerializer(sessions, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     

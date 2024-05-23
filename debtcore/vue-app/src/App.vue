@@ -20,14 +20,17 @@ const hideSidebar = computed(() => route.meta.hideNavigation)
 
 const mainHeaderRef = ref<ComponentMethods | null>(null)
 const wrapperHeight = ref<number>(0)
+const wrapperWidth = ref<number>(0)
 
 // Function to adjust layout
 const fixLayout = () => {
 	nextTick(() => {
 		const headerHeight: number = mainHeaderRef.value?.getHeaderHeight() ?? 0
 		const windowHeight = window.innerHeight
+		const windowWidth = window.innerWidth
 
 		wrapperHeight.value = windowHeight - headerHeight
+		wrapperWidth.value = windowWidth
 	})
 }
 
@@ -70,9 +73,9 @@ onBeforeMount(async () => {
 					<ScrollArea
 						v-if="route.name !== 'conversation'"
 						:style="{ height: wrapperHeight + 'px' }"
-						class="flex justify-center my-auto"
+						class="justify-center my-auto"
 					>
-						<router-view />
+						<router-view class="flex-1" />
 					</ScrollArea>
 					<router-view v-else :style="{ height: wrapperHeight + 'px' }" />
 				</ResizablePanel>

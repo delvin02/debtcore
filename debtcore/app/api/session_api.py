@@ -32,7 +32,7 @@ class SessionView(APIView):
         if start_date and end_date:
             query &= Q(scheduled_date__range=[start_date, end_date])
         
-        sessions = Session.objects.filter(query).order_by('-scheduled_date')
+        sessions = Session.objects.filter(query).order_by('-created_date')
         serializer = SessionTableSerializer(sessions, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     
@@ -90,4 +90,4 @@ def send_whatsapp(request, *args, **kwargs):
     
     process_debt_reminder(session_id)
     
-    return JsonResponse({'Result': "WhatsApp message sent successfully."}, status=200)
+    return JsonResponse({'Result': "Please refresh in 5 secs to check the status"}, status=200)

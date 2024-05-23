@@ -15,6 +15,7 @@ from debtcore_shared.meta.model.MessageObject.TemplateComponent import TemplateC
 from debtcore_shared.meta.api.message import MessageRequest
 from django.conf import settings
 from asgiref.sync import async_to_sync
+from django.core.files.storage import default_storage
 
 logger = logging.getLogger("debt_reminder_logger")
 
@@ -33,6 +34,13 @@ class DebtReminderProcessor(ServiceProcessorBase):
 
             customer_name = customer.name
             to = customer.merge_with_phone_code()
+
+            if not default_storage.exists(debt.document.name):
+                  logger.error(f"Document not found for debt ID {debt.id}: {debt.document.name}")
+                  self.fail_session(session, 
+                                    StatusCode.WHATSAPP_SCHEDULED_MESSAGE_ATTACHMENT_NOT_FOUND.value, 
+                                    "Attachment couldn't be retrieved.")
+                  return
 
             overdue_info = ""
             overdue = 0

@@ -2,6 +2,14 @@
 import { onMounted } from 'vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger
+} from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
@@ -90,12 +98,12 @@ const links2: LinkProp[] = [
 		id="resize-panel-1"
 		:default-size="defaultLayout[0]"
 		collapsible
-		:min-size="10"
-		:max-size="15"
 		:class="
 			cn(
-				store.isCollapsible &&
-					'position-fixed min-w-[50px] min-h-full max-w-[80px] transition-all duration-300 ease-in-out'
+				store.isCollapsible
+					? 'hidden absolute min-w-full'
+					: 'md:block' &&
+							'md:position-fixed md:max-w-[250px] transition-all duration-300 ease-in-out'
 			)
 		"
 		@expand="store.onExpand()"
@@ -135,6 +143,17 @@ const links2: LinkProp[] = [
 			<Nav :is-collapsed="store.isCollapsible" :links="links2" />
 		</div>
 	</ResizablePanel>
-	<ResizableHandle id="resize-handle-1" with-handle />
+	<Sheet>
+		<SheetContent class="w-[400px] sm:w-[540px]" side="left" :open="store.isCollapsible">
+			<SheetHeader>
+				<SheetTitle>Are you sure absolutely sure?</SheetTitle>
+				<SheetDescription>
+					This action cannot be undone. This will permanently delete your account and
+					remove your data from our servers.
+				</SheetDescription>
+			</SheetHeader>
+		</SheetContent>
+	</Sheet>
+	<ResizableHandle id="resize-handle-1" />
 </template>
 @/store/sidebar

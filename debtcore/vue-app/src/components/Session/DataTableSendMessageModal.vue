@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 
 import { Label } from '@/components/ui/label'
@@ -39,7 +39,7 @@ interface Debt {
 
 const form = reactive<Debt>({
 	id: props.row.id,
-	customer_name: props.row.customer_name,
+	customer_name: props.row.customer_name
 })
 
 const is_loading = ref(false)
@@ -47,19 +47,17 @@ const is_dialog_open = ref(false)
 const error_message = ref<String | null>(null)
 const { toast } = useToast()
 
-
 async function submit() {
 	// checking
 	is_loading.value = true
 	try {
-		const response = await axios.post(
-			`/api/session/${props.row.id}/send_whatsapp`
-		)
+		const response = await axios.post(`/api/session/${props.row.id}/send_whatsapp`)
 		toggleDialog()
 
 		await tableStore.refresh(tableStore.page_index)
 		toast({
-			title: response.data.Result,
+			title: 'Operation in queue',
+			description: response.data.Result,
 			variant: 'success'
 		})
 	} catch (error: any) {
@@ -76,25 +74,20 @@ async function submit() {
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	//if (is_dialog_open.value) {
-		// init()
-		// fetchCountries(searchCustomerQuery.value)
-		// fetchStatuses()
+	// init()
+	// fetchCountries(searchCustomerQuery.value)
+	// fetchStatuses()
 	//}
 }
-
 </script>
 
 <template>
 	<div>
 		<div>
-			<Button
-				size="sm"
-				class="hidden w-full h-8 lg:flex bg-green-500"
-				@click="toggleDialog"
-			>
-			<VIcon name="bi-whatsapp" class="size-4 mr-2" />
+			<Button size="sm" class="hidden w-full h-8 lg:flex bg-green-500" @click="toggleDialog">
+				<VIcon name="bi-whatsapp" class="size-4 mr-2" />
 				Send Whatsapp Message
-		</Button>
+			</Button>
 		</div>
 		<AlertDialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<AlertDialogContent :isSideBar="false" class="sm:max-w-[700px]">

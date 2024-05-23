@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
 
 <template>
 	<Card class="shadow-none" v-if="!whatsappStore.is_loading">
-		<div class="flex border-t-4 border-green-600/80 rounded">
+		<div class="flex flex-col md:flex-row border-t-4 border-green-600/80 rounded">
 			<CardHeader>
 				<CardTitle><VIcon name="fa-whatsapp" class="size-24 fill-green-500" /></CardTitle>
 			</CardHeader>
@@ -53,7 +53,7 @@ onBeforeUnmount(() => {
 				</CardContent>
 				<Separator class="w-full" />
 
-				<CardContent class="py-2 pl-0">
+				<CardContent class="py-1 pl-0">
 					<div>
 						<CardDescription
 							>To connect to WhatsApp Business, click the

@@ -79,4 +79,8 @@
   #dbTableBody tr > td:last-child  {
     @apply border-l-2 border-secondary w-5
   }
+
+  #vp > div {
+	  @apply block md:table;
+  }
 }

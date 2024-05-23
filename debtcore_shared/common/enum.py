@@ -28,6 +28,7 @@ class StatusCode(Enum):
 
     WHATSAPP_MESSAGE_MISSING_SENDER_PHONE_NUMBER = (110, "Missing sender's phone number")
     WHATSAPP_MESSAGE_SENDER_NOT_FOUND = (111, "Sender not found")
+
     
     # Whatsapp Scheduled Message (200-299)
     WHATSAPP_SCHEDULED_MESSAGE_SUCCESS = (200, "Scheduled message sent successfully")
@@ -35,7 +36,9 @@ class StatusCode(Enum):
     WHATSAPP_SCHEDULED_MESSAGE_PAST_DUE = (202, "Scheduled message is past due")
     WHATSAPP_SCHEDULED_MESSAGE_CANCELED = (203, "Scheduled message was canceled")
 
-    WHATSAPP_SCHEDULED_MESSAGE_MISSING_TEMPLATE = (203, "Scheduled message missing template")
+    WHATSAPP_SCHEDULED_MESSAGE_MISSING_TEMPLATE = (210, "Scheduled message missing template")
+
+    WHATSAPP_SCHEDULED_MESSAGE_ATTACHMENT_NOT_FOUND = (220, "Attachment not found")
 
     def __new__(cls, value, description=None):
         obj = object.__new__(cls)

@@ -45,7 +45,6 @@ const logout = () => {
 	auth.remove_token()
 	router.push('/login')
 }
-
 </script>
 
 <template>
@@ -61,10 +60,10 @@ const logout = () => {
 							@click="store.toggleCollapsible()"
 						>
 							<VIcon class="size-4" name="fa-bars" />
-							<span class="sr-only">Archive</span>
+							<span class="sr-only">Menu</span>
 						</Button>
 					</TooltipTrigger>
-					<TooltipContent>Archive</TooltipContent>
+					<TooltipContent>Menu</TooltipContent>
 				</Tooltip>
 				<div>
 					<CompanySwitcher v-if="auth.is_admin" />
@@ -91,7 +90,7 @@ const logout = () => {
 					<span class="sr-only"></span>
 				</a>
 			</router-link>
-			<Separator orientation="vertical" class="mx-2 h-6" v-if="auth.is_admin"/>
+			<Separator orientation="vertical" class="mx-2 h-6" v-if="auth.is_admin" />
 			<DropdownMenu>
 				<DropdownMenuTrigger as-child>
 					<Button variant="ghost" size="icon" class="mr-2">
