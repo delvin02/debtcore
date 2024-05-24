@@ -9,37 +9,34 @@
 // import StopwatchIcon from '~icons/radix-icons/stopwatch'
 
 export const labels = [
-  {
-    value: 'bug',
-    label: 'Bug',
-  },
-  {
-    value: 'feature',
-    label: 'Feature',
-  },
-  {
-    value: 'documentation',
-    label: 'Documentation',
-  },
+	{
+		value: 'bug',
+		label: 'Bug'
+	},
+	{
+		value: 'feature',
+		label: 'Feature'
+	},
+	{
+		value: 'documentation',
+		label: 'Documentation'
+	}
 ]
-
 
 export const statuses = [
-  {
-    value: '1',
-    label: 'In Progress',
-    icon: 'bi-stopwatch'
-  },
-  {
-    value: '2',
-    label: 'Done',
-    icon: 'fa-check-circle'
-  },
-  {
-    value: '3',
-    label: 'Canceled',
-    icon: 'fa-times-circle'
-  },
+	{
+		value: '1',
+		label: 'In Progress',
+		icon: 'bi-stopwatch'
+	},
+	{
+		value: '2',
+		label: 'Done',
+		icon: 'fa-check-circle'
+	},
+	{
+		value: '3',
+		label: 'Canceled',
+		icon: 'fa-times-circle'
+	}
 ]
-
-

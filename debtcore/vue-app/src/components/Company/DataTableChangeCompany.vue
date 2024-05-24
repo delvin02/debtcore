@@ -37,7 +37,7 @@ async function changeCompany() {
 			},
 			{
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				}
 			}
 		)
@@ -65,7 +65,12 @@ async function submit() {
 <template>
 	<div>
 		<div>
-			<Button variant="outline" size="sm" class="hidden h-8 lg:flex border border-primary" @click="submit">
+			<Button
+				variant="outline"
+				size="sm"
+				class="hidden h-8 lg:flex border border-primary"
+				@click="submit"
+			>
 				<VIcon name="fa-building" v-if="!is_loading" class="size-4" />
 				<VIcon name="fa-circle-notch" v-else animation="spin" speed="slow" class="size-4" />
 			</Button>

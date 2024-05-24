@@ -15,6 +15,7 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 import sys
+import mimetypes
 
 
 load_dotenv() 
@@ -42,7 +43,7 @@ AUTH_USER_MODEL = 'app.User'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=180),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
     'ROTATE_REFRESH_TOKENS': False
 }
 
@@ -224,6 +225,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',    
@@ -351,3 +353,8 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND",'redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+
+SITE_ID = 1
+mimetypes.add_type("text/css", ".css", True)
+

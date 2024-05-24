@@ -135,12 +135,7 @@ function toggleSheet() {
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="h-8 ml-2 flex"
-				@click="toggleSheet"
-			>
+			<Button variant="default" size="sm" class="h-8 ml-2 flex" @click="toggleSheet">
 				View
 			</Button>
 		</div>

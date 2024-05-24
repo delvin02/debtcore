@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import type {
-    ColumnDef,
-    ColumnFiltersState,
-    SortingState,
-    VisibilityState,
+	ColumnDef,
+	ColumnFiltersState,
+	SortingState,
+	VisibilityState,
 	PaginationState
 } from '@tanstack/vue-table'
 import {
-    FlexRender,
-    getCoreRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useVueTable
+	FlexRender,
+	getCoreRowModel,
+	getFacetedRowModel,
+	getFacetedUniqueValues,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useVueTable
 } from '@tanstack/vue-table'
 
 import { ref, inject, watchEffect } from 'vue'
@@ -23,20 +23,20 @@ import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'
 import { valueUpdater } from '@/lib/utils'
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow
 } from '@/components/ui/table'
 import { useTableStore } from '@/store/table'
 
 const phoneStore = inject('phoneStore', useTableStore('phone'))
 
 interface DataTableProps {
-    columns: ColumnDef<Task, any>[]
-    data: Task[]
+	columns: ColumnDef<Task, any>[]
+	data: Task[]
 }
 const props = defineProps<DataTableProps>()
 
@@ -70,14 +70,14 @@ function paginationUpdater(
 }
 
 const table = useVueTable({
-    get data() {
-        return props.data
-    },
-    get columns() {
-        return props.columns
-    },
-    state: {
-        get sorting() {
+	get data() {
+		return props.data
+	},
+	get columns() {
+		return props.columns
+	},
+	state: {
+		get sorting() {
 			return sorting.value
 		},
 		get columnFilters() {
@@ -92,19 +92,19 @@ const table = useVueTable({
 		get pagination() {
 			return pagination.value
 		}
-    },
-    enableRowSelection: true,
-    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
-    onPaginationChange: (updaterOrValue) => paginationUpdater(updaterOrValue, pagination),
-    onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
-    onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
-    onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues()
+	},
+	enableRowSelection: true,
+	onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+	onPaginationChange: (updaterOrValue) => paginationUpdater(updaterOrValue, pagination),
+	onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
+	onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
+	onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
+	getCoreRowModel: getCoreRowModel(),
+	getFilteredRowModel: getFilteredRowModel(),
+	getPaginationRowModel: getPaginationRowModel(),
+	getSortedRowModel: getSortedRowModel(),
+	getFacetedRowModel: getFacetedRowModel(),
+	getFacetedUniqueValues: getFacetedUniqueValues()
 })
 
 watchEffect(() => {
@@ -114,47 +114,46 @@ watchEffect(() => {
 </script>
 
 <template>
-    <div class="space-y-4">
-        <DataTableToolbar :table="table" />
-        <div class="rounded-md border">
-            <Table>
-                <TableHeader>
-                    <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-                        <TableHead v-for="header in headerGroup.headers" :key="header.id">
-                            <FlexRender
-                                v-if="!header.isPlaceholder"
-                                :render="header.column.columnDef.header"
-                                :props="header.getContext()"
-                            />
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
+	<div class="space-y-4">
+		<DataTableToolbar :table="table" />
+		<div class="rounded-md border">
+			<Table>
+				<TableHeader>
+					<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+						<TableHead v-for="header in headerGroup.headers" :key="header.id">
+							<FlexRender
+								v-if="!header.isPlaceholder"
+								:render="header.column.columnDef.header"
+								:props="header.getContext()"
+							/>
+						</TableHead>
+					</TableRow>
+				</TableHeader>
 				<TableBody id="dbTableBody">
+					<template v-if="table.getRowModel().rows?.length">
+						<TableRow
+							v-for="row in table.getRowModel().rows"
+							:key="row.id"
+							:data-state="row.getIsSelected() && 'selected'"
+						>
+							<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+								<FlexRender
+									:render="cell.column.columnDef.cell"
+									:props="cell.getContext()"
+								/>
+							</TableCell>
+						</TableRow>
+					</template>
 
-                    <template v-if="table.getRowModel().rows?.length">
-                        <TableRow
-                            v-for="row in table.getRowModel().rows"
-                            :key="row.id"
-                            :data-state="row.getIsSelected() && 'selected'"
-                        >
-                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                <FlexRender
-                                    :render="cell.column.columnDef.cell"
-                                    :props="cell.getContext()"
-                                />
-                            </TableCell>
-                        </TableRow>
-                    </template>
+					<TableRow v-else>
+						<TableCell :colspan="columns.length" class="h-24 text-center">
+							No results.
+						</TableCell>
+					</TableRow>
+				</TableBody>
+			</Table>
+		</div>
 
-                    <TableRow v-else>
-                        <TableCell :colspan="columns.length" class="h-24 text-center">
-                            No results.
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-
-        <DataTablePagination :table="table" />
-    </div>
+		<DataTablePagination :table="table" />
+	</div>
 </template>

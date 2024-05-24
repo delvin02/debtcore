@@ -9,51 +9,49 @@
 // import StopwatchIcon from '~icons/radix-icons/stopwatch'
 
 export const labels = [
-  {
-    value: 'bug',
-    label: 'Bug',
-  },
-  {
-    value: 'feature',
-    label: 'Feature',
-  },
-  {
-    value: 'documentation',
-    label: 'Documentation',
-  },
+	{
+		value: 'bug',
+		label: 'Bug'
+	},
+	{
+		value: 'feature',
+		label: 'Feature'
+	},
+	{
+		value: 'documentation',
+		label: 'Documentation'
+	}
 ]
-
 
 export const statuses = [
-  {
-    value: '1',
-    label: 'Draft',
-    icon: 'fa-pen'
-  },
-  {
-    value: '2',
-    label: 'In Progress',
-    icon: 'bi-stopwatch'
-  },
-  {
-    value: '3',
-    label: 'Claiming',
-    icon: 'fa-circle'
-  },
-  {
-    value: '4',
-    label: 'Verifying Payment',
-    icon: 'bi-arrow-up-square-fill'
-  },
-  {
-    value: '5',
-    label: 'Done',
-    icon: 'fa-check-circle'
-  },
-  {
-    value: '6',
-    label: 'Canceled',
-    icon: 'fa-times-circle'
-  },
+	{
+		value: '1',
+		label: 'Draft',
+		icon: 'fa-pen'
+	},
+	{
+		value: '2',
+		label: 'In Progress',
+		icon: 'bi-stopwatch'
+	},
+	{
+		value: '3',
+		label: 'Claiming',
+		icon: 'fa-circle'
+	},
+	{
+		value: '4',
+		label: 'Verifying Payment',
+		icon: 'bi-arrow-up-square-fill'
+	},
+	{
+		value: '5',
+		label: 'Done',
+		icon: 'fa-check-circle'
+	},
+	{
+		value: '6',
+		label: 'Canceled',
+		icon: 'fa-times-circle'
+	}
 ]
-

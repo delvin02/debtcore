@@ -55,10 +55,10 @@ const login = async () => {
 <template>
 	<div class="h-screen w-full flex flex-col">
 		<div
-			class="relative flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-3 lg:px-0 overflow-hidden h-full bg-background shadow-md md:shadow-xl"
+			class="relative flex-col items-center p-4 md:p-0 justify-center md:grid lg:max-w-none lg:grid-cols-3 lg:px-0 overflow-hidden h-full bg-background shadow-md md:shadow-xl"
 		>
 			<div
-				class="relative h-full col-span-2 flex-col bg-muted p-10 text-white lg:flex dark:border-r"
+				class="hidden md:block relative h-full col-span-2 flex-col bg-muted p-10 text-white lg:flex dark:border-r"
 			>
 				<div class="absolute inset-0 bg-zinc-900"></div>
 				<div class="relative z-20 flex items-center text-lg font-medium">
@@ -87,8 +87,10 @@ const login = async () => {
 					</blockquote>
 				</div>
 			</div>
-			<div class="lg:p-8">
-				<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+			<div class="flex h-full justify-center items-center my-auto self-center p-4 lg:p-8">
+				<div
+					class="mx-auto flex my-auto w-full flex-col justify-center space-y-6 sm:w-[350px]"
+				>
 					<div class="flex flex-col space-y-2">
 						<h1 class="text-2xl font-semibold tracking-tight">Login</h1>
 						<p class="text-sm text-muted-foreground">

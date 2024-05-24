@@ -49,7 +49,6 @@ interface Company {
 	business_registration_id: string
 	whatsapp_business_account_id: string
 	country?: number | null
-
 }
 
 const form = reactive<Company>({
@@ -67,7 +66,7 @@ const form = reactive<Company>({
 	country: null
 })
 
-const countries: GenericSelectListModel= reactive({
+const countries: GenericSelectListModel = reactive({
 	is_loading: true,
 	is_open: false,
 	data: [{ value: '', label: '' }]
@@ -115,7 +114,7 @@ watch(
 function validateForm() {
 	const validations = [
 		{ condition: form.name === '', message: 'Name cannot be blank' },
-		{ condition: form.country == null, message: 'Whatsapp Phone cannot be blank' },
+		{ condition: form.country == null, message: 'Whatsapp Phone cannot be blank' }
 	]
 
 	for (let validation of validations) {
@@ -169,9 +168,8 @@ async function submit() {
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	if (is_dialog_open.value) {
-		 fetchCountries(searchCountryQuery.value)
+		fetchCountries(searchCountryQuery.value)
 	}
-
 }
 
 function handleCountrySelect(country: any) {
@@ -216,86 +214,87 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-							<Label for="country" class="text-right leading-normal"> Country 
-								<span
-									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-									>*</span
-								>
-							</Label>
-							<div class="col-span-3">
-								<Popover v-model:open="countries.is_open">
-									<PopoverTrigger as-child>
-										<Button
-											variant="outline"
-											role="combobox"
-											:aria-expanded="countries.is_open"
-											class="w-full justify-between px-3"
-											:disabled="countries.is_loading"
-										>
-											{{
-												form.country
-													? countries.data.find(
-															(country) => country.id === form.country
-														)?.label
-													: 'Select country'
-											}}
+						<Label for="country" class="text-right leading-normal">
+							Country
+							<span
+								class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
+								>*</span
+							>
+						</Label>
+						<div class="col-span-3">
+							<Popover v-model:open="countries.is_open">
+								<PopoverTrigger as-child>
+									<Button
+										variant="outline"
+										role="combobox"
+										:aria-expanded="countries.is_open"
+										class="w-full justify-between px-3"
+										:disabled="countries.is_loading"
+									>
+										{{
+											form.country
+												? countries.data.find(
+														(country) => country.id === form.country
+													)?.label
+												: 'Select country'
+										}}
+										<VIcon
+											name="fa-circle-notch"
+											v-if="countries.is_loading"
+											animation="spin"
+											class="w-4 h-4 mr-2"
+										/>
+										<VIcon
+											v-else
+											name="fa-angle-down"
+											class="h-4 w-4 shrink-0 opacity-50"
+										/>
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent class="w-[500px] p-1">
+									<Command>
+										<CommandInput
+											class="h-9"
+											v-model="searchCountryQuery"
+											placeholder="Search country..."
+											@input="updateCountryQuery"
+										/>
+										<CommandEmpty>No country found.</CommandEmpty>
+										<CommandList v-if="!countries.is_loading">
+											<CommandGroup>
+												<CommandItem
+													v-for="country in countries.data"
+													:key="country.id"
+													:value="country.value ?? ''"
+													@select="() => handleCountrySelect(country)"
+												>
+													{{ country.label }}
+													<VIcon
+														name="fa-check"
+														:class="[
+															'ml-auto h-4 w-4',
+															form.country === country.id
+																? 'opacity-100'
+																: 'opacity-0'
+														]"
+													/>
+												</CommandItem>
+											</CommandGroup>
+										</CommandList>
+										<CommandList v-else>
 											<VIcon
 												name="fa-circle-notch"
-												v-if="countries.is_loading"
+												v-if="true"
 												animation="spin"
-												class="w-4 h-4 mr-2"
+												speed="slow"
+												class="w-fit h-fit mr-2 my-2 mx-auto"
 											/>
-											<VIcon
-												v-else
-												name="fa-angle-down"
-												class="h-4 w-4 shrink-0 opacity-50"
-											/>
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent class="w-[500px] p-1">
-										<Command>
-											<CommandInput
-												class="h-9"
-												v-model="searchCountryQuery"
-												placeholder="Search country..."
-												@input="updateCountryQuery"
-											/>
-											<CommandEmpty>No country found.</CommandEmpty>
-											<CommandList v-if="!countries.is_loading">
-												<CommandGroup>
-													<CommandItem
-														v-for="country in countries.data"
-														:key="country.id"
-														:value="country.value ?? ''"
-														@select="() => handleCountrySelect(country)"
-													>
-														{{ country.label }}
-														<VIcon
-															name="fa-check"
-															:class="[
-																'ml-auto h-4 w-4',
-																form.country === country.id
-																	? 'opacity-100'
-																	: 'opacity-0'
-															]"
-														/>
-													</CommandItem>
-												</CommandGroup>
-											</CommandList>
-											<CommandList v-else>
-												<VIcon
-													name="fa-circle-notch"
-													v-if="true"
-													animation="spin"
-													speed="slow"
-													class="w-fit h-fit mr-2 my-2 mx-auto"
-												/>
-											</CommandList>
-										</Command>
-									</PopoverContent>
-								</Popover>
-							</div>
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
 						</div>
+					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
 						<Label for="phone" class="text-right required:"> Phone </Label>
 						<Input
@@ -306,9 +305,7 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal">
-							Email
-						</Label>
+						<Label for="email" class="text-right leading-normal"> Email </Label>
 						<Input
 							id="email"
 							v-model="form.email"
@@ -317,9 +314,7 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="website" class="text-right leading-normal">
-							Website
-						</Label>
+						<Label for="website" class="text-right leading-normal"> Website </Label>
 						<Input
 							id="website"
 							v-model="form.website"
@@ -327,7 +322,6 @@ function updateCountryQuery(event: any) {
 							class="col-span-3"
 						/>
 					</div>
-		
 
 					<Separator />
 					<div class="grid grid-cols-4 items-center gap-4">

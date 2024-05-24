@@ -9,45 +9,44 @@
 // import StopwatchIcon from '~icons/radix-icons/stopwatch'
 
 export const labels = [
-  {
-    value: 'bug',
-    label: 'Bug',
-  },
-  {
-    value: 'feature',
-    label: 'Feature',
-  },
-  {
-    value: 'documentation',
-    label: 'Documentation',
-  },
+	{
+		value: 'bug',
+		label: 'Bug'
+	},
+	{
+		value: 'feature',
+		label: 'Feature'
+	},
+	{
+		value: 'documentation',
+		label: 'Documentation'
+	}
 ]
 
 export const statuses = [
-  {
-    value: 'backlog',
-    label: 'Backlog',
-    //icon: h(QuestionMarkCircledIcon),
-  },
-  {
-    value: 'todo',
-    label: 'Todo',
-    //icon: h(CircleIcon),
-  },
-  {
-    value: 'in progress',
-    label: 'In Progress',
-    //icon: h(StopwatchIcon),
-  },
-  {
-    value: 'done',
-    label: 'Done',
-    //icon: h(CheckCircledIcon),
-  },
-  {
-    value: 'canceled',
-    label: 'Canceled',
-    //icon: h(CrossCircledIcon),
-  },
+	{
+		value: 'backlog',
+		label: 'Backlog'
+		//icon: h(QuestionMarkCircledIcon),
+	},
+	{
+		value: 'todo',
+		label: 'Todo'
+		//icon: h(CircleIcon),
+	},
+	{
+		value: 'in progress',
+		label: 'In Progress'
+		//icon: h(StopwatchIcon),
+	},
+	{
+		value: 'done',
+		label: 'Done'
+		//icon: h(CheckCircledIcon),
+	},
+	{
+		value: 'canceled',
+		label: 'Canceled'
+		//icon: h(CrossCircledIcon),
+	}
 ]
-

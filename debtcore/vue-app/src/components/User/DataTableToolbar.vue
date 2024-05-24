@@ -29,7 +29,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 				class="h-8 w-[150px] lg:w-[250px]"
 				@input="table.setGlobalFilter($event.target.value)"
 			/>
-<!-- 
+			<!-- 
 			<DataTableFacetedFilter
 				v-if="table.getColumn('status')"
 				:column="table.getColumn('status')"

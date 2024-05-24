@@ -25,7 +25,6 @@ const columns = computed(() =>
 		.getAllColumns()
 		.filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
 )
-
 </script>
 
 <template>

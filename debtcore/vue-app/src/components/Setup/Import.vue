@@ -91,12 +91,15 @@ async function TemplateImport() {
 <template>
 	<div>
 		<h4 class="text-lg font-bold py-3">Company</h4>
-		<table class="w-full border-t-2 border-primary bg-secondary mb-5">
-			<tr>
+		<table class="flex border-t-2 border-primary bg-secondary gap-4 overflow-auto">
+			<tr class="flex justify-between w-full">
 				<td class="p-2"><EditCompanyModal /></td>
 				<td class="p-2">
-					<Button class="flex ml-auto"
-					@click="() => CompanyRefresh()" :disabled="company_refresh.is_loading">
+					<Button
+						class="flex ml-auto"
+						@click="() => CompanyRefresh()"
+						:disabled="company_refresh.is_loading"
+					>
 						<VIcon
 							name="fa-circle-notch"
 							animation="spin"
@@ -111,13 +114,14 @@ async function TemplateImport() {
 		</table>
 
 		<h4 class="text-lg font-bold py-3">Management</h4>
-		<table class="w-full border-t-2 border-primary bg-secondary gap-4 overflow-auto">
-			<tr class="pb-2">
+		<table class="flex border-t-2 border-primary bg-secondary gap-4 overflow-auto">
+			<tr class="flex w-full items-center ">
 				<td class="p-2 text-sm w-1/4">Whatsapp Template</td>
 				<td class="font-bold text-center">Created</td>
-				<td class="px-2">
+				<td class="flex w-full justify-between ml-4">
+					<div>
 					<Button
-						class="my-2 "
+						class="my-2"
 						@click="() => TemplateExport()"
 						:disabled="template.is_loading"
 					>
@@ -131,10 +135,10 @@ async function TemplateImport() {
 
 						Export Reminder Template</Button
 					>
-				</td>
-				<td class="px-2">
-					<Button
-						class="my-2 flex ml-auto"
+					</div>
+					<div>
+						<Button
+						class="m-2 md:ml-0 button"
 						@click="() => TemplateImport()"
 						:disabled="template_import.is_loading"
 					>
@@ -147,6 +151,7 @@ async function TemplateImport() {
 						<VIcon name="fa-sync" class="h-4 w-4 shrink-0 mr-2" />
 						Import</Button
 					>
+					</div>
 				</td>
 			</tr>
 		</table>

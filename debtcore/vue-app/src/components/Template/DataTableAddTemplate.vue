@@ -255,7 +255,8 @@ console.log(variables.value) // You will see each variable with its count of occ
 						</Popover>
 					</div>
 				</div>
-				<--<div class="border-r-2 w-[800px] h-[750px] overflow-auto ml-2">
+				<--
+				<div class="border-r-2 w-[800px] h-[750px] overflow-auto ml-2">
 					<SheetHeader>
 						<SheetTitle>Template Design (English)</SheetTitle>
 						<SheetDescription>
@@ -373,14 +374,15 @@ console.log(variables.value) // You will see each variable with its count of occ
 					</div>
 
 					<div class="grid gap-2 py-2 mt-2">
-                        <SheetTitle class="mt-5">Footer</SheetTitle>
-                        <div class="grid grid-cols-4 gap-4">
-                            <div class="col-span-4 mr-4 pl-1">
-                                <Input placeholder="Type your footer here." class="p-2" />
-                            </div>
-                        </div>
-                    </div> 
-				</div>-->
+						<SheetTitle class="mt-5">Footer</SheetTitle>
+						<div class="grid grid-cols-4 gap-4">
+							<div class="col-span-4 mr-4 pl-1">
+								<Input placeholder="Type your footer here." class="p-2" />
+							</div>
+						</div>
+					</div>
+				</div>
+				-->
 				<div class="p-3 w-[400px]">
 					<SheetHeader>
 						<SheetTitle>Preview Message</SheetTitle>

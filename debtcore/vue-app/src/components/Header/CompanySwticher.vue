@@ -35,9 +35,13 @@ const form = reactive<CompanySwitcherForm>({
 	company: parseInt(auth.user?.company_id ?? '0')
 })
 
-watch(() => auth.user?.company_id, (newVal) => {
-  form.company = parseInt(newVal ?? '0');
-}, { immediate: true });
+watch(
+	() => auth.user?.company_id,
+	(newVal) => {
+		form.company = parseInt(newVal ?? '0')
+	},
+	{ immediate: true }
+)
 
 const companies: GenericSelectListModel = reactive({
 	is_loading: true,
@@ -46,7 +50,7 @@ const companies: GenericSelectListModel = reactive({
 })
 
 async function fetchCompanies() {
-	console.log("fetching company: "+ auth.user?.company_id)
+	console.log('fetching company: ' + auth.user?.company_id)
 	companies.is_loading = true
 	try {
 		const companyResponse = await axios.get('http://127.0.0.1:8000/api/company/list', {
@@ -97,7 +101,7 @@ async function handleCompanySelect(company: any) {
 			},
 			{
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				}
 			}
 		)
@@ -108,7 +112,7 @@ async function handleCompanySelect(company: any) {
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.' 
+		let errorMessage = 'An unexpected error occurred.'
 		toast({
 			title: 'Whoops, something went wrong',
 			description: errorMessage,

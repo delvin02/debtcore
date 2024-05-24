@@ -43,8 +43,11 @@ interface Debt {
 const form = reactive<Debt>({
 	id: props.row.id,
 	invoice: props.row.invoice,
-	scheduled_date: new CalendarDate(props.row.scheduled_date.getFullYear(), 
-	props.row.scheduled_date.getMonth() + 1, props.row.scheduled_date.getDate())
+	scheduled_date: new CalendarDate(
+		props.row.scheduled_date.getFullYear(),
+		props.row.scheduled_date.getMonth() + 1,
+		props.row.scheduled_date.getDate()
+	)
 })
 
 const is_loading = ref(false)
@@ -60,10 +63,10 @@ const formattedTomorrow = new CalendarDate(
 
 function validateForm() {
 	const validations = [
-		{ condition: form.scheduled_date == null, message: 'Schedule Date cannot be blank' },
+		{ condition: form.scheduled_date == null, message: 'Schedule Date cannot be blank' }
 	]
 
-	for (let  validation of validations) {
+	for (let validation of validations) {
 		if (validation.condition) {
 			error_message.value = validation.message
 			return false
@@ -112,9 +115,9 @@ async function submit() {
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	//if (is_dialog_open.value) {
-		// init()
-		// fetchCountries(searchCustomerQuery.value)
-		// fetchStatuses()
+	// init()
+	// fetchCountries(searchCustomerQuery.value)
+	// fetchStatuses()
 	//}
 }
 
@@ -132,9 +135,9 @@ function updateScheduleDate(payload: any) {
 				class="hidden h-8 lg:flex w-full"
 				@click="toggleDialog"
 			>
-			<VIcon name="fa-pen" class="size-4 mr-2" />
+				<VIcon name="fa-pen" class="size-4 mr-2" />
 				Edit Schedule
-		</Button>
+			</Button>
 		</div>
 		<Dialog :open="is_dialog_open" @update:open="is_dialog_open = $event">
 			<DialogContent :isSideBar="false" class="sm:max-w-[700px]">

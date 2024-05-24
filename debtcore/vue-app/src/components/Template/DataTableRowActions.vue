@@ -16,6 +16,6 @@ const task = computed(() => taskSchema.parse(props.row.original))
 
 <template>
 	<div>
-		<DataTableViewTemplate :row="task"/>
+		<DataTableViewTemplate :row="task" />
 	</div>
 </template>

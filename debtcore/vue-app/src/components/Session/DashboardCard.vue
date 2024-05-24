@@ -24,22 +24,25 @@ import _ from 'lodash'
 
 const tableStore = inject('tableStore', useTableStore('session'))
 
-const today = new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+const today = new CalendarDate(
+	new Date().getFullYear(),
+	new Date().getMonth() + 1,
+	new Date().getDate()
+)
 
 const value = ref({
-	start: new CalendarDate(2024, 5, 20).subtract({ months: 3}),
+	start: new CalendarDate(2024, 5, 20).subtract({ months: 3 }),
 	end: today
 }) as Ref<DateRange>
 
-
 interface Session {
-		date: DateRange
-		company: number | null
+	date: DateRange
+	company: number | null
 }
 
 const filterForm = reactive<Session>({
-		date: value.value as DateRange,
-		company: null
+	date: value.value as DateRange,
+	company: null
 })
 const companies: GenericSelectListModel = reactive({
 	is_loading: false,
@@ -68,8 +71,8 @@ async function fetchCompanies(query?: string) {
 			title: 'Whoops, something went wrong',
 			description: 'There is an error fetching the companies.',
 			variant: 'destructive'
-		})	
-		} finally {
+		})
+	} finally {
 		companies.is_loading = false
 	}
 }
@@ -107,11 +110,9 @@ const df = new DateFormatter('en-US', {
 })
 
 function handleCompanySelect(company: any) {
-	if (company.id == filterForm.company)
-	{
+	if (company.id == filterForm.company) {
 		filterForm.company = null
-	} else
-	{
+	} else {
 		filterForm.company = company.id
 	}
 	companies.is_open = false
@@ -121,7 +122,9 @@ function handleCompanySelect(company: any) {
 <template>
 	<div class="border border-secondary rounded p-4">
 		<div class="flex flex-col gap-4">
-			<div class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full">
+			<div
+				class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
+			>
 				<div class="w-1/3 text-left lg:text-right my-auto">
 					<p>Schduled Date</p>
 				</div>
@@ -139,12 +142,17 @@ function handleCompanySelect(company: any) {
 							<VIcon name="bi-calendar-fill" class="mr-2 h-4 w-4" />
 							<template v-if="filterForm.date.start">
 								<template v-if="filterForm.date.end">
-									{{ df.format(filterForm.date.start.toDate(getLocalTimeZone())) }} -
+									{{
+										df.format(filterForm.date.start.toDate(getLocalTimeZone()))
+									}}
+									-
 									{{ df.format(filterForm.date.end.toDate(getLocalTimeZone())) }}
 								</template>
 
 								<template v-else>
-									{{ df.format(filterForm.date.start.toDate(getLocalTimeZone())) }}
+									{{
+										df.format(filterForm.date.start.toDate(getLocalTimeZone()))
+									}}
 								</template>
 							</template>
 							<template v-else> Pick a date </template>
@@ -160,7 +168,9 @@ function handleCompanySelect(company: any) {
 					</PopoverContent>
 				</Popover>
 			</div>
-			<div class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full">
+			<div
+				class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
+			>
 				<div class="w-1/3 text-left lg:text-right my-auto">
 					<p>Company</p>
 				</div>
@@ -170,13 +180,14 @@ function handleCompanySelect(company: any) {
 							variant="outline"
 							role="combobox"
 							:aria-expanded="companies.is_open"
-							class="w-full lg:w-1/3 justify-start  px-3"
+							class="w-full lg:w-1/3 justify-between px-3"
 							:disabled="companies.is_loading"
 						>
 							{{
 								filterForm.company
-									? companies.data.find((company) => company.id === filterForm.company)
-											?.label
+									? companies.data.find(
+											(company) => company.id === filterForm.company
+										)?.label
 									: 'Select company'
 							}}
 							<VIcon
@@ -192,7 +203,7 @@ function handleCompanySelect(company: any) {
 							/>
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent class="w-[500px] p-1">
+					<PopoverContent class="md:w-[500px] p-1">
 						<Command>
 							<CommandInput
 								class="h-9"
@@ -229,7 +240,7 @@ function handleCompanySelect(company: any) {
 		<div class="flex self-end justify-end justify-self-end mt-3">
 			<Button @click="filter" class="w-[100px]">Filter</Button>
 		</div>
-		<Separator  class="my-3" />
+		<Separator class="my-3" />
 		<div class="flex justify-end space-x-2">
 			<Button @click="all" class="w-[100px]">All</Button>
 		</div>

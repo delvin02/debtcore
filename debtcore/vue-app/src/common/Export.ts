@@ -1,3 +1,3 @@
 export interface ExportModel {
-  is_loading: boolean;
+	is_loading: boolean
 }

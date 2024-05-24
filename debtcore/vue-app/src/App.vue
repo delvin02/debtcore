@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, nextTick, ref, provide, onUnmounted, onBeforeMount } from 'vue'
+import {
+	computed,
+	onMounted,
+	nextTick,
+	ref,
+	provide,
+	onUnmounted,
+	onBeforeMount,
+	inject
+} from 'vue'
 import Sidebar from './components/Sidebar/Sidebar.vue'
 import Header from './components/Header/Header.vue'
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
@@ -9,7 +18,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ComponentMethods } from '@/components/Header/Header.vue'
 import { useAuthStore } from '@/store/user'
 import Toaster from '@/components/ui/toast/Toaster.vue'
-
 import axios from 'axios'
 
 const router = useRouter()
@@ -58,31 +66,41 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-	<div class="wrapper">
-		<TooltipProvider :delay-duration="0" v-if="!hideSidebar">
-			<ResizablePanelGroup
-				id="resize-panel-group-1"
-				direction="horizontal"
-				class="h-fit items-stretch"
-			>
-				<Sidebar ref="sidebarRef" />
-				<Toaster />
+	<div>
+		<div v-if="auth.is_loading" class="h-screen flex justify-center items-center">
+			<VIcon
+				name="fa-circle-notch"
+				animation="spin"
+				speed="slow"
+				class="mr-2 size-14 md:size-40"
+			/>
+		</div>
+		<div v-else class="wrapper">
+			<TooltipProvider :delay-duration="0" v-if="!hideSidebar">
+				<ResizablePanelGroup
+					id="resize-panel-group-1"
+					direction="horizontal"
+					class="h-fit items-stretch"
+				>
+					<Sidebar ref="sidebarRef" />
+					<Toaster />
 
-				<ResizablePanel id="resize-panel-2" :min-size="30">
-					<Header ref="mainHeaderRef" />
-					<ScrollArea
-						v-if="route.name !== 'conversation'"
-						:style="{ height: wrapperHeight + 'px' }"
-						class="justify-center my-auto"
-					>
-						<router-view class="flex-1" />
-					</ScrollArea>
-					<router-view v-else :style="{ height: wrapperHeight + 'px' }" />
-				</ResizablePanel>
-			</ResizablePanelGroup>
-		</TooltipProvider>
-		<router-view v-else />
-		<Toaster />
+					<ResizablePanel id="resize-panel-2" :min-size="30">
+						<Header ref="mainHeaderRef" />
+						<ScrollArea
+							v-if="route.name !== 'conversation'"
+							:style="{ height: wrapperHeight + 'px' }"
+							class="justify-center my-auto"
+						>
+							<router-view class="flex-1" />
+						</ScrollArea>
+						<router-view v-else :style="{ height: wrapperHeight + 'px' }" />
+					</ResizablePanel>
+				</ResizablePanelGroup>
+			</TooltipProvider>
+			<router-view v-else />
+			<Toaster />
+		</div>
 	</div>
 </template>
 

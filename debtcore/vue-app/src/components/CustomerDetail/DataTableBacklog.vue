@@ -123,7 +123,6 @@ function toggleSheet() {
 		init()
 	}
 }
-
 </script>
 
 <template>
@@ -132,7 +131,7 @@ function toggleSheet() {
 			<Button
 				variant="secondary"
 				size="sm"
-				class=" h-8 flex border border-primary"
+				class="h-8 flex border border-primary"
 				@click="toggleSheet"
 			>
 				<VIcon name="bi-bookmark-plus-fill" class="size-4" />
@@ -149,31 +148,31 @@ function toggleSheet() {
 					<div class="pr-4">
 						<div v-for="(msg, index) in messages" :key="index" class="ml-2 pr-4">
 							<div class="flex justify-between mt-2">
-									<div
-											class="text-primary font-bold flex place-items-center self-center"
-											v-if="msg.is_system_generated"
-									>
-											<VIcon
-													name="bi-circle-fill"
-													class="size-3 my-auto fill-green-600 mr-2"
-													animation="pulse"
-											/>
-											System Generated
-									</div>
-									<div class="text-primary font-bold" v-else>
-											{{ msg.created_by_name }}
-									</div>
+								<div
+									class="text-primary font-bold flex place-items-center self-center"
+									v-if="msg.is_system_generated"
+								>
+									<VIcon
+										name="bi-circle-fill"
+										class="size-3 my-auto fill-green-600 mr-2"
+										animation="pulse"
+									/>
+									System Generated
+								</div>
+								<div class="text-primary font-bold" v-else>
+									{{ msg.created_by_name }}
+								</div>
 							</div>
-							
+
 							<div>
 								<div class="text-primary">
-											{{ msg.created_date }}
-									</div>
-									<Separator variant="default" />
+									{{ msg.created_date }}
+								</div>
+								<Separator variant="default" />
 
-									<div>{{ msg.message }}</div>
+								<div>{{ msg.message }}</div>
 							</div>
-					</div>
+						</div>
 					</div>
 				</ScrollArea>
 				<Label for="error" class="text-red-600 flex" v-if="error_message">

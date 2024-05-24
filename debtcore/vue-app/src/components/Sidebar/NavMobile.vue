@@ -20,16 +20,11 @@ interface NavProps {
 defineProps<NavProps>()
 
 const sideBar = useSideBarStore()
-
 </script>
 
 <template>
-	<div
-		class="group flex flex-col gap-4 py-2"
-	>
-		<nav
-			class="grid gap-1 px-2"
-		>
+	<div class="group flex flex-col gap-4 py-2">
+		<nav class="grid gap-1 px-2">
 			<template v-for="(link, index) of links" :key="index">
 				<router-link :to="link.to" v-slot="{ isActive }">
 					<a
@@ -45,7 +40,7 @@ const sideBar = useSideBarStore()
 									: ''
 							)
 						"
-            @click="sideBar.toggleCollapsible"
+						@click="sideBar.toggleCollapsible"
 					>
 						<VIcon :name="link.icon" class="mr-2" />
 						{{ link.title }}

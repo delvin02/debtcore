@@ -114,7 +114,6 @@ watch(
 	}, 500)
 )
 
-
 async function init() {
 	try {
 		const response = await axios.get(`http://127.0.0.1:8000/api/company/${props.row.id}/`)
@@ -133,7 +132,6 @@ function validateForm() {
 	const validations = [
 		{ condition: form.name === '', message: 'Name cannot be blank' },
 		{ condition: form.country?.toString == null, message: 'Country cannot be blank' }
-
 	]
 
 	for (let validation of validations) {
@@ -163,7 +161,7 @@ async function submit() {
 			},
 			{
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				}
 			}
 		)
@@ -174,7 +172,7 @@ async function submit() {
 			variant: 'success'
 		})
 	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.';
+		let errorMessage = 'An unexpected error occurred.'
 		toast({
 			title: 'Whoops, something went wrong',
 			description: errorMessage,
@@ -204,12 +202,7 @@ function updateCountryQuery(event: any) {
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
-				@click="toggleDialog"
-			>
+			<Button variant="default" size="sm" class="h-8 ml-2 flex" @click="toggleDialog">
 				<VIcon name="fa-pen" class="size-4" />
 			</Button>
 		</div>
@@ -316,9 +309,7 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="email" class="text-right leading-normal">
-							Email
-						</Label>
+						<Label for="email" class="text-right leading-normal"> Email </Label>
 						<Input
 							id="email"
 							v-model="form.email"
@@ -327,9 +318,7 @@ function updateCountryQuery(event: any) {
 						/>
 					</div>
 					<div class="grid grid-cols-4 items-center gap-4">
-						<Label for="website" class="text-right leading-normal">
-							Website
-						</Label>
+						<Label for="website" class="text-right leading-normal"> Website </Label>
 						<Input
 							id="website"
 							v-model="form.website"

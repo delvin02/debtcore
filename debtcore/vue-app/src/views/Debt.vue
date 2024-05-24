@@ -8,7 +8,6 @@ import { onMounted, provide, onBeforeUnmount } from 'vue'
 import { useTableStore } from '@/store/table'
 
 const tableStore = useTableStore('debt')
-
 const debtsUrl = '/api/debt'
 const map_function = (task: any): Task => {
 	const serialized_task = {
@@ -23,7 +22,7 @@ const map_function = (task: any): Task => {
 		document_url: task.document_url,
 		editable: task.editable
 	}
-		return serialized_task
+	return serialized_task
 }
 
 onMounted(async () => {
@@ -54,3 +53,4 @@ onBeforeUnmount(() => {
 		</div>
 	</div>
 </template>
+

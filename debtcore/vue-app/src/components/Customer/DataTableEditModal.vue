@@ -202,19 +202,12 @@ function handleCountrySelect(country: any) {
 function updateCountryQuery(event: any) {
 	searchCountryQuery.value = event.target.value
 }
-
-
 </script>
 
 <template>
 	<div>
 		<div>
-			<Button
-				variant="default"
-				size="sm"
-				class=" h-8 ml-2 flex"
-				@click="toggleDialog"
-			>
+			<Button variant="default" size="sm" class="h-8 ml-2 flex" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-pen" class="size-4" />
 			</Button>

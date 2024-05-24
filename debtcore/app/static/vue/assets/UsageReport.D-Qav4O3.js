@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper.DlAUqK2U.js";import{o,c as t,d as s}from"../main.js";const c={},r=s("h1",null,"Usage Report TODO",-1),n=[r];function a(_,d){return o(),t("div",null,n)}const i=e(c,[["render",a]]);export{i as default};

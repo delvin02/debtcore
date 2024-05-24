@@ -220,7 +220,7 @@ function updateDueDate(payload: any) {
 <template>
 	<div>
 		<div>
-			<Button variant="default" size="sm" class="flex h-8 " @click="toggleDialog">
+			<Button variant="default" size="sm" class="flex h-8" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-pen" class="size-4" />
 			</Button>

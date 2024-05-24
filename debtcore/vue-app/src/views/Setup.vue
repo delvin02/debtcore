@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
 				</div>
 			</div>
 			<div class="border-t-primary border-t-4 rounded">
-				<DataTable :data="phoneStore.tasks" :columns="columns" class="p-3" />
+				<DataTable :data="phoneStore.tasks" :columns="columns" />
 			</div>
 		</div>
 

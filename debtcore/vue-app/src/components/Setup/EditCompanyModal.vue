@@ -25,15 +25,6 @@ import {
 } from '@/components/ui/command'
 import { Textarea } from '@/components/ui/textarea'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
 import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
