@@ -113,9 +113,6 @@ LOGGING = {
         'detailed': {
             'format': '[%(asctime)s: %(levelname)s/%(name)s] === %(message)s',
         },
-        'task_completed': {
-            'format': '[%(asctime)s: %(levelname)s/%(name)s] %(message)s\n', 
-        },
     },
     "root": {
         "handlers": ["console", "django_file"],  
@@ -348,6 +345,8 @@ META_AUTHENTICATE_URL = os.getenv("META_AUTHENTICATE_URL")
 META_SYSTEM_USER_ACCESS_TOKEN = os.getenv("META_SYSTEM_USER_ACCESS_TOKEN")
 
 DOMAIN = os.getenv("DOMAIN")
+
+
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND",'redis://redis:6379/0')

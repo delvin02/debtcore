@@ -201,7 +201,7 @@ export const columns: ColumnDef<Task>[] = [
 
 			return h(
 				Badge,
-				{ variant: 'secondary', class: 'flex w-full items-center whitespace-nowrap' },
+				{ variant: 'secondary', class: 'inline items-center whitespace-nowrap' },
 				[
 					status.icon &&
 						h(VIcon, {

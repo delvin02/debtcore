@@ -9,12 +9,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
-     {% comment %} {% if DEBUG %}
+    {% comment %} {% if DEBUG %}
     <!-- In development, point to Vite's development server for CSS -->
     <link rel="stylesheet" href="{% static 'vue/index.css' %}" />
-     {% else %}
+    {% else %} {% endif %} {% endcomment %}
     <link rel="stylesheet" href="{% static 'vue/index.css' %}" />
-     {% endif %}  {% endcomment %}
   </head>
   {% endblock %}
   <body>
@@ -22,7 +21,7 @@
     <div id="app"></div>
 
     <script type="application/json" id="drf_csrf">
-    {
+      {
         "csrfHeaderName": "X-CSRFTOKEN",
         "csrfToken": "{{ csrf_token }}"
       }
@@ -30,7 +29,7 @@
     {% if DEBUG %}
     <!-- In development, point to Vite's development server for JS -->
 
-     <script
+    <script
       type="module"
       crossorigin
       src="http://localhost:5174/@vite/client"
@@ -39,13 +38,12 @@
       type="module"
       crossorigin
       src="http://localhost:5174/src/main.ts"
-    ></script> 
+    ></script>
     {% else %}
     <!-- In production, load the compiled JS from static files -->
-    
+
     <script type="module" src="{% static 'vue/main.js' %}"></script>
-    {% endif %}
-     {% endblock %}
+    {% endif %} {% endblock %}
     <script
       async
       defer

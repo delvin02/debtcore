@@ -202,14 +202,14 @@ export const columns: ColumnDef<Task>[] = [
 
 			return h(
 				Badge,
-				{ variant: 'secondary', class: 'flex min-w-fit items-center whitespace-nowrap' },
+				{ variant: 'secondary', class: 'inline items-center whitespace-nowrap' },
 				[
 					status.icon &&
 						h(VIcon, {
 							name: status.icon,
 							class: 'mr-1 h-4 w-4 text-muted-foreground'
 						}),
-					h('span', { class: 'w-fit' }, status.label)
+					h('span',  status.label)
 				]
 			)
 		},
