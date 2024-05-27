@@ -1,10 +1,20 @@
-FROM python:3.12.2
-ENV PYTHONUNBUFFERED 1
+FROM python:3.12
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory
 WORKDIR /app
-COPY requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
 
-RUN pip install debugpy
+# Install dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
+# Copy project
+COPY . /app/
+
+# Expose the port
+EXPOSE 80
+
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT debtcore.wsgi:application"]
 

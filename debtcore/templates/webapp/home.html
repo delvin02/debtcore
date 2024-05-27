@@ -42,8 +42,8 @@
     {% else %}
     <!-- In production, load the compiled JS from static files -->
 
-    <script type="module" src="{% static 'vue/main.js' %}"></script>
     {% endif %} {% endblock %}
+    <script type="module" src="{% static 'vue/main.js' %}"></script>
     <script
       async
       defer
