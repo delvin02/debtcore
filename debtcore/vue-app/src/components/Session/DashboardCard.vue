@@ -99,7 +99,7 @@ const filter = () => {
 
 const all = () => {
 	tableStore.set_filter({})
-	tableStore.refresh(tableStore.page_index)
+	tableStore.refresh(0)
 }
 onMounted(() => {
 	fetchCompanies()

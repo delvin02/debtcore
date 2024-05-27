@@ -277,13 +277,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv("MYSQL_NAME", "debtcore"),
-        'USER': os.getenv("MYSQL_USER", "root"),
+        'USER': os.getenv("MYSQL_USER", "lucid"),
         'PASSWORD': os.getenv("MYSQL_PASSWORD", "password"),
-        'HOST': os.getenv("MYSQL_HOST", 'localhost'),  
+        'HOST': os.getenv("MYSQL_HOST", 'db'),  
         'PORT': os.getenv("MYSQL_PORT", '3306')
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -348,8 +347,8 @@ DOMAIN = os.getenv("DOMAIN")
 
 
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", 'redis://redis:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND",'redis://redis:6379/0')
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 

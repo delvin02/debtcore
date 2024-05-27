@@ -104,13 +104,11 @@ router.beforeEach(
 		const requiresAuth = to.meta.requiresAuth ?? true
 
 		if (requiresAuth && !isAuthenticated) {
-			auth.is_loading = false
 			next({ name: 'login' })
 			return
 		}
 
 		if (to.name === 'login' && isAuthenticated) {
-			auth.is_loading = false
 			next({ name: 'dashboard' })
 			return
 		}

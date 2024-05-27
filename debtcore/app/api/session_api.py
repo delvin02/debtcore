@@ -29,8 +29,11 @@ class SessionView(APIView):
         if filtered_company:
             query &= Q(company=filtered_company)
         
-        if start_date and end_date:
-            query &= Q(scheduled_date__range=[start_date, end_date])
+        if not start_date and not end_date:
+            end_date = timezone.now()
+            start_date = end_date - timedelta(days=90)
+        
+        query &= Q(scheduled_date__range=[start_date, end_date])
         
         sessions = Session.objects.filter(query).order_by('-created_date')
         serializer = SessionTableSerializer(sessions, many=True)

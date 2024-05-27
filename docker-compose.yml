@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c "sleep 10 && python -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:5678 --wait-for-client debtcore/manage.py runserver 0.0.0.0:8000"
+    command: gunicorn --bind 0.0.0.0:$PORT debtcore.wsgi:application
     ports:
       - "8000:8000"
       - "5678:5678"
@@ -17,7 +17,8 @@ services:
         condition: service_healthy
     environment:
       - DEBUG=1
-      - PYTHONPATH=/app:$PYTHONPATH
+      - PORT=8000
+      - PYTHONPATH=/app/debtcore:$PYTHONPATH
       - DJANGO_SETTINGS_MODULE=debtcore.settings
 
   celery:
@@ -37,7 +38,7 @@ services:
       - DEBUG=1
       - PYTHONPATH=/app/debtcore:$PYTHONPATH
       - DJANGO_SETTINGS_MODULE=debtcore.settings
-    command: python -m debugpy --listen 0.0.0.0:6000 --wait-for-client -m celery -A debtcore.celery worker -l info
+    command: celery -A debtcore.celery worker -l info
     ports:
       - 6000:6000
 
@@ -84,12 +85,10 @@ services:
       MYSQL_USER: 'lucid'
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'password'
-    env_file:
-      - .env
     volumes:
       - .dbdata:/var/lib/mysql
     ports:
-      - '33066:3306'
+      - '3306:3306'
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 30s
@@ -116,5 +115,5 @@ services:
         condition: service_started
 
 volumes:
-  rabbitmq_data:
   dbdata:
+  rabbitmq_data:

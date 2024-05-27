@@ -117,7 +117,7 @@ watchEffect(() => {
 	<div class="flex flex-col space-y-4 text-muted-foreground">
 		<DataTableToolbar :table="table" />
 		<div class="flex rounded-md border">
-			<Table>
+			<Table class="text-xs">
 				<TableHeader>
 					<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
 						<TableHead v-for="header in headerGroup.headers" :key="header.id">
