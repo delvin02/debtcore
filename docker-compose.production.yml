@@ -60,20 +60,19 @@ services:
 
   db:
     image: mysql:8.0.26
-    restart: always
     environment:
       MYSQL_DATABASE: 'debtcore'
       MYSQL_USER: 'lucid'
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'password'
-    env_file:
-      - .env
-    volumes:
-      - .dbdata:/var/lib/mysql
     ports:
-      - '33066:3306'
+      - '3306:3306'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 
 volumes:
-  dbdata:
   redisdata:
