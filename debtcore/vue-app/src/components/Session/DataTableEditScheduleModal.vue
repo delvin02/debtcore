@@ -7,12 +7,11 @@ import {
 	DialogTitle,
 	DialogFooter
 } from '@/components/ui/dialog'
-
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject, watch, computed } from 'vue'
+import { ref, reactive, inject } from 'vue'
 import { cn } from '@/lib/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Separator from '../ui/separator/Separator.vue'
@@ -20,10 +19,9 @@ import axios from 'axios'
 import { format, parseISO, addDays } from 'date-fns'
 import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
-import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import type { Task } from '@/components/Transaction/data/schema'
-import { CalendarDate, type DateValue, getLocalTimeZone } from '@internationalized/date'
+import { CalendarDate, type DateValue } from '@internationalized/date'
 
 const tableStore = inject('sessionStore', useTableStore('session'))
 
@@ -114,11 +112,6 @@ async function submit() {
 }
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
-	//if (is_dialog_open.value) {
-	// init()
-	// fetchCountries(searchCustomerQuery.value)
-	// fetchStatuses()
-	//}
 }
 
 function updateScheduleDate(payload: any) {

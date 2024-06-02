@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
 
 export const useSideBarStore = defineStore('sidebar', {
 	state: () => ({

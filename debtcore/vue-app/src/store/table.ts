@@ -66,6 +66,8 @@ export const useTableStore = (key: string) => {
 				this.page_index = 0
 				this.page_size = 10
 				this.fetch_url = ''
+				this.map_function = undefined
+				this.filters = {}
 			}
 		}
 	})()

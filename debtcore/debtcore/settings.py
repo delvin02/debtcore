@@ -167,12 +167,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "https://eefe-49-178-103-117.ngrok-free.app",
-    "https://17df-211-26-122-216.ngrok-free.app",
+    "https://d415-211-26-122-216.ngrok-free.app",
     os.getenv("DOMAIN")
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    os.getenv("DOMAIN")
+    os.getenv("DOMAIN"),
+    "http://localhost:5174"
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -279,7 +280,7 @@ DATABASES = {
         'NAME': os.getenv("MYSQL_NAME", "debtcore"),
         'USER': os.getenv("MYSQL_USER", "lucid"),
         'PASSWORD': os.getenv("MYSQL_PASSWORD", "password"),
-        'HOST': os.getenv("MYSQL_HOST", 'db'),  
+        'HOST': os.getenv("MYSQL_HOST", '13.250.18.104'),  
         'PORT': os.getenv("MYSQL_PORT", '3306')
     }
 }

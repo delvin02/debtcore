@@ -12,13 +12,14 @@
     {% comment %} {% if DEBUG %}
     <!-- In development, point to Vite's development server for CSS -->
     <link rel="stylesheet" href="{% static 'vue/index.css' %}" />
-    {% else %} {% endif %} {% endcomment %}
+    {% else %} {% endif %} {% endcomment %} {% comment %}
     <link rel="stylesheet" href="{% static 'vue/index.css' %}" />
+    {% endcomment %}
   </head>
   {% endblock %}
   <body>
     {% block body %}
-    <div id="app"></div>
+    <div id="app" class="overflow-hidden"></div>
 
     <script type="application/json" id="drf_csrf">
       {
@@ -26,7 +27,19 @@
         "csrfToken": "{{ csrf_token }}"
       }
     </script>
-    {% if DEBUG %}
+    <script
+      type="module"
+      crossorigin
+      src="http://localhost:5174/@vite/client"
+    ></script>
+    <script
+      type="module"
+      crossorigin
+      src="http://localhost:5174/src/main.ts"
+    ></script>
+    {% comment %}
+    <script type="module" src="{% static 'vue/main.js' %}"></script>
+    {% endcomment %} {% comment %} {% if DEBUG %}
     <!-- In development, point to Vite's development server for JS -->
 
     <script
@@ -43,7 +56,7 @@
     <!-- In production, load the compiled JS from static files -->
     <script type="module" src="{% static 'vue/main.js' %}"></script>
 
-    {% endif %} {% endblock %}
+    {% endif %} {% endcomment %} {% endblock %}
     <script
       async
       defer

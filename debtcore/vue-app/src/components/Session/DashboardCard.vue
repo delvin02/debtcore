@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, type Ref, onMounted, reactive, inject, watch } from 'vue'
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -11,12 +12,11 @@ import {
 	CommandItem,
 	CommandList
 } from '@/components/ui/command'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { ref, type Ref, onMounted, reactive, inject, watch } from 'vue'
 import type { DateRange } from 'radix-vue'
-import { Calendar as CalendarIcon } from 'lucide-vue-next'
 import { RangeCalendar } from '@/components/ui/range-calendar'
-import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
+import type { GenericSelectListModel } from '@/common/SelectList'
 import axios from 'axios'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useTableStore } from '@/store/table'
@@ -36,11 +36,13 @@ const value = ref({
 }) as Ref<DateRange>
 
 interface Session {
+	invoice: string
 	date: DateRange
 	company: number | null
 }
 
 const filterForm = reactive<Session>({
+	invoice: '',
 	date: value.value as DateRange,
 	company: null
 })
@@ -120,129 +122,152 @@ function handleCompanySelect(company: any) {
 </script>
 
 <template>
-	<div class="border border-secondary rounded p-4">
-		<div class="flex flex-col gap-4">
-			<div
-				class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
-			>
-				<div class="w-1/3 text-left lg:text-right my-auto">
-					<p>Schduled Date</p>
+	<div class="border border-secondary rounded">
+		<div class="bg-border/30 p-4">
+			<div class="flex flex-col gap-4">
+				<div
+					class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
+				>
+					<div class="w-1/3 text-left lg:text-right my-auto">
+						<p>Invoice</p>
+					</div>
+					<Input id="invoice" v-model="filterForm.invoice" class="w-full lg:w-1/3" />
 				</div>
-				<Popover>
-					<PopoverTrigger as-child>
-						<Button
-							variant="outline"
-							:class="
-								cn(
-									'w-full lg:w-1/3 justify-start text-left font-normal',
-									!filterForm.date && 'text-muted-foreground'
-								)
-							"
-						>
-							<VIcon name="bi-calendar-fill" class="mr-2 h-4 w-4" />
-							<template v-if="filterForm.date.start">
-								<template v-if="filterForm.date.end">
-									{{
-										df.format(filterForm.date.start.toDate(getLocalTimeZone()))
-									}}
-									-
-									{{ df.format(filterForm.date.end.toDate(getLocalTimeZone())) }}
-								</template>
+				<Separator class="my-1" />
+				<div
+					class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
+				>
+					<div class="w-1/3 text-left lg:text-right my-auto">
+						<p>Schduled Date</p>
+					</div>
+					<Popover>
+						<PopoverTrigger as-child>
+							<Button
+								variant="outline"
+								:class="
+									cn(
+										'w-full lg:w-1/3 justify-start text-left font-normal',
+										!filterForm.date && 'text-muted-foreground'
+									)
+								"
+							>
+								<VIcon name="bi-calendar-fill" class="mr-2 h-4 w-4" />
+								<template v-if="filterForm.date.start">
+									<template v-if="filterForm.date.end">
+										{{
+											df.format(
+												filterForm.date.start.toDate(getLocalTimeZone())
+											)
+										}}
+										-
+										{{
+											df.format(
+												filterForm.date.end.toDate(getLocalTimeZone())
+											)
+										}}
+									</template>
 
-								<template v-else>
-									{{
-										df.format(filterForm.date.start.toDate(getLocalTimeZone()))
-									}}
+									<template v-else>
+										{{
+											df.format(
+												filterForm.date.start.toDate(getLocalTimeZone())
+											)
+										}}
+									</template>
 								</template>
-							</template>
-							<template v-else> Pick a date </template>
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent class="w-auto p-0">
-						<RangeCalendar
-							v-model="filterForm.date as DateRange"
-							initial-focus
-							:number-of-months="2"
-							@update:start-value="(startDate) => (filterForm.date.start = startDate)"
-						/>
-					</PopoverContent>
-				</Popover>
-			</div>
-			<div
-				class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
-			>
-				<div class="w-1/3 text-left lg:text-right my-auto">
-					<p>Company</p>
+								<template v-else> Pick a date </template>
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent class="w-auto p-0">
+							<RangeCalendar
+								v-model="filterForm.date as DateRange"
+								initial-focus
+								:number-of-months="2"
+								@update:start-value="
+									(startDate) => (filterForm.date.start = startDate)
+								"
+							/>
+						</PopoverContent>
+					</Popover>
 				</div>
-				<Popover class="col-span-1" v-model:open="companies.is_open">
-					<PopoverTrigger as-child>
-						<Button
-							variant="outline"
-							role="combobox"
-							:aria-expanded="companies.is_open"
-							class="w-full lg:w-1/3 justify-between px-3"
-							:disabled="companies.is_loading"
-						>
-							{{
-								filterForm.company
-									? companies.data.find(
-											(company) => company.id === filterForm.company
-										)?.label
-									: 'Select company'
-							}}
-							<VIcon
-								name="fa-circle-notch"
-								v-if="companies.is_loading"
-								animation="spin"
-								class="w-4 h-4 mr-2"
-							/>
-							<VIcon
-								v-else
-								name="fa-angle-down"
-								class="h-4 w-4 shrink-0 opacity-50"
-							/>
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent class="md:w-[500px] p-1">
-						<Command>
-							<CommandInput
-								class="h-9"
-								v-model="searchCompanyQuery"
-								placeholder="Search company..."
-							/>
-							<CommandEmpty>No company found.</CommandEmpty>
-							<CommandList>
-								<CommandGroup>
-									<CommandItem
-										v-for="company in companies.data"
-										:key="company.id"
-										:value="company.value ?? ''"
-										@select="() => handleCompanySelect(company)"
-									>
-										{{ company.label }}
-										<VIcon
-											name="fa-check"
-											:class="[
-												'ml-auto h-4 w-4',
-												filterForm.company === company.id
-													? 'opacity-100'
-													: 'opacity-0'
-											]"
-										/>
-									</CommandItem>
-								</CommandGroup>
-							</CommandList>
-						</Command>
-					</PopoverContent>
-				</Popover>
+				<div
+					class="flex flex-col md:flex-row gap-x-2 md:justify-items-center md:items-center mx-auto w-full"
+				>
+					<div class="w-1/3 text-left lg:text-right my-auto">
+						<p>Company</p>
+					</div>
+					<Popover class="col-span-1" v-model:open="companies.is_open">
+						<PopoverTrigger as-child>
+							<Button
+								variant="outline"
+								role="combobox"
+								:aria-expanded="companies.is_open"
+								class="w-full lg:w-1/3 justify-between px-3"
+								:disabled="companies.is_loading"
+							>
+								{{
+									filterForm.company
+										? companies.data.find(
+												(company) => company.id === filterForm.company
+											)?.label
+										: 'Select company'
+								}}
+								<VIcon
+									name="fa-circle-notch"
+									v-if="companies.is_loading"
+									animation="spin"
+									class="w-4 h-4 mr-2"
+								/>
+								<VIcon
+									v-else
+									name="fa-angle-down"
+									class="h-4 w-4 shrink-0 opacity-50"
+								/>
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent class="md:w-[500px] p-1">
+							<Command>
+								<CommandInput
+									class="h-9"
+									v-model="searchCompanyQuery"
+									placeholder="Search company..."
+								/>
+								<CommandEmpty>No company found.</CommandEmpty>
+								<CommandList>
+									<CommandGroup>
+										<CommandItem
+											v-for="company in companies.data"
+											:key="company.id"
+											:value="company.value ?? ''"
+											@select="() => handleCompanySelect(company)"
+										>
+											{{ company.label }}
+											<VIcon
+												name="fa-check"
+												:class="[
+													'ml-auto h-4 w-4',
+													filterForm.company === company.id
+														? 'opacity-100'
+														: 'opacity-0'
+												]"
+											/>
+										</CommandItem>
+									</CommandGroup>
+								</CommandList>
+							</Command>
+						</PopoverContent>
+					</Popover>
+				</div>
+				<div class="flex self-end justify-end justify-self-end space-x-2">
+					<Button @click="filter" class="w-[100px]">Filter</Button>
+				</div>
 			</div>
 		</div>
-		<div class="flex self-end justify-end justify-self-end mt-3">
-			<Button @click="filter" class="w-[100px]">Filter</Button>
-		</div>
-		<Separator class="my-3" />
-		<div class="flex justify-end space-x-2">
-			<Button @click="all" class="w-[100px]">All</Button>
+		<Separator class="border-primary" />
+		<div class="p-4">
+			<div class="flex justify-end space-x-2">
+				<Button @click="all" class="w-[100px]">All</Button>
+			</div>
 		</div>
 	</div>
 </template>

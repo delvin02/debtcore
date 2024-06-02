@@ -73,11 +73,6 @@ async function submit() {
 }
 function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
-	//if (is_dialog_open.value) {
-	// init()
-	// fetchCountries(searchCustomerQuery.value)
-	// fetchStatuses()
-	//}
 }
 </script>
 

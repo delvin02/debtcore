@@ -4,9 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: gunicorn --bind 0.0.0.0:$PORT debtcore.wsgi:application
+    image: backend:latest
+    command: sh -c "sleep 10 && python -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:5678 --wait-for-client manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
+      - "5678:5678"  
     volumes:
       - .:/app
     depends_on:
@@ -14,11 +16,11 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
-      - DEBUG=1
-      - PORT=8000
       - PYTHONPATH=/app/debtcore:$PYTHONPATH
-      - DJANGO_SETTINGS_MODULE=debtcore.settings
+      - PORT=8000
 
   celery:
     build:
@@ -33,11 +35,9 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
-    environment:
-      - DEBUG=1
-      - PYTHONPATH=/app/debtcore:$PYTHONPATH
-      - DJANGO_SETTINGS_MODULE=debtcore.settings
-    command: celery -A debtcore.celery worker -l info
+    env_file:
+      - .env
+    command: python -m debugpy --listen 0.0.0.0:6000 --wait-for-client -m celery -A debtcore.celery worker -l info
     ports:
       - 6000:6000
 
@@ -54,10 +54,8 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
-    environment:
-      - DEBUG=1
-      - PYTHONPATH=/app/debtcore:$PYTHONPATH
-      - DJANGO_SETTINGS_MODULE=debtcore.settings
+    env_file:
+      - .env
     command: celery -A debtcore.celery beat -l info
 
   rabbitmq:
@@ -93,25 +91,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
-  frontend:
-    build: 
-      context: ./debtcore/vue-app
-      dockerfile: Dockerfile
-    command: sh -c "npm run dev"
-    ports:
-      - "5174:5174"
-    volumes:
-      - ./debtcore/vue-app:/app
-      - /app/node_modules
-    environment:
-      - BROWSER=none
-      - VITE_BACKEND_URL='https://3c0f-211-26-122-216.ngrok-free.app'
-    env_file:
-      - .env
-    depends_on:
-      backend:
-        condition: service_started
 
 volumes:
   dbdata:

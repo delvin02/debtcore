@@ -80,7 +80,11 @@ async function fetchCountries(query?: string, currentCountryId?: number) {
 		})
 		countries.data = response.data.Result
 	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'There was an error fetching the country list',
+			variant: 'destructive'
+		})
 	} finally {
 		countries.is_loading = false
 	}

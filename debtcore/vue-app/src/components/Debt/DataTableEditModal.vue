@@ -7,7 +7,6 @@ import {
 	DialogTitle,
 	DialogFooter
 } from '@/components/ui/dialog'
-
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
@@ -25,7 +24,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Separator from '../ui/separator/Separator.vue'
 import axios from 'axios'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { useTableStore } from '@/store/table'
 import type { Task } from '@/components/Debt/data/schema'
 import { useToast } from '@/components/ui/toast/use-toast'
@@ -87,7 +86,11 @@ async function fetchCountries(query?: string) {
 
 		customers.data = response.data.Result
 	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'There was an error fetching the select list',
+			variant: 'destructive'
+		})
 	} finally {
 		customers.is_loading = false
 	}
@@ -177,6 +180,7 @@ async function submit() {
 		toggleDialog()
 
 		await tableStore.refresh(tableStore.page_index)
+		console.log('hello ' + tableStore.page_index)
 		toast({
 			title: response.data.Result,
 			variant: 'success'

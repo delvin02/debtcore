@@ -48,6 +48,7 @@ export const useAuthStore = defineStore('auth', {
 	actions: {
 		async init() {
 			// Make sure to check for null and handle it appropriately
+			this.is_loading = true
 			const accessToken = localStorage.getItem('access_token')
 			if (accessToken) {
 				this.access_token = accessToken
@@ -64,6 +65,7 @@ export const useAuthStore = defineStore('auth', {
 			}
 			await this.refresh_user_token()
 			await this.get_user()
+			this.is_loading = false
 		},
 		async login(email: string, password: string) {
 			const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')

@@ -86,7 +86,7 @@ const roles: GenericSelectListModel<SelectList> = reactive({
 async function fetchCompanies() {
 	companies.is_loading = true
 	try {
-		const companyResponse = await axios.get('http://127.0.0.1:8000/api/company/list', {
+		const companyResponse = await axios.get('/api/company/list', {
 			withCredentials: true,
 			headers: {
 				'Cache-Control': 'no-cache',
@@ -106,7 +106,7 @@ async function fetchCompanies() {
 async function fetchRoles() {
 	roles.is_loading = true
 	try {
-		const roleResponse = await axios.get('http://127.0.0.1:8000/api/role-choices/', {
+		const roleResponse = await axios.get('/api/role-choices/', {
 			withCredentials: true,
 			headers: {
 				'Cache-Control': 'no-cache',
@@ -165,7 +165,7 @@ async function submit() {
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.post(
-			'http://127.0.0.1:8000/api/user',
+			'/api/user',
 			{
 				...form
 			},

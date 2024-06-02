@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineModel, ref, computed, watch } from 'vue'
 import { cn } from '@/lib/utils'
-
 import {
 	Sheet,
 	SheetContent,
@@ -12,11 +11,8 @@ import {
 } from '@/components/ui/sheet'
 
 import { Input } from '@/components/ui/input'
-
 import { Label } from '@/components/ui/label'
-
 import { Separator } from '@/components/ui/separator'
-
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
@@ -26,11 +22,9 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue
 } from '@/components/ui/select'
-
 import {
 	Command,
 	CommandEmpty,
@@ -40,10 +34,7 @@ import {
 	CommandList
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-
 import { CardContent } from '@/components/ui/card'
-import DialogFooter from '../ui/dialog/DialogFooter.vue'
-
 import type { AcceptableValue } from 'node_modules/radix-vue/dist/Combobox/ComboboxRoot'
 import type { SelectEvent } from 'node_modules/radix-vue/dist/Combobox/ComboboxItem'
 import { headers } from './data/data'
@@ -255,7 +246,6 @@ console.log(variables.value) // You will see each variable with its count of occ
 						</Popover>
 					</div>
 				</div>
-				<--
 				<div class="border-r-2 w-[800px] h-[750px] overflow-auto ml-2">
 					<SheetHeader>
 						<SheetTitle>Template Design (English)</SheetTitle>

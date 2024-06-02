@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, reactive, inject, watch, computed } from 'vue'
 import {
 	Dialog,
 	DialogDescription,
@@ -12,8 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 import { Button } from '@/components/ui/button'
-import { ref, reactive, inject, watch, computed } from 'vue'
-import { cn } from '@/lib/utils'
 import {
 	Command,
 	CommandEmpty,
@@ -60,7 +59,6 @@ const form = reactive<Company>({
 	business_registration_id: '',
 	whatsapp_phone_number: '',
 	email: '',
-
 	streetAddress: '',
 	postcode: '',
 	city: '',

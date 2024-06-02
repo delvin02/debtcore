@@ -95,31 +95,34 @@ const router = createRouter({
 	]
 })
 
+
 router.beforeEach(
 	(to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
 		const auth = useAuthStore()
 		auth.is_loading = true
+		try {
+			const isAuthenticated = auth.isAuthenticated
+			const requiresAuth = to.meta.requiresAuth ?? true
 
-		const isAuthenticated = auth.isAuthenticated
-		const requiresAuth = to.meta.requiresAuth ?? true
+			if (requiresAuth && !isAuthenticated) {
+				next({ name: 'login' })
+				return
+			}
 
-		if (requiresAuth && !isAuthenticated) {
-			next({ name: 'login' })
-			return
+			if (to.name === 'login' && isAuthenticated) {
+				next({ name: 'dashboard' })
+				return
+			}
+
+			next()
+		} catch (error) {
+			console.log(error)
+		} finally {
+			auth.is_loading = false
 		}
 
-		if (to.name === 'login' && isAuthenticated) {
-			next({ name: 'dashboard' })
-			return
-		}
-
-		next()
 	}
 )
 
-router.afterEach(() => {
-	const auth = useAuthStore()
-	auth.is_loading = false
-})
 
 export default router

@@ -80,7 +80,7 @@ const searchCountryQuery = ref('')
 async function fetchCountries(query?: string, currentCountryId?: number) {
 	countries.is_loading = true
 	try {
-		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		var url = `/api/country/list?search=${query}`
 		if (currentCountryId) {
 			url += `&current_country=${currentCountryId}`
 		}
@@ -94,7 +94,11 @@ async function fetchCountries(query?: string, currentCountryId?: number) {
 		})
 		countries.data = response.data.Result
 	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'There was an error fetching the select list',
+			variant: 'destructive'
+		})
 	} finally {
 		countries.is_loading = false
 	}
@@ -116,7 +120,7 @@ watch(
 
 async function init() {
 	try {
-		const response = await axios.get(`http://127.0.0.1:8000/api/company/${props.row.id}/`)
+		const response = await axios.get(`/api/company/${props.row.id}/`)
 
 		Object.assign(form, response.data.Result)
 		if (form.country) {
@@ -124,6 +128,12 @@ async function init() {
 		}
 		is_loading.value = false
 	} catch (error) {
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'Failed to retrieved the data',
+			variant: 'destructive'
+		})
+	} finally {
 		is_loading.value = false
 	}
 }

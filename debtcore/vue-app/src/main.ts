@@ -148,7 +148,7 @@ addIcons(
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL
 
-export const baseURL = '/'
+export const baseURL = ''
 axios.defaults.baseURL = baseURL
 axios.defaults.withCredentials = true
 

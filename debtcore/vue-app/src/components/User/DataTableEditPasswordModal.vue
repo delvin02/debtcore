@@ -78,7 +78,7 @@ async function submit() {
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.post(
-			'http://127.0.0.1:8000/api/user/change-password/',
+			'/api/user/change-password/',
 			{
 				...form
 			},

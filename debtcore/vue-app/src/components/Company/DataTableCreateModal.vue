@@ -77,7 +77,7 @@ const searchCountryQuery = ref('')
 async function fetchCountries(query?: string, currentCountryId?: number) {
 	countries.is_loading = true
 	try {
-		var url = `http://127.0.0.1:8000/api/country/list?search=${query}`
+		var url = `/api/country/list?search=${query}`
 		if (currentCountryId) {
 			url += `&current_country=${currentCountryId}`
 		}
@@ -136,8 +136,8 @@ async function submit() {
 	is_loading.value = true
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
-		const response = await axios.post(
-			'http://127.0.0.1:8000/api/company',
+		await axios.post(
+			'/api/company',
 			{
 				...form
 			},

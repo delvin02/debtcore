@@ -3,7 +3,6 @@ import tasks from '@/components/Company/data/tasks.json'
 import DataTable from '@/components/Company/DataTable.vue'
 import { columns } from '@/components/Company/columns'
 import type { Task } from '@/components/Company/data/schema'
-import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount } from 'vue'
 import { useTableStore } from '@/store/table'
 

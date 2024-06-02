@@ -2,12 +2,10 @@
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogHeader,
 	DialogTitle,
 	DialogFooter
 } from '@/components/ui/dialog'
-
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Label } from '@/components/ui/label'
@@ -20,7 +18,6 @@ import axios from 'axios'
 import { format, parseISO, addDays } from 'date-fns'
 import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
-import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 import type { Task } from '@/components/Transaction/data/schema'
 import { CalendarDate, type DateValue, getLocalTimeZone } from '@internationalized/date'
@@ -71,7 +68,11 @@ async function init() {
 
 		console.log(form.scheduled_date)
 	} catch (error) {
-		console.log(error)
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'There was an error in initialising the form',
+			variant: 'destructive'
+		})
 	} finally {
 		is_loading.value = false
 	}

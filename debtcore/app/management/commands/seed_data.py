@@ -67,7 +67,7 @@ class Command(BaseCommand):
             self.stdout.write(f'Created company: {company.name}')
 
     def seed_users(self):
-        if not User.objects.filter(email='admin@gmail.com').exists():
+        if not User.objects.filter(email='admin').exists():
             admin_user = User.objects.create_superuser(
                 email='admin@gmail.com',
                 name='Admin',

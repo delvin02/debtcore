@@ -72,21 +72,22 @@ const searchCountryQuery = ref('')
 async function fetchCountries(query?: string) {
 	countries.is_loading = true
 	try {
-		const response = await axios.get(
-			`http://127.0.0.1:8000/api/country/list?search=${query || ''}`,
-			{
-				withCredentials: true,
-				headers: {
-					'Cache-Control': 'no-cache',
-					Pragma: 'no-cache',
-					Expires: '0'
-				}
+		const response = await axios.get(`/api/country/list?search=${query || ''}`, {
+			withCredentials: true,
+			headers: {
+				'Cache-Control': 'no-cache',
+				Pragma: 'no-cache',
+				Expires: '0'
 			}
-		)
+		})
 
 		countries.data = response.data.Result
 	} catch (error) {
-		console.error('There was an error fetching the select list:', error)
+		toast({
+			title: 'Whoops, something went wrong',
+			description: 'There was an error fetching the country list',
+			variant: 'destructive'
+		})
 	} finally {
 		countries.is_loading = false
 	}
@@ -134,7 +135,7 @@ async function submit() {
 	const drfCsrf = JSON.parse(document.getElementById('drf_csrf')?.textContent || '{}')
 	try {
 		const response = await axios.post(
-			'http://127.0.0.1:8000/api/customer',
+			'/api/customer',
 			{
 				...form
 			},

@@ -21,19 +21,35 @@ class SessionView(APIView):
     
 
     def get(self, request, *args, **kwargs):
+        invoice = request.query_params.get('invoice')
         filtered_company = request.query_params.get('company')
         start_date = request.query_params.get('date[start]')
         end_date = request.query_params.get('date[end]')
         
-        query = Q()
-        if filtered_company:
-            query &= Q(company=filtered_company)
+        if start_date:
+            start_date = timezone.datetime.strptime(start_date, "%Y-%m-%d").date()
+        if end_date:
+            end_date = timezone.datetime.strptime(end_date, "%Y-%m-%d").date()
         
+        # Set the default date range for the last 90 days if no dates are provided
         if not start_date and not end_date:
             end_date = timezone.now()
             start_date = end_date - timedelta(days=90)
-        
-        query &= Q(scheduled_date__range=[start_date, end_date])
+
+        # Construct the Q object for the query
+        # Either invoice matches OR (date range AND company matches)
+        date_and_company_query = Q()
+        if filtered_company:
+            date_and_company_query &= Q(company__id=filtered_company)  # Assuming you're passing company ID
+
+        date_and_company_query &= Q(scheduled_date__range=[start_date, end_date])
+
+        # Combine with invoice query
+        query = Q()
+        if invoice:
+            query |= Q(invoice__iexact=invoice)  # Invoice is provided, so we use it in an OR condition
+
+        query |= date_and_company_query
         
         sessions = Session.objects.filter(query).order_by('-created_date')
         serializer = SessionTableSerializer(sessions, many=True)

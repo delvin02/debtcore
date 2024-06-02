@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import tasks from '@/components/Customer/data/tasks.json'
 import DataTable from '@/components/Customer/DataTable.vue'
 import { columns } from '@/components/Customer/columns'
 import type { Task } from '@/components/Customer/data/schema'
-import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount } from 'vue'
 import { useTableStore } from '@/store/table'
 
@@ -28,6 +26,7 @@ onMounted(async () => {
 })
 
 provide('tableStore', tableStore)
+console.log(tableStore)
 
 onBeforeUnmount(() => {
 	tableStore.$reset()

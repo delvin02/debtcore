@@ -1,29 +1,23 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
 	SheetHeader,
-	SheetTitle,
-	SheetTrigger
+	SheetTitle
 } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import Nav, { type LinkProp } from './Nav.vue'
 import NavMobile from './NavMobile.vue'
-
 import { useSideBarStore } from '@/store/sidebar'
 import { useAuthStore } from '@/store/user'
-
-const defaultLayout = [15, 85]
 
 const store = useSideBarStore()
 const user = useAuthStore()
 
-console.log(store.screenMdOrLarger)
 const links: LinkProp[] = [
 	{
 		title: 'Dashboard',
@@ -76,29 +70,28 @@ const adminLink: LinkProp[] = [
 </script>
 
 <template>
-	<ResizablePanel
-		id="resize-panel-1"
-		:default-size="defaultLayout[0]"
+	<div
 		collapsible
 		:class="
 			cn(
 				store.isCollapsed &&
 					'md:flex justify-items-center justify-center items-center md:position-fixed md:min-w-[50px] md:min-h-full md:max-w-[80px] flex',
-				'hidden md:block transition-all duration-300 ease-in-out'
+				'hidden md:block transition-all duration-300 ease-in-out border bg-border/20',
+				'md:w-64'
 			)
 		"
 		@expand="store.onExpand"
 		@collapse="store.onCollapse"
-		default="{20}"
 		:disabled="true"
 	>
 		<div
 			:class="cn('flex items-center justify-center', store.isCollapsed ? 'h-[52px]' : 'px-2')"
 		>
-			<h1 class="text-2xl font-bold">DebtCore</h1>
+			<h1 v-if="!store.isCollapsed" class="text-2xl font-bold my-2">DebtCore</h1>
+			<h1 v-else class="text-2xl font-bold my-2">DC</h1>
 		</div>
-		<Separator />
-		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
+		<Separator :class="cn('bg-primary/60')" />
+		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-medium">
 			Dashboard
 		</h1>
 		<Nav
@@ -107,7 +100,7 @@ const adminLink: LinkProp[] = [
 			:class="cn(store.isCollapsed && 'items-center')"
 		/>
 		<Separator />
-		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
+		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-medium">
 			Management
 		</h1>
 		<Nav
@@ -116,7 +109,7 @@ const adminLink: LinkProp[] = [
 			:class="cn(store.isCollapsed && 'items-center')"
 		/>
 		<Separator />
-		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
+		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-medium">
 			Settings
 		</h1>
 		<Nav
@@ -126,7 +119,7 @@ const adminLink: LinkProp[] = [
 		/>
 		<div v-show="user.is_admin">
 			<Separator />
-			<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-thin">
+			<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-medium">
 				Admin
 			</h1>
 			<Nav
@@ -135,7 +128,7 @@ const adminLink: LinkProp[] = [
 				:class="cn(store.isCollapsed && 'items-center')"
 			/>
 		</div>
-	</ResizablePanel>
+	</div>
 	<Sheet
 		v-if="!store.screenMdOrLarger"
 		:open="store.isCollapsed"
@@ -162,5 +155,4 @@ const adminLink: LinkProp[] = [
 			</SheetHeader>
 		</SheetContent>
 	</Sheet>
-	<ResizableHandle id="resize-handle-1" />
 </template>

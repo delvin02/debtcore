@@ -3,7 +3,6 @@ import tasks from '@/components/Debt/data/tasks.json'
 import DataTable from '@/components/Debt/DataTable.vue'
 import { columns } from '@/components/Debt/columns'
 import type { Task } from '@/components/Debt/data/schema'
-import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount } from 'vue'
 import { useTableStore } from '@/store/table'
 
@@ -30,6 +29,7 @@ onMounted(async () => {
 })
 
 provide('tableStore', tableStore)
+console.log(tableStore)
 
 onBeforeUnmount(() => {
 	tableStore.$reset()
@@ -53,4 +53,3 @@ onBeforeUnmount(() => {
 		</div>
 	</div>
 </template>
-
