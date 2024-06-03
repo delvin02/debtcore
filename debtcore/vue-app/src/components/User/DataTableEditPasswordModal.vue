@@ -130,7 +130,7 @@ function toggleDialog() {
 <template>
 	<div>
 		<div>
-			<Button variant="default" size="sm" class="hidden h-8 lg:flex" @click="toggleDialog">
+			<Button variant="default" size="sm" class="h-8 lg:flex" @click="toggleDialog">
 				<!-- <MixerHorizontalIcon class="mr-2 h-4 w-4" /> -->
 				<VIcon name="fa-lock" class="size-4" />
 			</Button>

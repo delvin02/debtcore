@@ -43,7 +43,7 @@ const exportExcel = () => {
 		const due_date = formatDate(row.getValue('due_date') as Date)
 		const overdue = (row.getValue('overdue') as number) + ' day(s)'
 		const amount = ('RM ' + row.getValue('amount')) as string
-		const attachment = `=HYPERLINK("${baseURL}${row.getValue('document_url') as string}", "Click Link Here")`
+		const attachment = `=HYPERLINK("${window.location.origin}${row.getValue('document_url') as string}", "Click Link Here")`
 		const status = statuses.find(
 			(status) => status.value === row.original.status.toString()
 		)?.label

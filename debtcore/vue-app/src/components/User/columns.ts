@@ -37,7 +37,7 @@ export const columns: ColumnDef<Task>[] = [
 	{
 		accessorKey: 'name',
 		header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Name' }),
-		cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('name')),
+		cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('name')),
 		enableSorting: true,
 		enableHiding: true,
 		enableColumnFilter: true,
@@ -54,7 +54,7 @@ export const columns: ColumnDef<Task>[] = [
 		accessorKey: 'email',
 		header: ({ column }) =>
 			h(DataTableColumnHeader, { column, title: column.columnDef.meta!.title }),
-		cell: ({ row }) => h('div', { class: 'w-20' }, row.getValue('email')),
+		cell: ({ row }) => h('div', { class: 'w-fit' }, row.getValue('email')),
 		enableSorting: true,
 		enableHiding: true,
 		meta: {

@@ -8,13 +8,10 @@ import {
 	DialogFooter,
 	DialogScrollContent
 } from '@/components/ui/dialog'
-
 import { Input } from '@/components/ui/input'
-
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ref, reactive, inject, watch } from 'vue'
-import { cn } from '@/lib/utils'
 import {
 	Command,
 	CommandEmpty,
@@ -188,7 +185,7 @@ function updateCountryQuery(event: any) {
 			<Button
 				variant="default"
 				size="sm"
-				class="hidden h-8 ml-2 lg:flex"
+				class="h-8 ml-2 flex"
 				@click="toggleDialog"
 			>
 				<VIcon name="fa-plus" class="size-4" />

@@ -54,7 +54,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-	<div>
+	<div class="max-w-full">
 		<div v-if="auth.is_loading" class="h-screen flex justify-center items-center">
 			<VIcon
 				name="fa-circle-notch"
@@ -68,14 +68,14 @@ onBeforeMount(async () => {
 				<div class="flex h-fit w-full items-stretch">
 					<Sidebar ref="sidebarRef" />
 
-					<div class="flex-1">
+					<div class="flex-1 max-w-full">
 						<Header ref="mainHeaderRef" />
 						<ScrollArea
 							v-if="route.name !== 'conversation'"
 							:style="{ height: wrapperHeight + 'px' }"
 							class="justify-center my-auto"
 						>
-							<router-view class="flex-1" />
+							<router-view />
 						</ScrollArea>
 						<router-view v-else :style="{ height: wrapperHeight + 'px' }" />
 					</div>
