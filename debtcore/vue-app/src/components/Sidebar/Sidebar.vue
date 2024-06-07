@@ -87,10 +87,10 @@ const adminLink: LinkProp[] = [
 		<div
 			:class="cn('flex items-center justify-center', store.isCollapsed ? 'h-[52px]' : 'px-2')"
 		>
-			<h1 v-if="!store.isCollapsed" class="text-2xl font-bold my-2">DebtCore</h1>
-			<h1 v-else class="text-2xl font-bold my-2">DC</h1>
+			<h1 v-if="!store.isCollapsed" class="text-3xl font-bold my-3">DebtCore</h1>
+			<h1 v-else class="text-2xl font-bold">DC</h1>
 		</div>
-		<Separator :class="cn('bg-primary/60')" />
+		<Separator :class="cn('bg-primary/40')" />
 		<h1 v-if="!store.isCollapsed" class="text-left mt-2 mx-3 text-foreground font-medium">
 			Dashboard
 		</h1>

@@ -61,12 +61,7 @@ class SessionView(APIView):
             serializer.save()
             return JsonResponse({'Result': f"{serializer.data.get('name')} created successfully"}, status=201)
 
-        else:
-            errors = {"message": "Session creation failed.", "details": {}}
-            for field, messages in serializer.errors.items():
-                # Assuming messages is a list of error strings
-                errors["details"][field] = " ".join(messages)  # Join messages for simplicity
-            return JsonResponse(errors, status=400)
+        return JsonResponse({'message': "Failed in saving the session."}, status=400)
     
   
 class SessionScheduleEditView(APIView):
@@ -110,3 +105,24 @@ def send_whatsapp(request, *args, **kwargs):
     process_debt_reminder(session_id)
     
     return JsonResponse({'Result': "Please refresh in 5 secs to check the status"}, status=200)
+
+@permission_classes([IsAdminOrStaff])
+@api_view(['PATCH'])
+def refresh_session(request, *args, **kwargs):
+    company = request.user.company
+
+    if not company:
+        return JsonResponse({'message': "Missing company."}, status=400)
+    
+    session_id = request.data.get('id')
+    
+    if not session_id:
+        return JsonResponse({'message': "Session id is missing"}, status=400)
+    
+    session = get_object_or_404(Session, pk=session_id)
+    session.status_code = 0
+    session.transaction_status = 0
+    
+    session.save()
+    
+    return JsonResponse({'Result': "Session updated successfully"}, status=200)

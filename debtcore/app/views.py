@@ -34,8 +34,8 @@ logger = logging.getLogger(__name__)
 class HomeView(TemplateView):
     template_name = "webapp/home.html"
 
-class MathGameView(TemplateView):
-    template_name = "webapp/math-game.html"
+class EmailTemplateView(TemplateView):
+    template_name = "app/invitation_email.html"
 
 
 @api_view(['GET'])

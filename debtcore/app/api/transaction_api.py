@@ -95,7 +95,7 @@ def transaction_card_data(request):
     
 
     settled_debts_amount = Debt.objects.filter(
-        Q(company=company) & Q(status=Debt.get_key_for_status('Done'))
+        Q(company=company) & Q(status=Debt.get_key_for_status('Claimed'))
     ).aggregate(
         active_debts_amount=Sum('amount')
     )['active_debts_amount'] or 0

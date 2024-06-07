@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 
 app_name = 'webapp'
 urlpatterns = [
+    path('email', EmailTemplateView.as_view(), name='email'),
     path('', HomeView.as_view(), name='homepage'),
     path('x/api/whatsapp', WhatsappWebhook.as_view(), name="whatsapp" ),
     path('api/me/', me, name="me"),
@@ -57,6 +58,8 @@ urlpatterns = [
     path('api/session', SessionView.as_view(), name="get_sessions"),
     path('api/session/<int:session_id>/scheduled_date', SessionScheduleEditView.as_view(), name="get_session_schedule"),
     path('api/session/<int:session_id>/send_whatsapp', send_whatsapp, name="session_send_whatsapp"),
+    path('api/session/refresh_session', refresh_session, name="session_send_whatsapp"),
+
     # Conversation
     path('api/conversations', ConversationView.as_view, name="conversations"),
 

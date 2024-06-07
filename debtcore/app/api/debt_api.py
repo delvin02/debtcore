@@ -55,8 +55,8 @@ class DebtView(APIView):
             
             #If cancelled, then cancel existing sessions
             status_key = serializer.data.get('status')
-            canceled_status = Debt.get_key_for_status('Canceled')
-            if status_key == canceled_status:
+            progress_status = Debt.get_key_for_status('In Progress')
+            if status_key != progress_status:
                 debt_session_cancel_process.delay(debt_id)
             
             return Response({'Result': 'Debt updated.'}, status=status.HTTP_201_CREATED)

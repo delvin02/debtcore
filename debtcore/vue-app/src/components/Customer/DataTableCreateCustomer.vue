@@ -224,7 +224,7 @@ function updateCountryQuery(event: any) {
 						<Input
 							id="whatsapp_phone"
 							v-model="form.whatsapp_phone_number"
-							placeholder="012-9886348"
+							placeholder="0129876348"
 							class="col-span-3"
 						/>
 					</div>

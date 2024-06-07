@@ -76,7 +76,7 @@ import {
 	BiWhatsapp
 } from 'oh-vue-icons/icons/bi/index.js'
 
-import { MdCancel, MdPendingactions } from 'oh-vue-icons/icons/md/index.js'
+import { MdCancel, MdPendingactions,MdRefresh  } from 'oh-vue-icons/icons/md/index.js'
 
 addIcons(
 	FaExclamationTriangle,
@@ -143,7 +143,8 @@ addIcons(
 	FaDownload,
 	FaMapPin,
 	BiArrowLeftRight,
-	BiWhatsapp
+	BiWhatsapp,
+	MdRefresh 
 )
 
 // const baseURL = import.meta.env.VITE_BACKEND_URL

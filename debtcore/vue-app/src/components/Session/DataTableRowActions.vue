@@ -3,22 +3,15 @@ import type { Row } from '@tanstack/vue-table'
 import { computed } from 'vue'
 import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
-
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
 	DropdownMenuSeparator,
-	DropdownMenuShortcut,
-	DropdownMenuSub,
-	DropdownMenuSubContent,
-	DropdownMenuSubTrigger,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 
+import DataTableRefreshSession from './DataTableRefreshSession.vue'
 import DataTableEditScheduleModal from './DataTableEditScheduleModal.vue'
 import DataTableSendMessageModal from './DataTableSendMessageModal.vue'
 
@@ -41,6 +34,7 @@ const task = computed(() => taskSchema.parse(props.row.original))
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" class="w-min-fit">
 				<DataTableEditScheduleModal :row="task" />
+				<DataTableRefreshSession :row="task" />
 				<DropdownMenuSeparator />
 				<DataTableSendMessageModal :row="task" />
 			</DropdownMenuContent>

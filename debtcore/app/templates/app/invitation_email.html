@@ -1,0 +1,63 @@
+<!-- templates/invitation_email.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invitation</title>
+
+    <style>
+      * {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content:center;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 720px;
+      }
+      .button {
+        padding: 10px 15px;
+        font-weight: bold;
+        margin-top: 5px;
+      }
+      my-2 {
+        margin: 2rem 0;
+      }
+      .bg-primary {
+        background-color: rgb(15, 23, 42);
+      }
+      .text-white {
+        color: white;
+      }
+    </style>
+</head>
+<body>
+  <section class="container">
+    <header>
+        <a href="#">
+            DebtCore
+        </a>
+    </header>
+
+    <main class="mt-8">
+        <h2 class="text-gray-700 dark:text-gray-200">Hi Olivia,</h2>
+
+        <p class="my-2 leading-loose text-gray-600 dark:text-gray-300">
+            Alicia has invited you to join the team on <span class="font-semibold ">Meraki UI</span>.
+        </p>
+        
+        <button class="button bg-primary text-white">
+            Accept the invite
+        </button>
+        
+        <p class="mt-8 text-gray-600 dark:text-gray-300">
+            Thanks, <br>
+            DebtCore Team
+        </p>
+    </main>
+    
+
+</section>
+</body>
+</html>

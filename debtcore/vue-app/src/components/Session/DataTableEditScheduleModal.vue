@@ -2,7 +2,6 @@
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogHeader,
 	DialogTitle,
 	DialogFooter
@@ -125,7 +124,7 @@ function updateScheduleDate(payload: any) {
 			<Button
 				variant="ghost"
 				size="sm"
-				class="hidden h-8 lg:flex w-full"
+				class="h-8 flex justify-start w-full"
 				@click="toggleDialog"
 			>
 				<VIcon name="fa-pen" class="size-4 mr-2" />
@@ -202,4 +201,3 @@ function updateScheduleDate(payload: any) {
 		</Dialog>
 	</div>
 </template>
-@/components/Transaction/data/schema

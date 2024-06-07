@@ -25,7 +25,13 @@ def debt_session_cancel_process(debt_id):
             for session in sessions:
                 session.status_code = StatusCode.WHATSAPP_SCHEDULED_MESSAGE_CANCELED.value
                 session.transaction_status = TransactionStatus.COMPLETED_SKIPPED.value  # Corrected typo here
-                session.additional_info = "Debt canceled, operation terminated."
+                
+                
+                status_key = int(session.debt.status)
+                status_text = Debt.get_status_text_for_key(status_key)
+                
+                session.additional_info = f"Debt {status_text}, operation terminated."
+               
                 session.save()
                     
     except Debt.DoesNotExist:

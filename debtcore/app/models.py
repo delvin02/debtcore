@@ -230,7 +230,7 @@ class Debt(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     STATUS_CHOICES = (
         (1, 'In Progress'),
-        (2, 'Done'),
+        (2, 'Claimed'),
         (3, 'Canceled')
     )
 

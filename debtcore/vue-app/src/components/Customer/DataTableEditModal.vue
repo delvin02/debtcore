@@ -9,9 +9,7 @@ import {
 	DialogFooter
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-
 import { Label } from '@/components/ui/label'
-
 import { Button } from '@/components/ui/button'
 import {
 	Command,
@@ -27,7 +25,6 @@ import axios from 'axios'
 import type { Task } from './data/schema'
 import { useTableStore } from '@/store/table'
 import { useToast } from '@/components/ui/toast/use-toast'
-import { Checkbox } from '@/components/ui/checkbox'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 
@@ -246,7 +243,7 @@ function updateCountryQuery(event: any) {
 							<Input
 								id="whatsapp_phone"
 								v-model="form.whatsapp_phone_number"
-								placeholder="01110155555"
+								placeholder="0129876348"
 								class="col-span-3"
 							/>
 						</div>
