@@ -29,7 +29,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="p-8 space-y-8 h-full">
+	<div class="p-4 md:p-8 space-y-8 h-full">
 		<div class="flex items-center justify-between space-y-2">
 			<div>
 				<h2 class="text-2xl font-bold tracking-tight">Company</h2>

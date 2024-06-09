@@ -16,7 +16,7 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import sys
 import mimetypes
-
+from kombu import Exchange, Queue
 
 load_dotenv() 
 
@@ -350,6 +350,19 @@ DOMAIN = os.getenv("DOMAIN")
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
+CELERY_TASK_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default', durable=True),
+)
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_PUBLISH_RETRY = True
+CELERY_TASK_PUBLISH_RETRY_POLICY = {
+    'max_retries': 5,
+    'interval_start': 0,
+    'interval_step': 0.2,
+    'interval_max': 0.2,
+}
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 

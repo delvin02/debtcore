@@ -24,7 +24,22 @@ class TransactionView(APIView):
         if not company:
             return JsonResponse({'message': "Missing company."}, status=400)
         
-        sessions = Session.objects.filter(company=company).order_by('-created_date')
+        start_date = request.query_params.get('date[start]')
+        end_date = request.query_params.get('date[end]')
+        
+        if start_date:
+            start_date = timezone.datetime.strptime(start_date, "%Y-%m-%d").date()
+        if end_date:
+            end_date = timezone.datetime.strptime(end_date, "%Y-%m-%d").date()
+        
+        # Set the default date range for the last 90 days if no dates are provided
+        if not start_date and not end_date:
+            end_date = timezone.now()
+            start_date = end_date - timedelta(days=90)
+
+        query = Q(scheduled_date__range=[start_date, end_date]) & Q(company=company)
+
+        sessions = Session.objects.filter(query).order_by('-created_date')
         serializer = TransactionTableSerializer(sessions, many=True)
         return JsonResponse({'Result': serializer.data}, status=200)
     

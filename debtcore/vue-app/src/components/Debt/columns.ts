@@ -38,13 +38,21 @@ export const columns: ColumnDef<Task>[] = [
 		accessorKey: 'invoice',
 		header: ({ column }) => h(DataTableColumnHeader, { column, title: 'Invoice' }),
 		cell: ({ row }) =>
-			h(
+		{
+			const status = statuses.find(
+				(status) => status.value === row.original.status.toString()
+			)
+
+			if (!status) return null
+
+			return h(
 				'div',
 				{
-					class: `w-20 font-bold ${row.original.editable ? '' : 'line-through decoration-red-600'}`
+					class: `w-20 font-bold ${status.label == "Canceled" ? 'line-through decoration-red-600' : ''}`
 				},
 				row.getValue('invoice')
-			),
+			)
+		},
 		enableSorting: true,
 		enableHiding: true,
 		filterFn: (row, id, value) => {

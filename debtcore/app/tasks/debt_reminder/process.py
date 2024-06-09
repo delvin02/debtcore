@@ -101,6 +101,9 @@ class DebtReminderProcessor(ServiceProcessorBase):
             request_send_message = MessageRequest(client, whatsapp_company_profile.whatsapp_id)
             sync_send_message = async_to_sync(request_send_message.send_test_message)
             response = sync_send_message(text_message)
+
+            # assigning the returned record to the db
+            session.whatsapp_message_id = response.get('messages')[0].get('id')
             
             self.complete_session_success(session, 
                                           StatusCode.WHATSAPP_SCHEDULED_MESSAGE_SUCCESS.value, 

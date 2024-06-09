@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Session
+from app.models import Session, Debt
 from django.utils import timezone
 from debtcore_shared.common.enum import *
 import datetime
@@ -116,6 +116,5 @@ class TransactionTableSerializer(serializers.ModelSerializer):
     
     def get_editable(self, obj) -> bool:
         SUCCESS_CODES = (200, 202, 203) 
-
         return obj.transaction_status == TransactionStatus.QUEUED.value or obj.status_code not in SUCCESS_CODES
     

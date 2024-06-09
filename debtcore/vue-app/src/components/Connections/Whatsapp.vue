@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
 						>
 						<CardDescription class="mt-4"
 							>When the connection requires authentication, click the
-							<b>'Authenticate'</b> button. You will be taken to the QBO website to
+							<b>'Authenticate'</b> button. You will be taken to Facebook to
 							re-establish connection to your Organisation.</CardDescription
 						>
 

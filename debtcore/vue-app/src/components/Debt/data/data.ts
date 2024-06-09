@@ -31,7 +31,7 @@ export const statuses = [
 	},
 	{
 		value: '2',
-		label: 'Done',
+		label: 'Claimed',
 		icon: 'fa-check-circle'
 	},
 	{

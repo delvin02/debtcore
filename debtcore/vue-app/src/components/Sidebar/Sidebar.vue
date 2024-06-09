@@ -76,7 +76,7 @@ const adminLink: LinkProp[] = [
 			cn(
 				store.isCollapsed &&
 					'md:flex justify-items-center justify-center items-center md:position-fixed md:min-w-[50px] md:min-h-full md:max-w-[80px] flex',
-				'hidden md:block transition-all duration-300 ease-in-out border bg-border/20',
+				'hidden md:block transition-all duration-300 ease-in-out border bg-border/25',
 				'md:w-64'
 			)
 		"
