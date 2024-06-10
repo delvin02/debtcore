@@ -9,6 +9,7 @@ import type { ComponentMethods } from '@/components/Header/Header.vue'
 import { useAuthStore } from '@/store/user'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import axios from 'axios'
+
 const route = useRoute()
 
 const auth = useAuthStore()

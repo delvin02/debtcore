@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from '@/router'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import axios from 'axios'
+import { createMetaManager } from 'vue-meta';
 
 import {
 	FaExclamationTriangle,
@@ -177,5 +178,6 @@ const app = createApp(App).component('VIcon', OhVueIcon)
 
 app.use(createPinia())
 app.use(router)
+app.use(createMetaManager());
 
 app.mount('#app')

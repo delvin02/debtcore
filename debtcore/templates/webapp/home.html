@@ -8,6 +8,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="{% static 'logo.png' %}" />
     <title>{% block title %}{% endblock %}</title>
     {% comment %} {% if DEBUG %}
     <!-- In development, point to Vite's development server for CSS -->
@@ -15,7 +16,6 @@
     {% else %} {% endif %} {% endcomment %} {% comment %}
     <link rel="stylesheet" href="{% static 'vue/index.css' %}" />
     {% endcomment %}
-    <link rel="stylesheet" href="{% static 'vue/index.css' %}" />
   </head>
   {% endblock %}
   <body class="overflow-hidden m-0 h-full">
@@ -28,9 +28,19 @@
         "csrfToken": "{{ csrf_token }}"
       }
     </script>
-
+    <script
+      type="module"
+      crossorigin
+      src="http://localhost:5174/@vite/client"
+    ></script>
+    <script
+      type="module"
+      crossorigin
+      src="http://localhost:5174/src/main.ts"
+    ></script>
+    {% comment %}
     <script type="module" src="{% static 'vue/main.js' %}"></script>
-    {% comment %} {% if DEBUG %}
+    {% endcomment %} {% comment %} {% if DEBUG %}
     <!-- In development, point to Vite's development server for JS -->
 
     <script
