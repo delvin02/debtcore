@@ -53,7 +53,7 @@ async function fetchCompanies() {
 	console.log('fetching company: ' + auth.user?.company_id)
 	companies.is_loading = true
 	try {
-		const companyResponse = await axios.get('http://127.0.0.1:8000/api/company/list', {
+		const companyResponse = await axios.get('/api/company/list', {
 			withCredentials: true,
 			headers: {
 				'Cache-Control': 'no-cache',
@@ -95,7 +95,7 @@ async function handleCompanySelect(company: any) {
 	companies.is_open = false
 	try {
 		const response = await axios.post(
-			'http://127.0.0.1:8000/api/user/change-company/',
+			'/api/user/change-company/',
 			{
 				...form
 			},

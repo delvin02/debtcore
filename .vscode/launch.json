@@ -12,10 +12,10 @@
         "pathMappings": [
             {
                 "localRoot": "${workspaceFolder}",
-                "remoteRoot": "."
+                "remoteRoot": "/app"
             }
         ],
-        "justMyCode": true,
+        "justMyCode": false,
         "django": true
     },
     {

@@ -2,9 +2,6 @@
 *.sqlite3
 /node_modules
 
-# build from vue, ignore the compiled files
-debtcore/app/static/vue/*
-
 /dbdata/*
 .dbdata/*
 .rabbitmq_data/*
