@@ -128,7 +128,6 @@ function validateForm() {
 	const validations = [
 		{ condition: form.name === '', message: 'Name cannot be blank' },
 		{ condition: form.whatsapp_phone_number === '', message: 'Whatsapp Phone cannot be blank' },
-		{ condition: form.email === '', message: 'Email cannot be blank' },
 		{ condition: form.country == null, message: 'Country cannot be blank' }
 	]
 
@@ -248,21 +247,6 @@ function updateCountryQuery(event: any) {
 							/>
 						</div>
 						<div class="grid grid-cols-4 items-center gap-4">
-							<Label for="email" class="text-right leading-normal">
-								Email
-								<span
-									class="absolute translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 text-red-500 rounded-full"
-									>*</span
-								>
-							</Label>
-							<Input
-								id="email"
-								v-model="form.email"
-								placeholder="hello@example.com"
-								class="col-span-3"
-							/>
-						</div>
-						<div class="grid grid-cols-4 items-center gap-4">
 							<Label for="country" class="text-right leading-normal">
 								Country
 								<span
@@ -342,6 +326,17 @@ function updateCountryQuery(event: any) {
 									</PopoverContent>
 								</Popover>
 							</div>
+						</div>
+						<div class="grid grid-cols-4 items-center gap-4">
+							<Label for="email" class="text-right leading-normal">
+								Email
+							</Label>
+							<Input
+								id="email"
+								v-model="form.email"
+								placeholder="hello@example.com"
+								class="col-span-3"
+							/>
 						</div>
 						<div class="grid grid-cols-4 items-center gap-4">
 							<Label for="business_registration_id" class="text-right">

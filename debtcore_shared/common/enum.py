@@ -39,6 +39,11 @@ class StatusCode(Enum):
     WHATSAPP_SCHEDULED_MESSAGE_MISSING_TEMPLATE = (210, "Scheduled message missing template")
 
     WHATSAPP_SCHEDULED_MESSAGE_ATTACHMENT_NOT_FOUND = (220, "Attachment not found")
+    
+    WHATSAPP_SCHEDULED_MESSAGE_FAILED_TO_SEND = (230, "Failed to send")
+    
+    WHATSAPP_SCHEDULED_MESSAGE_NO_DEFAULT_PHONE= (230, "No default phone has set")
+
 
     def __new__(cls, value, description=None):
         obj = object.__new__(cls)

@@ -94,13 +94,22 @@ class DebtReminderProcessor(ServiceProcessorBase):
             whatsapp_company_profile = company.whatsapp_phone_numbers_company.get(is_default_phone=True)
 
             if not whatsapp_company_profile:
-                  pass
-                  #return JsonResponse({'message': "No default phone found."}, status=404)
+                  self.fail_session(session, 
+                                          StatusCode.WHATSAPP_SCHEDULED_MESSAGE_NO_DEFAULT_PHONE.value, 
+                                          f"No default phone found")
+                  return
 
             client = WhatsappMetaClient(company.meta_access_token)
             request_send_message = MessageRequest(client, whatsapp_company_profile.whatsapp_id)
             sync_send_message = async_to_sync(request_send_message.send_test_message)
-            response = sync_send_message(text_message)
+            try:
+                  response = sync_send_message(text_message)
+            except Exception as e:
+                  logger.error(f"Error {debt.id}, {debt.document.name}, {debt.invoice} \n {e}")
+                  self.fail_session(session, 
+                                          StatusCode.WHATSAPP_SCHEDULED_MESSAGE_FAILED_TO_SEND.value, 
+                                          f"Payment reminder failed to send")
+                  return
 
             # assigning the returned record to the db
             session.whatsapp_message_id = response.get('messages')[0].get('id')

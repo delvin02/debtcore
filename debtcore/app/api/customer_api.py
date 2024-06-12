@@ -43,12 +43,8 @@ class CustomerView(APIView):
             serializer.save()
             return JsonResponse({'Result': f"{serializer.data.get('name')} created successfully"}, status=201)
 
-        else:
-            errors = {"message": "Customer creation failed.", "details": {}}
-            for field, messages in serializer.errors.items():
-                # Assuming messages is a list of error strings
-                errors["details"][field] = " ".join(messages)  # Join messages for simplicity
-            return JsonResponse(errors, status=400)
+        JsonResponse({'message': "Customer creation failed."}, status=400)
+
 
     def patch(self, request, *args, **kwargs):
         customer_id = kwargs.get('customer_id')

@@ -280,7 +280,7 @@ DATABASES = {
         'NAME': os.getenv("MYSQL_NAME", "debtcore"),
         'USER': os.getenv("MYSQL_USER", "lucid"),
         'PASSWORD': os.getenv("MYSQL_PASSWORD", "password"),
-        'HOST': os.getenv("MYSQL_HOST", '13.250.18.104'),  
+        'HOST': os.getenv("MYSQL_HOST", 'localhost'),  
         'PORT': os.getenv("MYSQL_PORT", '3306')
     }
 }
