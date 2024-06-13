@@ -56,4 +56,3 @@ onBeforeUnmount(() => {
 		</div>
 	</div>
 </template>
-@/components/Transaction/columns@/components/Transaction/data/schema

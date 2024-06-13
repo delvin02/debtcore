@@ -29,13 +29,6 @@
         "csrfToken": "{{ csrf_token }}"
       }
     </script>
-    <script type="module" src="{% static 'vue/main.js' %}"></script>
-
-    {% comment %}
-    <script type="module" src="{% static 'vue/main.js' %}"></script>
-    {% endcomment %} {% comment %} {% if DEBUG %}
-    <!-- In development, point to Vite's development server for JS -->
-    
     <script
       type="module"
       crossorigin
@@ -44,8 +37,14 @@
     <script
       type="module"
       crossorigin
-      src="http://localhost:5174/src/main.ts"
+      src="http://localhost:5174/static/vue/src/main.ts"
     ></script>
+
+    {% comment %}
+    <script type="module" src="{% static 'vue/main.js' %}"></script>
+    {% endcomment %} {% comment %} {% if DEBUG %}
+    <!-- In development, point to Vite's development server for JS -->
+    
     {% else %}
     <!-- In production, load the compiled JS from static files -->
     <script type="module" src="{% static 'vue/main.js' %}"></script>

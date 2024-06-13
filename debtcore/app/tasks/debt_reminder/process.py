@@ -1,7 +1,7 @@
 from app.service.base.ServiceProcessorBase import ServiceProcessorBase
 from app.models import Company, Session, Debt, WhatsappTemplate
 from django.core.exceptions import ObjectDoesNotExist
-import json
+import os
 import logging
 from debtcore_shared.common.enum import StatusCode, TransactionStatus
 from django.utils.dateparse import parse_datetime
@@ -56,9 +56,12 @@ class DebtReminderProcessor(ServiceProcessorBase):
             
             template_head: TemplateComponent = TemplateComponent(component_type="header")
 
+            filename = os.path.splitext(os.path.basename(debt.document.name))[0] if debt.document else "Untitled"
+
             # Define the content for the document parameter
             document_content = {
-                  "link": f"{settings.DOMAIN}{debt.document.url}"
+                  "link": f"{settings.DOMAIN}{debt.document.url}",
+                  "filename": filename
             }
 
             whatsapp_template = WhatsappTemplate.objects.get(name='payment_reminder',company=company)

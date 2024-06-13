@@ -72,5 +72,5 @@ class ServiceProcessorBase(Task, ABC):
       session.additional_info = additional_info
       session.transaction_status = transaction_status
       
-      session.completed_date = timezone.now().date()
+      session.completed_date = timezone.now()
       

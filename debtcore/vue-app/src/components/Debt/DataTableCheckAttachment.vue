@@ -161,10 +161,11 @@ async function submit() {
 function replace() {
 	form.document_url = null
 }
-function toggleDialog() {
+
+async function toggleDialog() {
 	is_dialog_open.value = !is_dialog_open.value
 	if (is_dialog_open.value) {
-		init()
+		await init()
 	}
 }
 
@@ -256,8 +257,11 @@ function handleFileChange(event: Event) {
 								fit-parent
 								@loaded="onPdfLoaded"
 								annonation-layer
+								v-if="!is_loading"
 							>
-								<div
+							</VuePDF>
+
+							<div v-else
 									class="flex justify-center my-auto items-center place-items-center"
 								>
 									<VIcon
@@ -267,7 +271,6 @@ function handleFileChange(event: Event) {
 										class="size-8 mr-2 my-auto"
 									/>
 								</div>
-							</VuePDF>
 						</ScrollArea>
 					</div>
 					<img
