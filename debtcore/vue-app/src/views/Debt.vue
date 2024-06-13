@@ -29,7 +29,6 @@ onMounted(async () => {
 })
 
 provide('tableStore', tableStore)
-console.log(tableStore)
 
 onBeforeUnmount(() => {
 	tableStore.$reset()

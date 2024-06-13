@@ -167,7 +167,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "https://eefe-49-178-103-117.ngrok-free.app",
-    "https://d415-211-26-122-216.ngrok-free.app",
     os.getenv("DOMAIN")
 ]
 
@@ -210,7 +209,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000', 
     'http://localhost:5174', 
     'http://127.0.0.1:5174',
-    'https://eefe-49-178-103-117.ngrok-free.app/'
+    os.getenv("DOMAIN")
     ]
 
 

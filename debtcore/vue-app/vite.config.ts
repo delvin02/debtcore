@@ -22,7 +22,7 @@ export default defineConfig({
     },
     host: true
   },
-  // base: `/static/vue/`,
+  base: `/static/vue/`,
   plugins: [
     vue(),
     vueJsx(),
