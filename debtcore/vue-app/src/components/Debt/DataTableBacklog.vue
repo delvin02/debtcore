@@ -220,7 +220,7 @@ function toggleSheet() {
 								class="w-full flex-1"
 							/>
 
-							<Button type="submit" @click="submit"> Save </Button>
+							<Button type="submit" @click="submit" :disabled="is_loading"> Save </Button>
 						</div>
 						<p class="text-xs mt-2">{{ auth.getUsername }}</p>
 					</div>
