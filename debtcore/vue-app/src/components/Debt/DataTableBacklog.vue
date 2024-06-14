@@ -175,7 +175,7 @@ function toggleSheet() {
 				<Separator class="mt-2 mb-4 border-primary border" />
 
 				<div class="flex flex-col justify-between">
-					<ScrollArea class="flex flex-col h-full" :style="{ height: '85vh' }">
+					<ScrollArea class="flex flex-col h-full" :style="{ height: '80vh' }">
 						<div class="pr-4">
 							<div v-for="(msg, index) in messages" :key="index" class="pr-4 my-2">
 								<div class="flex justify-between">

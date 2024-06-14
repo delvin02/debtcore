@@ -32,7 +32,7 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import type { GenericSelectListModel, SelectList } from '@/common/SelectList'
 import _ from 'lodash'
 
-const tableStore = inject('tableStore', useTableStore('debt'))
+const tableStore = inject('tableStore', useTableStore('customer_detail'))
 
 interface DataTableEditModalProps {
 	row: Task

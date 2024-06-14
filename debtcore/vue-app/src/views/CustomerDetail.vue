@@ -11,7 +11,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const customer_id = route.params.customer_id as string
 
-const tableStore = useTableStore('debt')
+const tableStore = useTableStore('customer_detail')
 const debtsUrl = `/api/customer/${customer_id}/debt`
 const map_function = (task: any): Task => {
 	const serialized_task = {

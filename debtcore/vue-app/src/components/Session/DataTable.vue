@@ -116,7 +116,10 @@ watchEffect(() => {
 <template>
 	<div class="flex flex-col space-y-4 text-muted-foreground">
 		<DataTableToolbar :table="table" />
-		<div class="flex rounded-md border">
+		<div v-if="tableStore.is_loading" class="text-center">
+			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
+		</div>
+		<div v-else class="rounded-md border">
 			<Table class="text-xs">
 				<TableHeader>
 					<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">

@@ -7,6 +7,7 @@ import { statuses } from './data/data'
 import DataTableFacetedFilter from './DataTableFacetedFilter.vue'
 import DataTableViewOptions from './DataTableViewOptions.vue'
 import DataTableExportReport from './DataTableExportReport.vue'
+import DataTableRefreshButton from './DataTableRefreshButton.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -48,6 +49,7 @@ const isFiltered = computed(() => props.table.getState().columnFilters.length > 
 			</Button>
 		</div>
 		<DataTableViewOptions :table="table" />
+		<DataTableRefreshButton />
 		<DataTableExportReport :table="table" />
 	</div>
 </template>

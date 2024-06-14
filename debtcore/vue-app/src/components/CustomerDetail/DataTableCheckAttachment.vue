@@ -21,7 +21,7 @@ import _ from 'lodash'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
-const tableStore = inject('tableStore', useTableStore('debt'))
+const tableStore = inject('tableStore', useTableStore('customer_detail'))
 
 interface DataTableEditModalProps {
 	row: Task

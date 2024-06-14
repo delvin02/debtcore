@@ -48,11 +48,7 @@ onBeforeUnmount(() => {
 			<DateRangeFilter />
 		</div>
 		<DashboardCard />
-		<div v-if="transactionStore.is_loading" class="text-center">
-			<VIcon name="fa-circle-notch" animation="spin" speed="slow" class="w-10 h-10" />
-		</div>
-		<div v-else>
-			<DataTable :data="transactionStore.tasks" :columns="columns" />
-		</div>
+
+		<DataTable :data="transactionStore.tasks" :columns="columns" />
 	</div>
 </template>
