@@ -20,6 +20,7 @@ class TransactionStatus(Enum):
 class StatusCode(Enum):
     WAITING = (0, "Waiting")
     COMPANY_DISABLED = (1, "The company is disabled")
+    ERROR = (44, "The debtcore staff is looking at this")
     
     # Whatsapp Message (100-199)
     WHATSAPP_MESSAGE_SUCCESS = (100, "Whatsapp message sent successfully")

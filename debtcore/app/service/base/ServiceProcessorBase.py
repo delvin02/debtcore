@@ -29,6 +29,7 @@ class ServiceProcessorBase(Task, ABC):
             self.process(session)
           except Exception as e:
             self.logger.error(f"Error processing session {session.id}: {e}", exc_info=True)
+            self.fail_session(session, StatusCode.ERROR)
           finally:
             session.save()
         
