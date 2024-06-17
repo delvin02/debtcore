@@ -30,3 +30,42 @@ def create_session_if_not_duplicate(event_type, webhook, company):
             # Add other relevant fields as needed
         )
         return session
+
+'''
+    BUKKU
+'''
+
+def parse_address(address_string):
+    address_lines = address_string.split('\n')
+    
+    # Initialize fields with default empty values
+    street_address = ''
+    city = ''
+    state = ''
+    postcode = ''
+    country = ''
+    
+    if len(address_lines) > 0:
+        street_address = address_lines[0].strip()
+    
+    if len(address_lines) > 1:
+        # Extract postcode and city/state line
+        city_state_line = address_lines[1].strip()
+        postcode_city_state_match = re.match(r'(\d+)?\s*(.*)', city_state_line)
+        
+        if postcode_city_state_match:
+            postcode = postcode_city_state_match.group(1) if postcode_city_state_match.group(1) else ''
+            city_state = postcode_city_state_match.group(2).split(',') if postcode_city_state_match.group(2) else []
+            city = city_state[0].strip() if len(city_state) > 0 else ''
+            state = city_state[1].strip() if len(city_state) > 1 else ''
+
+    if len(address_lines) > 2:
+        country = address_lines[2].strip()
+    
+    return {
+        'streetAddress': street_address,
+        'city': city,
+        'state': state,
+        'postcode': postcode,
+        'country': country
+    }

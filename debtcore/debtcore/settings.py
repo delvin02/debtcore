@@ -105,6 +105,18 @@ LOGGING = {
             "filename": str(BASE_DIR / "logs/debt-reminder.log"),
             "formatter": "detailed",
         },
+        "bukku_sync_invoice_handler": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/bukku-sync-invoice.log"),
+            "formatter": "detailed",
+        },
+        "bukku_sync_contact_handler": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "logs/bukku-sync-contact.log"),
+            "formatter": "detailed",
+        },
     },
     "formatters": {
         "default": {
@@ -159,6 +171,20 @@ LOGGING = {
             'backupCount': 5,
             "propagate": False,
         },
+        "bukku_sync_invoice_logger": {
+            "handlers": ["console", "bukku_sync_invoice_handler"],
+            "level": "INFO",
+            'maxBytes': 1024*1024*10,  
+            'backupCount': 5,
+            "propagate": False,
+        },
+        "bukku_sync_contact_logger": {
+            "handlers": ["console", "bukku_sync_contact_handler"],
+            "level": "INFO",
+            'maxBytes': 1024*1024*10,  
+            'backupCount': 5,
+            "propagate": False,
+        }
     },
 }
 

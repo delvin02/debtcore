@@ -1,4 +1,5 @@
 from app.models import *
+from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
@@ -6,11 +7,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from rest_framework.decorators import action
+from debtcore_shared.bukku.client import BukkuClient
+from debtcore_shared.bukku.api.invoices import InvoicesRequest
 import datetime
 from app.models import Company
 from app.serializers.serializers import *
 from django.shortcuts import get_object_or_404
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
 from app.common.permission import IsAdminOrStaff
 from django.db.models import Q
 
@@ -95,6 +98,52 @@ class CompanySetupView(APIView):
             serializer.save()
             return JsonResponse({'Result': "Company edited successfully"}, status=200)
         return JsonResponse({"error": "Company failed to update", "details": serializer.errors}, status=400)
+class BukkuSetupView(APIView):
+    permission_classes = [IsAdminOrStaff]
+
+    def get(self, request):
+        company = request.user.company
+        if not company:
+            return JsonResponse({'error': 'Company not found'}, status=404)
+        serializer = BukkuSetupSerializer(company)
+        return JsonResponse({'Result': serializer.data}, status=200)
+    
+    def patch(self, request, *args, **kwargs):
+        company = request.user.company
+        if not company:
+            return JsonResponse({'error': 'Company not found'}, status=404)
+        serializer = BukkuSetupSerializer(company, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'Result': "Company edited successfully"}, status=200)
+        return JsonResponse({"error": "Company failed to update", "details": serializer.errors}, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAdminOrStaff])
+def test_bukku(request):
+    company: Company = request.user.company
+
+    if not company:
+        return JsonResponse({'message': "Missing company."}, status=400)
+    
+    bukku_api = request.data.get('bukku_api')
+    bukku_subdomain = request.data.get('bukku_subdomain')
+    bukku_access_token = request.data.get('bukku_access_token')
+
+    client = BukkuClient(bukku_api, bukku_subdomain, bukku_access_token)
+    request = InvoicesRequest(client)
+
+    fetch_invoices = async_to_sync(request.get_invoice_list)
+    try:
+        invoices = fetch_invoices()
+        return JsonResponse({'Result': "Test OK"}, status=200) 
+    except Exception as e:
+        return JsonResponse({'message': "Error fetching invoices.", 'details': str(e)}, status=500)
+
+    
+
+
+    
 
 class GetCompanySelectList(APIView):
     permission_classes = [IsAdminOrStaff]

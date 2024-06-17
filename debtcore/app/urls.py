@@ -29,11 +29,14 @@ urlpatterns = [
     path('api/company/<int:company_id>/', CompanyView.as_view(), name="get_company"),  
     path('api/company/list', GetCompanySelectList.as_view(), name="company_get_list"),
     path('api/company/setup/', CompanySetupView.as_view(), name="get_companies"),
+    path('api/company/setup/bukku', BukkuSetupView.as_view(), name="get_companies"),
+    path('api/company/setup/test-bukku', test_bukku, name="get_companies"),
 
     path('api/customer', CustomerView.as_view(), name="get_companies"),
     path('api/customer/<int:customer_id>/', CustomerView.as_view(), name="get_company"),  
     path('api/customer/<int:customer_id>/debt', CustomerDebtView.as_view(), name="get_company_debt"),  
     path('api/customer/<int:customer_id>/debt/card', customer_debt_card_data, name="get_session_data"),
+    path('api/customer/settings', CustomerSettings.as_view(), name="customer_setting"),
 
     path('api/customer/list', GetCustomerSelectList.as_view(), name="get_customer_list"),
 
@@ -49,6 +52,7 @@ urlpatterns = [
     path('api/template', WhatsappTemplateView.as_view(), name="get_templates"),
     path('api/template/<int:template_id>', WhatsappTemplateView.as_view(), name="get_template"),
     path('api/connections/facebook', FacebookOAuthView.as_view(), name="facebook_oauth"),
+    path('api/connections/bukku', BukkuAuthView.as_view(), name="bukku_oauth"),
 
     # Transaction
     path('api/transaction', TransactionView.as_view(), name="get_transactions"),
@@ -71,5 +75,11 @@ urlpatterns = [
     path('api/setup/phone/setdefault', set_phone_default, name="setup_phone_default"),
     path('api/setup/whatsapp-profile/<str:phone_number_id>', WhatsAppProfileAPIView.as_view(), name="whatsapp_profile"),
     path('api/setup/whatsapp_business/category/list', get_whatsapp_business_category_list, name="get_category_list"),
-    path('api/setup/phone/send-test-message', send_test_message, name="send_test_message")
+    path('api/setup/phone/send-test-message', send_test_message, name="send_test_message"),
+
+
+
+    # Bukku 
+    path('api/bukku/refresh-contact', refresh_contact, name="refresh_contact"),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

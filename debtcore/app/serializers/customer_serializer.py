@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Customer, Debt, Country
+from app.models import Customer, Debt, Country, Company
 from django.utils import timezone
 from .country_serializer import CountrySerializer
 from django.db import models
@@ -14,7 +14,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ['name', 'business_registration_id', 
+        fields = ['name', 
+                  'business_registration_id', 
                   'whatsapp_phone_number', 
                   'email', 
                   'streetAddress', 
@@ -52,6 +53,12 @@ class CustomerSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation['whatsapp_phone_number'] is None:
+            representation['whatsapp_phone_number'] = ''
+        return representation
 
 class CustomerEditSerializer(serializers.ModelSerializer):
     streetAddress = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=255)
@@ -138,7 +145,16 @@ class CustomerChangeSerializer(serializers.Serializer):
     class Meta:
         model = Customer
         fields = ['id', 'name', 'phone', 'email', 'website']
-        
+
+class CustomerSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['default_country']
+
+    def update(self, instance, validated_data):
+        instance.default_country = validated_data.get('default_country', instance.default_country)
+        instance.save()
+        return instance
 
 class CustomerSelectListSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField(source='name')

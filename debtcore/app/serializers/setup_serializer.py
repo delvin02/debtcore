@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import WhatsAppUser, WhatsappTemplate, WhatsAppCompanyProfile  
+from app.models import WhatsAppUser, WhatsappTemplate, WhatsAppCompanyProfile, Company  
 from django.utils import timezone
 from app.serializers.whatsapp_profile_serializer import WhatsAppCompanyProfileSerializer
 
@@ -75,6 +75,12 @@ class WhatsappProfileSerializer(serializers.ModelSerializer):
             setattr(instance, field, value)
         instance.save()
         return instance
+
+class BukkuSetupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['bukku_api', 'bukku_access_token', 'bukku_subdomain']
+        
 
     
 class WhatsappBusinessCategorySelectListSerializer(serializers.Serializer):

@@ -6,12 +6,12 @@ import { taskSchema } from './data/schema'
 import type { Task } from './data/schema'
 import DataTableEditModal from './DataTableEditModal.vue'
 import { ref } from 'vue'
-import { Button } from '@/components/ui/button'
 
 interface DataTableRowActionsProps {
 	row: Row<Task>
 }
 const props = defineProps<DataTableRowActionsProps>()
+console.log(props.row)
 const task = computed(() => taskSchema.parse(props.row.original))
 </script>
 

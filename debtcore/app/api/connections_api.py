@@ -66,3 +66,30 @@ class FacebookOAuthView(APIView):
       company.meta_token_created_date = timezone.now()
       company.save()
       return JsonResponse({'success': True})
+    
+class BukkuAuthView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, format=None):
+      company = request.user.company
+
+      if not company:
+        return JsonResponse({'error': 'Company missing'}, status=400)    
+
+      is_authenticated = company.bukku_access_token is not None
+
+      return JsonResponse({'Result':{
+         'is_authenticated': is_authenticated,
+        }
+      }, status=200)
+    
+    def put(self, request):
+      company = request.user.company
+      if not company:
+        return JsonResponse({'error': 'Company missing'}, status=400)
+      
+      company.bukku_access_token = None
+      company.save()
+
+      return JsonResponse({'success': True}, status=200)
+

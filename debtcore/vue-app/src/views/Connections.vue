@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import Whatsapp from '@/components/Connections/Whatsapp.vue'
+import Bukku from '@/components/Connections/Bukku.vue'
+import { Separator } from '@/components/ui/separator'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { useToast } from '@/components/ui/toast/use-toast'
@@ -31,7 +33,9 @@ onMounted(() => {
 			</div>
 		</div>
 		<div>
-			<Whatsapp />
+			<Whatsapp class="mb-4" />
+			<h4 class="text-xl font-bold tracking-tight my-2">Accounting Softwares</h4>
+			<Bukku />
 		</div>
 	</div>
 </template>

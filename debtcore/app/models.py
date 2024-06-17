@@ -36,7 +36,12 @@ class Country(models.Model):
     def __str__(self):
         return self.name
 
-
+    @staticmethod
+    def get_id_by_name(name: str):
+        try:
+            return Country.objects.get(name=name).id
+        except Country.DoesNotExist:
+            return None
     
     class Meta:
         verbose_name_plural = "Countries"
@@ -63,6 +68,13 @@ class Company(models.Model):
     business_registration_id = models.CharField(max_length=255, null=True)
     whatsapp_business_account_id = models.CharField(max_length=255, blank=True, null=True)
     
+    bukku_api = models.CharField(max_length=255, null=True)
+    bukku_access_token = models.TextField(help_text="Bukku access token", blank=True, null=True)
+    bukku_subdomain = models.CharField(max_length=255, null=True)
+    bukku_last_sync_time = models.DateTimeField(blank=True, null=True)
+    
+    default_country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True, related_name="default_country")
+
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -141,6 +153,8 @@ class Customer(models.Model):
     postcode = models.CharField(max_length=255, null=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="customer_country")
     
+    accounting_id = models.IntegerField(null=True, blank=True)
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="created_customers",
@@ -241,6 +255,8 @@ class Debt(models.Model):
     # Document
     document = models.FileField(upload_to=debt_document_path, validators=[validate_file_extension])
     
+    accounting_id = models.IntegerField(null=True, blank=True)
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="created_debts",

@@ -39,7 +39,9 @@ onBeforeUnmount(() => {
 	<Card class="shadow-none" v-if="!whatsappStore.is_loading">
 		<div class="flex flex-col md:flex-row border-t-4 border-green-600/80 rounded">
 			<CardHeader>
-				<CardTitle><VIcon name="fa-whatsapp" class="size-24 fill-green-500" /></CardTitle>
+				<CardTitle class="my-auto flex items-center">
+					<VIcon name="fa-whatsapp" class="size-32 fill-green-500" />
+				</CardTitle>
 			</CardHeader>
 			<CardHeader class="flex-1">
 				<CardContent class="py-2 pl-0">

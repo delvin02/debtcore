@@ -17,7 +17,6 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 @setup_logging.connect()
 def config_loggers(*args, **kwargs):
     from logging.config import dictConfig
-    from django.conf import settings
     dictConfig(settings.LOGGING)
     
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
@@ -29,14 +28,18 @@ app.conf.update(
     worker_redirect_stdouts_level='INFO',
     broker_connection_retry=True,
     broker_connection_retry_on_startup=True,
-    timezone = 'Australia/Adelaide'
+    timezone = 'Australia/Adelaide',
 )
 
 app.conf.beat_schedule = {
-    'process_debt_reminder': {
-        'task': 'tasks.process_debt_reminder.main',
-        'schedule': crontab(minute='*')
+    'process_bukku': {
+        'task': 'tasks.scheduler.process_bukku',
+        'schedule': crontab(minute='1'),
     },
+# 'process_debt_reminder': {
+    #     'task': 'tasks.process_debt_reminder.main',
+    #     'schedule': crontab(minute='*')
+    # },
     # 'process_webhook': {
     #     'task': 'tasks.process_webhook',
     #     'schedule': crontab(minute='*'),

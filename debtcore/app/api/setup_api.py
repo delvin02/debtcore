@@ -16,7 +16,6 @@ from debtcore_shared.meta.model.MessageObject.Language import Language
 from debtcore_shared.meta.model.MessageObject.TemplateObject import TemplateObject
 from debtcore_shared.meta.model.MessageObject.TemplateComponent import TemplateComponent
 from debtcore_shared.meta.api.message import MessageRequest
-
 from app.common.whatsapp import format_phone_number
 from django.core.files.storage import default_storage
 from debtcore_shared.meta.model.WhatsappProfile import WhatsappProfile

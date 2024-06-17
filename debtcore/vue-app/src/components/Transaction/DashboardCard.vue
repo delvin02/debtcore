@@ -20,10 +20,8 @@ const card_data = reactive<CardData>({
 
 const dataUrl = '/api/transaction/card'
 const init = async () => {
-	try {
-		const response = await axios.get(dataUrl)
-		Object.assign(card_data, response.data.Result)
-	} catch (error) {}
+	const response = await axios.get(dataUrl)
+	Object.assign(card_data, response.data.Result)
 }
 
 onMounted(() => {

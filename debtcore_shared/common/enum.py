@@ -58,4 +58,10 @@ class EventType(Enum):
   INVALID = 0
   WHATSAPP_MESSAGE = 10
   WHATSAPP_SCHEDULED_MESSAGE = 11
-  
+
+  '''
+    BUKKU 100-199
+  '''
+  BUKKU_INVOICE = 101
+  BUKKU_CONTACT = 102
+

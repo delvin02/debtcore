@@ -56,7 +56,33 @@ class CustomerView(APIView):
             return Response({'Result': 'Customer updated'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomerSettings(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        company: Company = request.user.company
+
+        if not company:
+            return JsonResponse({'message': 'Company not found'}, status=404)
+
+        serializer = CustomerSettingSerializer(company)
+        return JsonResponse({'Result': serializer.data}, status=200)
     
+
+    def patch(self, request, *args, **kwargs):
+        company: Company = request.user.company
+
+        if not company:
+            return JsonResponse({'message': 'Company not found'}, status=404) 
+
+        serializer = CustomerSettingSerializer(company, data=request.data, partial=True, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'Result': 'Default country updated'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def customer_debt_card_data(request, *args, **kwargs):

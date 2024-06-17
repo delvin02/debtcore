@@ -6,8 +6,8 @@ import type { Task } from '@/components/Setup/data/schema'
 import axios from 'axios'
 import { onMounted, provide, onBeforeUnmount } from 'vue'
 import Import from '@/components/Setup/Import.vue'
+import Accounting from '@/components/Setup/Accounting.vue'
 import { useTableStore } from '@/store/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const phoneStore = useTableStore('phone')
 
@@ -47,6 +47,7 @@ onBeforeUnmount(() => {
 		<hr />
 
 		<Import />
+		<Accounting />
 		<div>
 			<div class="flex items-center justify-between space-y-2 my-2">
 				<div>
