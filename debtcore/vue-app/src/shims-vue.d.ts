@@ -17,4 +17,32 @@ declare module '@tanstack/vue-table' {
 	interface ColumnMeta<TData extends RowData, TValue> {
 		title: string
 	}
+
+
+	// For image files
+declare module '*.png' {
+  const content: string;
+  export default content;
+}
+
+// You can add more declarations for other file types as needed
+declare module '*.jpg' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.jpeg' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.svg' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.gif' {
+  const content: string;
+  export default content;
+}
 }

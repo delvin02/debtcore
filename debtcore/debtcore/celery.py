@@ -34,7 +34,7 @@ app.conf.update(
 app.conf.beat_schedule = {
     'process_bukku': {
         'task': 'tasks.scheduler.process_bukku',
-        'schedule': crontab(minute='1'),
+        'schedule': crontab(minute='5'),
     },
 # 'process_debt_reminder': {
     #     'task': 'tasks.process_debt_reminder.main',

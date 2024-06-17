@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { connectionStore } from '@/store/connection'
 import { useToast } from '@/components/ui/toast/use-toast'
+import bukku from '@/assets/bukku.png'
 
 const bukkuImage = new URL(bukku, import.meta.url).href
 const connection = connectionStore('bukku')
@@ -40,7 +41,7 @@ onBeforeUnmount(() => {
 	<Card class="shadow-none" v-if="!connection.is_loading">
 		<div class="flex flex-col md:flex-row border-t-4 border-[#0aa89a] rounded">
 			<CardHeader>
-				<CardTitle class="my-auto flex items-center">
+				<CardTitle class="m-auto flex items-center">
 					<img :src="bukkuImage" alt="bukku logo" class="w-32" />
 				</CardTitle>
 			</CardHeader>

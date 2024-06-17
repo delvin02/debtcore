@@ -1,7 +1,8 @@
 import json
 from debtcore_shared.common.enum import EventType
-from app.models import Session
+from app.models import Session, Debt
 import logging
+import re
 
 logger = logging.getLogger("celery")
 
@@ -69,3 +70,4 @@ def parse_address(address_string):
         'postcode': postcode,
         'country': country
     }
+    

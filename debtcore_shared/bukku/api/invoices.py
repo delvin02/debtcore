@@ -16,12 +16,10 @@ class InvoicesRequest():
         endpoint = f"{self.endpoint}/{transaction_id}" 
         return await self.client.get_async(endpoint)
     
-    async def get_invoice_list(self, payment_status: str = None, date_from: str = None):
+    async def get_invoice_list(self, date_from: str = None):
         endpoint = f"{self.endpoint}"
         params = {}
 
-        if payment_status:
-            params['payment_status'] = payment_status
         if date_from:
             params['date_from'] = date_from
 

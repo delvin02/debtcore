@@ -69,7 +69,8 @@ def refresh_contact(request):
 
         # Create or update the Customer instance
         customer, created = Customer.objects.update_or_create(
-            accounting_id=contact_id,  # Use email as a unique identifier for simplicity
+            accounting_id=contact_id,
+            company=company,
             defaults={
                 'name': company_name if company_name else display_name,
                 'business_registration_id': reg_no,
@@ -84,4 +85,4 @@ def refresh_contact(request):
             }
         )
 
-        return JsonResponse({'Result': "Bukku's contacts refreshed successfully"}, status=200)
+    return JsonResponse({'Result': "Bukku's contacts refreshed successfully"}, status=200)

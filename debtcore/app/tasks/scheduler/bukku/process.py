@@ -7,6 +7,7 @@ from django.utils import timezone
 from debtcore_shared.bukku.client import BukkuClient
 from debtcore_shared.bukku.api.invoices import InvoicesRequest
 from debtcore_shared.bukku.api.contact import ContactRequest
+from debtcore_shared.bukku.api.payments import PaymentsRequest
 from django.conf import settings
 from asgiref.sync import async_to_sync
 from django.shortcuts import get_object_or_404
@@ -14,9 +15,9 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 from datetime import datetime
 from app.tasks.helper.helper import parse_address
-import requests
 from app.tasks.debt_session_process import debt_session_process
-import re
+import requests
+from app.tasks.debt_service.debt_session_cancel_process import debt_session_cancel_process
 
 logger = logging.getLogger("bukku_sync_invoice_logger")
 
@@ -34,10 +35,10 @@ def process_bukku(self):
 
     for company in companies:
         try:
-            #process_contact(company)
             process_invoice(company)
+            process_payment(company)
         except Exception as e:
-            self.logger.error(f"Error processing company {company.id}: {e}", exc_info=True)
+            logger.error(f"Error processing company {company.id}: {e}", exc_info=True)
         finally:
             company.bukku_last_sync_time = now
             company.save()
@@ -51,17 +52,21 @@ def process_invoice(company: Company):
 
     fetch_invoices = async_to_sync(request.get_invoice_list)
     try:
-        # company.bukku_last_sync_time.strftime('%Y-%m-%d') if company.bukku_last_sync_time else None
-        date_from = None
-        response =  fetch_invoices(payment_status="OUTSTANDING", date_from=date_from)
+        date_from = company.bukku_last_sync_time.strftime('%Y-%m-%d') if company.bukku_last_sync_time else None
+        response =  fetch_invoices(date_from=date_from)
     except Exception as e:
         logger.error(f"Processing company {company.id} - Contacts: FAILED \n {e}")
         return
     
     invoices = response.get('transactions')
+    
+    if not invoices:
+        logger.info("No transaction found today, operation skipped")
+        return
 
     for invoice in invoices:
         balance = invoice.get('balance')
+
         if balance == 0:
             continue
 
@@ -82,7 +87,7 @@ def process_invoice(company: Company):
         except Customer.DoesNotExist:
             # Handle case where customer does not exist
             customer = process_bukku_contact(client, company, invoice_contact_id)
-            
+        
 
         # Fetch attachment using the request instance      
         fetch_attachment = async_to_sync(request.get_attachment)      
@@ -91,6 +96,7 @@ def process_invoice(company: Company):
 
         debt, created = Debt.objects.update_or_create(
             accounting_id=invoice_id,
+            company=company,
             defaults={
                 'company': company,
                 'customer': customer,
@@ -116,9 +122,68 @@ def process_invoice(company: Company):
             debt_session_process(debt.id)
         logger.info(f"Processed invoice ID: {invoice_id} for customer {customer.id}")
 
+def process_payment(company: Company):
+    client = BukkuClient(company.bukku_api, company.bukku_subdomain, company.bukku_access_token)
+    request = PaymentsRequest(client)
+    
+    fetch_payments = async_to_sync(request.get_payment_list)
+    try:
+        date_from = company.bukku_last_sync_time.strftime('%Y-%m-%d') if company.bukku_last_sync_time else None
+        response =  fetch_payments(date_from=date_from)
+    except Exception as e:
+        logger.error(f"Processing company {company.id} - Contacts: FAILED \n {e}")
+        return
+    
+    payments = response.get('transactions')
+    
+    if not payments:
+        logger.info("No payment found today, operation skipped")
+        return
+    
+    for payment in payments:
+        balance = payment.get('balance')
+        
+        # if there's still outstanding payment, don't process
+        if balance != 0:
+            continue
 
-    
-    
+        payment_id = payment.get('id')
+        
+        fetch_payment_by_id = async_to_sync(request.get_payment)
+        try:
+            payment_response =  fetch_payment_by_id(payment_id)
+        except Exception as e:
+            logger.error(f"Processing bukku's payment for company {company.id} - BUKKU PAYMENT: FAILED \n {e}")
+            return
+        
+        transaction_record = payment_response.get('transaction')
+        transaction_id = payment_response.get('id')
+        linked_transactions = transaction_record.get('link_items')
+        if not linked_transactions:
+            logger.info(f"No existing linked transactions found for payment ID {transaction_id}, operation suspended.")
+            return
+        
+        
+        for transaction in linked_transactions:
+            target_transaction_id = transaction.get('target_transaction_id')
+            try:
+                existing_debt = Debt.objects.get(accounting_id=target_transaction_id, company=company)
+                # Proceed with operations on existing_debt
+            except Debt.DoesNotExist:
+                logger.info(f"No existing debt found for invoice ID {target_transaction_id} and company ID {company.id}. Continuing to next invoice.")
+                continue
+            
+            is_unpaid = transaction.get('balance_after_apply')
+            if is_unpaid:
+                continue
+            
+            existing_debt.status = Debt.get_key_for_status('Claimed')
+            existing_debt.save()
+            
+            debt_session_cancel_process(existing_debt.id)
+        
+            logger.info(f"Processed debt cancellation ID: {existing_debt.id}, terminated scheduler beacuse invoice has been paid.")
+
 def save_document(debt, document_file, invoice_number):
     debt.document.save(f"{invoice_number}.pdf", document_file)
     
@@ -193,19 +258,4 @@ def process_bukku_contact(client: BukkuClient, company: Company, contact_id: int
     return customer
 
 
-
-
-# def process_invoice(company: Company):
-#     client = BukkuClient(company.bukku_api, company.bukku_subdomain, company.bukku_access_token)
-#     request = InvoicesRequest(client)
-
-#     fetch_invoices = async_to_sync(request.get_invoice_list)
-#     try:
-#         invoices = fetch_invoices()
-#     except Exception as e:
-#         logger.error(f"Processing company {company.id} - FAILED \n {e}")
-#         return
-
-#     for invoice in invoices:
-        
     
