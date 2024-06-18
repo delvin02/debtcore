@@ -256,7 +256,9 @@ class Debt(models.Model):
     document = models.FileField(upload_to=debt_document_path, validators=[validate_file_extension])
     
     accounting_id = models.IntegerField(null=True, blank=True)
-
+    bukku_updated_at = models.CharField(max_length=255, null=True, blank=True)
+    bukku_is_voided = models.BooleanField(default=False, null=True, blank=True)
+    
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="created_debts",

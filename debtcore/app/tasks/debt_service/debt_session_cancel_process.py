@@ -13,7 +13,7 @@ logger = logging.getLogger("session_debt_cancel_logger")
 
 @shared_task
 def debt_session_cancel_process(debt_id):
-    logger.info(f'Starting data processing task for Debt ID: {debt_id}')
+    logger.info(f'Processing debt cancellation task for Debt ID: {debt_id}')
     try:
         debt = Debt.objects.get(pk=debt_id)
         

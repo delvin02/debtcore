@@ -15,7 +15,8 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 from datetime import datetime
 from app.tasks.helper.helper import parse_address
-from app.tasks.debt_session_process import debt_session_process
+from django.db import transaction
+from datetime import datetime
 import requests
 from app.tasks.debt_service.debt_session_cancel_process import debt_session_cancel_process
 
@@ -36,6 +37,7 @@ def process_bukku(self):
     for company in companies:
         try:
             process_invoice(company)
+            process_voided_invoice(company)
             process_payment(company)
         except Exception as e:
             logger.error(f"Error processing company {company.id}: {e}", exc_info=True)
@@ -65,16 +67,20 @@ def process_invoice(company: Company):
         return
 
     for invoice in invoices:
+        invoice_id = invoice.get('id')
         balance = invoice.get('balance')
-
+        
         if balance == 0:
             continue
+        
 
-        invoice_id = invoice.get('id')
         invoice_number = invoice.get('number')
         invoice_date = invoice.get('date')
         amount = invoice.get('amount')
         
+        bukku_updated_at = invoice.get('updated_at')
+
+            
         term_date_str = invoice.get('term_items')[0].get('date')
         term_date = datetime.strptime(term_date_str, '%Y-%m-%d').date()
         invoice_date_obj = datetime.strptime(invoice_date, '%Y-%m-%d').date()
@@ -94,6 +100,7 @@ def process_invoice(company: Company):
         document_bytes = fetch_attachment(invoice_id)
         document_file = ContentFile(document_bytes, name=f"{invoice_number}.pdf")
 
+
         debt, created = Debt.objects.update_or_create(
             accounting_id=invoice_id,
             company=company,
@@ -105,9 +112,13 @@ def process_invoice(company: Company):
                 'amount': amount,
                 'status': '1',  # Defaulting to 'In Progress'
                 'term': days_to_due,  # Assuming term is not available in the response
-                'due_date': term_date
+                'due_date': term_date,
+                'bukku_updated_at': bukku_updated_at,
+                'bukku_is_voided': False
             }
         )
+
+        logger.info(f"Debt {'created' if created else 'updated'}: {debt.id}")
 
         if document_file:
             save_document(debt, document_file, invoice_number)
@@ -119,8 +130,39 @@ def process_invoice(company: Company):
                 created_date=timezone.now(),
                 is_system_generated=True
             )
-            debt_session_process(debt.id)
         logger.info(f"Processed invoice ID: {invoice_id} for customer {customer.id}")
+
+def process_voided_invoice(company: Company):
+    client = BukkuClient(company.bukku_api, company.bukku_subdomain, company.bukku_access_token)
+    request = InvoicesRequest(client)
+    
+    fetch_invoices = async_to_sync(request.get_invoice_list)
+    try:
+        date_from = company.bukku_last_sync_time.strftime('%Y-%m-%d') if company.bukku_last_sync_time else None
+        response =  fetch_invoices(date_from=date_from, is_voided=True)
+    except Exception as e:
+        logger.error(f"Processing company {company.id} - Contacts: FAILED \n {e}")
+        return
+    
+    invoices = response.get('transactions')
+    
+    if not invoices:
+        logger.info("No voided transaction found today, operation skipped")
+        return
+
+    for invoice in invoices:
+        invoice_id = invoice.get('id')
+        is_voided = invoice.get('status') == "void"
+        
+        if not is_voided:
+            continue
+        
+        debt = Debt.objects.filter(accounting_id=invoice_id, company=company, bukku_is_voided=False)
+        
+        if debt.exists():
+            logger.info(f"BUKKU - Invoice ID: {invoice_id} from Company ID: {company.id} is voided")
+            debt.update(bukku_is_voided=True)
+            
 
 def process_payment(company: Company):
     client = BukkuClient(company.bukku_api, company.bukku_subdomain, company.bukku_access_token)
@@ -180,7 +222,6 @@ def process_payment(company: Company):
             existing_debt.status = Debt.get_key_for_status('Claimed')
             existing_debt.save()
             
-            debt_session_cancel_process(existing_debt.id)
         
             logger.info(f"Processed debt cancellation ID: {existing_debt.id}, terminated scheduler beacuse invoice has been paid.")
 
