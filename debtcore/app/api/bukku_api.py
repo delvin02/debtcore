@@ -23,6 +23,9 @@ def refresh_contact(request):
     if not company:
         return JsonResponse({'message': "Missing company."}, status=400)
     
+    if not company.default_country:
+        return JsonResponse({'message': "Missing default country."}, status=400)
+    
     client = BukkuClient(company.bukku_api, company.bukku_subdomain, company.bukku_access_token)
     request = ContactRequest(client)
 
@@ -65,10 +68,11 @@ def refresh_contact(request):
         country_id = Country.get_id_by_name(country_name)
         country = get_object_or_404(Country, id=country_id) if country_id else company.default_country
 
+
         # Assuming there's only one address in the list for this example
 
         # Create or update the Customer instance
-        customer, created = Customer.objects.update_or_create(
+        customer, created = Customer.objects.get_or_create(
             accounting_id=contact_id,
             company=company,
             defaults={

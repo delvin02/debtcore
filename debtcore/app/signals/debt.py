@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from app.models import Debt, Session
 from app.tasks.debt_service.debt_session_cancel_process import debt_session_cancel_process
 from app.tasks.debt_session_create_process import debt_session_create_process
+from app.tasks.debt_session_schedule_process import debt_session_schedule_process
 
 @receiver(post_save, sender=Debt)
 def process_debt(sender, instance, created, **kwargs):
@@ -21,4 +22,6 @@ def process_debt(sender, instance, created, **kwargs):
         if not has_session:
             debt_session_create_process(instance.id)
             return
+        else:
+            debt_session_schedule_process(instance.id)
         

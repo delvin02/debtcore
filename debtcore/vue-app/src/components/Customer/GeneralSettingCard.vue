@@ -101,11 +101,12 @@ const RefreshCustomer = async () => {
 			title: response.data.Result,
 			variant: 'success'
 		})
-	} catch (error) {
-		let errorMessage = 'An unexpected error occurred.'
+	} catch (error: any) {
+		console.log(error.data)
+		let errorMessage = error.response.data.message
 		toast({
 			title: 'Whoops, something went wrong',
-			description: errorMessage || '',
+			description: errorMessage || 'An unexpected error occurred.',
 			variant: 'destructive'
 		})
 	} finally {

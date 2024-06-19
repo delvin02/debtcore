@@ -12,7 +12,7 @@ logger = logging.getLogger("session_scheduler_logger")
 
 @shared_task
 def debt_session_create_process(debt_id):
-    logger.info(f'Starting data processing task for Debt ID: {debt_id}')
+    logger.info(f'Processing session creation task for Debt ID: {debt_id}')
     try:
         debt = Debt.objects.get(pk=debt_id)
         
@@ -20,7 +20,7 @@ def debt_session_create_process(debt_id):
         status_text = Debt.get_status_text_for_key(status_key)
         
         if status_text != "In Progress":
-            logger.info(f'Debt is not in progress, operation terminated.')
+            logger.info(f'Debt {debt.id} is not in progress, operation terminated.')
             return
         
         dates = {

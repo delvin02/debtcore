@@ -161,14 +161,15 @@ def process_voided_invoice(company: Company):
         
         if debt.exists():
             logger.info(f"BUKKU - Invoice ID: {invoice_id} from Company ID: {company.id} is voided")
+            debt.status = Debt.get_key_for_status('Canceled')
             debt.update(bukku_is_voided=True)
             
 
 def process_payment(company: Company):
     client = BukkuClient(company.bukku_api, company.bukku_subdomain, company.bukku_access_token)
-    request = PaymentsRequest(client)
+    request_payment = PaymentsRequest(client)
     
-    fetch_payments = async_to_sync(request.get_payment_list)
+    fetch_payments = async_to_sync(request_payment.get_payment_list)
     try:
         date_from = company.bukku_last_sync_time.strftime('%Y-%m-%d') if company.bukku_last_sync_time else None
         response =  fetch_payments(date_from=date_from)
@@ -191,7 +192,7 @@ def process_payment(company: Company):
 
         payment_id = payment.get('id')
         
-        fetch_payment_by_id = async_to_sync(request.get_payment)
+        fetch_payment_by_id = async_to_sync(request_payment.get_payment)
         try:
             payment_response =  fetch_payment_by_id(payment_id)
         except Exception as e:
@@ -199,7 +200,7 @@ def process_payment(company: Company):
             return
         
         transaction_record = payment_response.get('transaction')
-        transaction_id = payment_response.get('id')
+        transaction_id = transaction_record.get('id')
         linked_transactions = transaction_record.get('link_items')
         if not linked_transactions:
             logger.info(f"No existing linked transactions found for payment ID {transaction_id}, operation suspended.")
@@ -214,8 +215,15 @@ def process_payment(company: Company):
             except Debt.DoesNotExist:
                 logger.info(f"No existing debt found for invoice ID {target_transaction_id} and company ID {company.id}. Continuing to next invoice.")
                 continue
-            
-            is_unpaid = transaction.get('balance_after_apply')
+
+            request_invoice = InvoicesRequest(client)
+
+            fetch_invoices = async_to_sync(request_invoice.get_invoice)
+            response_invoice =  fetch_invoices(target_transaction_id)
+
+            invoice = response_invoice.get('transaction')
+
+            is_unpaid = invoice.get('balance') != 0
             if is_unpaid:
                 continue
             
