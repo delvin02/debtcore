@@ -2,7 +2,7 @@
 *.sqlite3
 /node_modules
 
-/dbdata/*
+/.dbdata/*
 .dbdata/*
 .rabbitmq_data/*
 .mysql-conf/
@@ -15,6 +15,7 @@ ibtmp1
 undo_00*
 celerybeat-schedule
 
+./debtcore/app/migrations
 
 .env
 
@@ -121,3 +122,5 @@ __pypackages__/
 
 # SageMath parsed files
 *.sage.py
+
+

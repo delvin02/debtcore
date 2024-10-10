@@ -59,7 +59,7 @@ services:
     command: celery -A debtcore.celery beat -l info
 
   rabbitmq:
-    image: "rabbitmq:3-management"
+    image: "rabbitmq:3"
     ports:
       - "5672:5672"
     volumes:
