@@ -305,7 +305,7 @@ DATABASES = {
         'NAME': os.getenv("MYSQL_NAME", "debtcore"),
         'USER': os.getenv("MYSQL_USER", "lucid"),
         'PASSWORD': os.getenv("MYSQL_PASSWORD", "password"),
-        'HOST': os.getenv("MYSQL_HOST", 'localhost'),  
+        'HOST': os.getenv("MYSQL_HOST", '127.0.0.1'),  
         'PORT': os.getenv("MYSQL_PORT", '3306')
     }
 }
